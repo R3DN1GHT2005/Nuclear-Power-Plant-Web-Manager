@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Statistici - NuclearWatch</title>
+		<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+
+<div class="wrap">
+	<div class="sidebar">
+		<div class="logo">
+			<div class="logo-icon"><span></span></div>
+			<span class="logo-text">NuclearWatch</span>
+		</div>
+		<div class="nav">
+			<a class="nav-item" href="./index.html"><span class="dot"></span>Panou principal</a>
+			<a class="nav-item" href="./index.html#stare-reactoare"><span class="dot"></span>Reactoare</a>
+			<a class="nav-item active" href="./stats.html"><span class="dot"></span>Statistici</a>
+			<a class="nav-item" href="./reactors.html"><span class="dot"></span>Amplasare</a>
+			<a class="nav-item" href="./alerts.html"><span class="dot"></span>Mentenanță</a>
+			<a class="nav-item" href="./index.html#flux-rss"><span class="dot"></span>Flux RSS</a>
+		</div>
+		<div class="nav-bottom">
+			<a class="nav-item" href="#"><span class="dot"></span>Setări</a>
+			<a class="nav-item" href="#"><span class="dot"></span>Deconectare</a>
+		</div>
+	</div>
+
+	<div class="main">
+		<div class="topbar">
+			<span class="topbar-title">Statistici operaționale</span>
+			<div class="topbar-right">
+				<div class="bell"><div class="bell-icon"></div><div class="bell-badge">4</div></div>
+				<div class="avatar">IA</div>
+			</div>
+		</div>
+
+		<div class="infobar">
+			<span class="infobar-text">Date actualizate la fiecare 30 secunde pe baza fluxului intern de senzori și al rapoartelor de monitorizare.</span>
+		</div>
+
+		<div class="content">
+			<div class="kpi-row">
+				<div class="kpi">
+					<div class="kpi-header">
+						<span class="kpi-label">Producție totală (24h)</span>
+						<div class="kpi-dot blue"></div>
+					</div>
+					<span class="kpi-val blue">13.8 GWh</span>
+					<span class="kpi-sub">+4.1% față de media săptămânală</span>
+				</div>
+				<div class="kpi">
+					<div class="kpi-header">
+						<span class="kpi-label">Eficiență globală</span>
+						<div class="kpi-dot green"></div>
+					</div>
+					<span class="kpi-val green">87.4%</span>
+					<span class="kpi-sub">Stabilă în ultimele 6 ore</span>
+				</div>
+				<div class="kpi">
+					<div class="kpi-header">
+						<span class="kpi-label">Evenimente anormale</span>
+						<div class="kpi-dot amber"></div>
+					</div>
+					<span class="kpi-val amber">7</span>
+					<span class="kpi-sub">5 avertismente, 2 incidente</span>
+				</div>
+				<div class="kpi">
+					<div class="kpi-header">
+						<span class="kpi-label">Indice de risc</span>
+						<div class="kpi-dot red"></div>
+					</div>
+					<span class="kpi-val red">31 / 100</span>
+					<span class="kpi-sub">Nivel moderat, monitorizare activă</span>
+				</div>
+			</div>
+
+			<div class="stats-grid">
+				<div class="panel">
+					<div class="panel-head">
+						<span class="panel-head-title">Eficiență pe reactor</span>
+						<span class="panel-head-link">Ultimele 24h</span>
+					</div>
+					<div class="chart-body">
+						<div class="chart-stack">
+							<div class="chart-bar"><span>Reactor 1</span><div class="chart-track"><div class="chart-fill" style="width:91%; background:#057A55"></div></div><span>91%</span></div>
+							<div class="chart-bar"><span>Reactor 2</span><div class="chart-track"><div class="chart-fill" style="width:88%; background:#057A55"></div></div><span>88%</span></div>
+							<div class="chart-bar"><span>Reactor 3</span><div class="chart-track"><div class="chart-fill" style="width:76%; background:#C81E1E"></div></div><span>76%</span></div>
+							<div class="chart-bar"><span>Reactor 4</span><div class="chart-track"><div class="chart-fill" style="width:62%; background:#C27803"></div></div><span>62%</span></div>
+							<div class="chart-bar"><span>Reactor 5</span><div class="chart-track"><div class="chart-fill" style="width:94%; background:#057A55"></div></div><span>94%</span></div>
+							<div class="chart-bar"><span>Reactor 6</span><div class="chart-track"><div class="chart-fill" style="width:85%; background:#057A55"></div></div><span>85%</span></div>
+							<div class="chart-bar"><span>Reactor 7</span><div class="chart-track"><div class="chart-fill" style="width:0%; background:#9CA3AF"></div></div><span>0%</span></div>
+							<div class="chart-bar"><span>Reactor 8</span><div class="chart-track"><div class="chart-fill" style="width:79%; background:#057A55"></div></div><span>79%</span></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel">
+					<div class="panel-head">
+						<span class="panel-head-title">Distribuție alerte</span>
+						<span class="panel-head-link">Săptămâna curentă</span>
+					</div>
+					<div class="mini-list">
+						<div class="mini-row"><span class="mini-label">Critice</span><span class="mini-value">2</span></div>
+						<div class="mini-row"><span class="mini-label">Avertismente</span><span class="mini-value">11</span></div>
+						<div class="mini-row"><span class="mini-label">Informaționale</span><span class="mini-value">29</span></div>
+						<div class="mini-row"><span class="mini-label">Total evenimente</span><span class="mini-value">42</span></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel">
+				<div class="panel-head">
+					<span class="panel-head-title">Trend temperatură medie reactor</span>
+					<span class="panel-head-link">Actualizat la minut</span>
+				</div>
+				<table>
+					<thead>
+						<tr>
+							<th>Reactor</th>
+							<th>Temp. curentă (°C)</th>
+							<th>Media 24h (°C)</th>
+							<th>Abatere</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>Reactor 1</td><td>302</td><td>299</td><td>+3</td><td><span class="pill green">Normal</span></td></tr>
+						<tr><td>Reactor 2</td><td>298</td><td>297</td><td>+1</td><td><span class="pill green">Normal</span></td></tr>
+						<tr><td>Reactor 3</td><td class="critical-value">412</td><td>351</td><td class="critical-value">+61</td><td><span class="pill red">Critic</span></td></tr>
+						<tr><td>Reactor 4</td><td>289</td><td>281</td><td>+8</td><td><span class="pill amber">Monitorizare</span></td></tr>
+						<tr><td>Reactor 5</td><td>305</td><td>304</td><td>+1</td><td><span class="pill green">Normal</span></td></tr>
+						<tr><td>Reactor 6</td><td>301</td><td>300</td><td>+1</td><td><span class="pill green">Normal</span></td></tr>
+						<tr><td>Reactor 7</td><td class="muted-cell">—</td><td class="muted-cell">—</td><td class="muted-cell">—</td><td><span class="pill gray">Oprit</span></td></tr>
+						<tr><td>Reactor 8</td><td>295</td><td>293</td><td>+2</td><td><span class="pill green">Normal</span></td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

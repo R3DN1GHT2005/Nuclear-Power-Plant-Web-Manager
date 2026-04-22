@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panou principal - NuclearWatch</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><span></span></div>
+      <span class="logo-text">NuclearWatch</span>
+    </div>
+    <div class="nav">
+      <a class="nav-item active" href="./index.html"><span class="dot"></span>Panou principal</a>
+      <a class="nav-item" href="./index.html#stare-reactoare"><span class="dot"></span>Reactoare</a>
+      <a class="nav-item" href="./stats.html"><span class="dot"></span>Statistici</a>
+      <a class="nav-item" href="./reactors.html"><span class="dot"></span>Amplasare</a>
+      <a class="nav-item" href="./alerts.html"><span class="dot"></span>Mentenanță</a>
+      <a class="nav-item" href="./index.html#flux-rss"><span class="dot"></span>Flux RSS</a>
+    </div>
+    <div class="nav-bottom">
+      <a class="nav-item" href="#"><span class="dot"></span>Setări</a>
+      <a class="nav-item" href="#"><span class="dot"></span>Deconectare</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Panou principal</span>
+      <div class="topbar-right">
+        <div class="bell">
+          <div class="bell-icon"></div>
+          <div class="bell-badge">4</div>
+        </div>
+        <div class="avatar">IA</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Reactoare active</span>
+            <div class="kpi-dot blue"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="#1A56DB" stroke-width="1.5"/><circle cx="6" cy="6" r="1.5" fill="#1A56DB"/></svg></div>
+          </div>
+          <span class="kpi-val blue">6 / 8</span>
+          <span class="kpi-sub">2 inactive momentan</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Eficiență medie</span>
+            <div class="kpi-dot green"><svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,9 5,5 8,7 10,3" fill="none" stroke="#057A55" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          </div>
+          <span class="kpi-val green">87%</span>
+          <span class="kpi-sub">+2% față de ieri</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Avertismente</span>
+            <div class="kpi-dot amber"><svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,2 10,10 2,10" fill="none" stroke="#C27803" stroke-width="1.5" stroke-linejoin="round"/><line x1="6" y1="5" x2="6" y2="7.5" stroke="#C27803" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          </div>
+          <span class="kpi-val amber">3</span>
+          <span class="kpi-sub">1 nou în ultimele 6h</span>
+        </div>
+        <div class="kpi">
+          <div class="kpi-header">
+            <span class="kpi-label">Alerte critice</span>
+            <div class="kpi-dot red"><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="#C81E1E" stroke-width="1.5"/><line x1="6" y1="4" x2="6" y2="6.5" stroke="#C81E1E" stroke-width="1.5" stroke-linecap="round"/><circle cx="6" cy="8.2" r=".8" fill="#C81E1E"/></svg></div>
+          </div>
+          <span class="kpi-val red">1</span>
+          <span class="kpi-sub">Reactor 3 – urgent</span>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div class="panel" id="stare-reactoare">
+          <div class="panel-head">
+            <span class="panel-head-title">Starea reactoarelor</span>
+            <span class="panel-head-link">Vezi toate →</span>
+          </div>
+          <table>
+            <thead><tr><th>Reactor</th><th>Putere</th><th>Temp. (°C)</th><th>Stare</th><th>Actualizat</th></tr></thead>
+            <tbody>
+              <tr><td>Reactor 1</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill green" style="width:91%"></div></div>91%</div></td><td>302</td><td><span class="pill green">Activ</span></td><td class="muted-cell">2 min</td></tr>
+              <tr><td>Reactor 2</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill green" style="width:88%"></div></div>88%</div></td><td>298</td><td><span class="pill green">Activ</span></td><td class="muted-cell">1 min</td></tr>
+              <tr><td>Reactor 3</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill red" style="width:76%"></div></div>76%</div></td><td><span class="critical-value">412</span></td><td><span class="pill red">Alertă</span></td><td class="muted-cell">30 sec</td></tr>
+              <tr><td>Reactor 4</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill amber" style="width:62%"></div></div>62%</div></td><td>289</td><td><span class="pill amber">Mentenanță</span></td><td class="muted-cell">5 min</td></tr>
+              <tr><td>Reactor 5</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill green" style="width:94%"></div></div>94%</div></td><td>305</td><td><span class="pill green">Activ</span></td><td class="muted-cell">1 min</td></tr>
+              <tr><td>Reactor 6</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill green" style="width:85%"></div></div>85%</div></td><td>301</td><td><span class="pill green">Activ</span></td><td class="muted-cell">3 min</td></tr>
+              <tr><td>Reactor 7</td><td><div class="bar-cell"><div class="bar-bg" style="width:48px"><div class="bar-fill" style="width:0;background:#9CA3AF"></div></div>—</div></td><td>—</td><td><span class="pill gray">Oprit</span></td><td class="muted-cell">2h</td></tr>
+              <tr><td>Reactor 8</td><td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill green" style="width:79%"></div></div>79%</div></td><td>295</td><td><span class="pill green">Activ</span></td><td class="muted-cell">2 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="right-col">
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-head-title">Alerte recente</span>
+              <span class="panel-head-link">Toate →</span>
+            </div>
+            <div class="alert-list">
+              <div class="alert-row"><div class="alert-bar red"></div><div class="alert-body"><div class="alert-text">Reactor 3: temperatură critică depășită</div><div class="alert-meta"><span class="alert-time">acum 2 min</span><span class="alert-link">Detalii →</span></div></div></div>
+              <div class="alert-row"><div class="alert-bar amber"></div><div class="alert-body"><div class="alert-text">Reactor 4: presiune ușor crescută</div><div class="alert-meta"><span class="alert-time">acum 34 min</span><span class="alert-link">Detalii →</span></div></div></div>
+              <div class="alert-row"><div class="alert-bar amber"></div><div class="alert-body"><div class="alert-text">Reactor 7: oprire planificată inițiată</div><div class="alert-meta"><span class="alert-time">acum 2h</span><span class="alert-link">Detalii →</span></div></div></div>
+              <div class="alert-row"><div class="alert-bar blue"></div><div class="alert-body"><div class="alert-text">Mentenanță Reactor 4 programată</div><div class="alert-meta"><span class="alert-time">ieri, 14:22</span><span class="alert-link">Detalii →</span></div></div></div>
+              <div class="alert-row"><div class="alert-bar blue"></div><div class="alert-body"><div class="alert-text">Actualizare firmware senzori R1–R2</div><div class="alert-meta"><span class="alert-time">ieri, 09:05</span><span class="alert-link">Detalii →</span></div></div></div>
+            </div>
+          </div>
+
+          <div class="panel" id="flux-rss">
+            <div class="panel-head">
+              <span class="panel-head-title">Flux RSS – stare centrală</span>
+              <span class="panel-head-link">Abonare →</span>
+            </div>
+            <div class="rss-row"><div class="rss-icon"><div class="rss-icon-inner"></div></div><div class="rss-body"><div class="rss-title">Reactor 3 – alertă activă, monitorizare continuă</div><div class="rss-date">16 apr 2026, 11:42</div></div></div>
+            <div class="rss-row"><div class="rss-icon"><div class="rss-icon-inner"></div></div><div class="rss-body"><div class="rss-title">Centrala funcționează la 87% eficiență medie</div><div class="rss-date">16 apr 2026, 08:00</div></div></div>
+            <div class="rss-row"><div class="rss-icon"><div class="rss-icon-inner"></div></div><div class="rss-body"><div class="rss-title">Mentenanță planificată Reactor 4 – 17 apr</div><div class="rss-date">15 apr 2026, 16:30</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
