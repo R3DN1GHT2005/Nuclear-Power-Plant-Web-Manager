@@ -2,13 +2,8 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(150) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL, -- Parola criptată generată de PHP
-<<<<<<< Updated upstream
-    salt VARCHAR(255) NOT NULL;
-    full_name VARCHAR(100) NOT NULL,
-=======
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
->>>>>>> Stashed changes
     role VARCHAR(50) DEFAULT 'viewer',   -- Roluri acceptate: 'admin', 'technician', 'viewer'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

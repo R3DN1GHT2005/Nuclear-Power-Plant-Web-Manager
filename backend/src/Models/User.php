@@ -6,16 +6,14 @@ class User{
     private int $id;
     private string $email;
     private string $password_hash;
-    private string $salt;
     private string $full_name;
     private string $role; 
     private \DateTime $created_at;
 
-    public function __construct(int $id, string $email, string $password_hash, string $salt, string $full_name, string $role, \DateTime $created_at) {
+    public function __construct(int $id, string $email, string $password_hash, string $full_name, string $role, \DateTime $created_at) {
         $this->id = $id;
         $this->email = $email;
         $this->password_hash = $password_hash;
-        $this->salt = $salt;
         $this->full_name = $full_name;
 =======
 <?php
@@ -55,10 +53,6 @@ class User
         return $this->password_hash;
     }
 
-    public function getSalt(): string {
-        return $this->salt;
-    }
-
     public function getFullName(): string {
         return $this->full_name;
     }
@@ -77,10 +71,6 @@ class User
 
     public function setPasswordHash(string $password_hash): void {
         $this->password_hash = $password_hash;
-    }
-
-    public function setSalt(string $salt): void {
-        $this->salt = $salt;
     }
 
     public function setFullName(string $full_name): void {
