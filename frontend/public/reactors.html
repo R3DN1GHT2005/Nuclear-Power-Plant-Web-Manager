@@ -3,161 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amplasare Reactoare - NuclearWatch</title>
-  <link rel="stylesheet" href="./assets/css/style.css">
+    <title>NuclearWatch — Reactoare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<div class="wrap">
-  <div class="sidebar">
-    <div class="logo">
-      <div class="logo-icon"><span></span></div>
-      <span class="logo-text">NuclearWatch</span>
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="#">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
+                    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            NuclearWatch
+        </a>
+        <a class="nav-link" href="index.html">Panou principal</a>
+        <a class="nav-link active" href="reactors.html">Reactoare</a>
+        <a class="nav-link" href="stats.html">Statistici</a>
+        <a class="nav-link" href="location.html">Amplasare</a>
+        <a class="nav-link" href="maintenance.html">Mentenanță</a>
+        <a class="nav-link" href="rss.html">Flux RSS</a>
     </div>
-    <div class="nav">
-      <a class="nav-item" href="./index.html"><span class="dot"></span>Panou principal</a>
-      <a class="nav-item" href="./index.html#stare-reactoare"><span class="dot"></span>Reactoare</a>
-      <a class="nav-item" href="./stats.html"><span class="dot"></span>Statistici</a>
-      <a class="nav-item active" href="./reactors.html"><span class="dot"></span>Amplasare</a>
-      <a class="nav-item" href="./alerts.html"><span class="dot"></span>Mentenanță</a>
-      <a class="nav-item" href="./index.html#flux-rss"><span class="dot"></span>Flux RSS</a>
-    </div>
-    <div class="nav-bottom">
-      <a class="nav-item" href="#"><span class="dot"></span>Setări</a>
-      <a class="nav-item" href="#"><span class="dot"></span>Deconectare</a>
-    </div>
-  </div>
-
-  <div class="main">
-    <div class="topbar">
-      <span class="topbar-title">Amplasare reactoare</span>
-      <div class="topbar-right">
-        <div class="bell"><div class="bell-inner"></div><div class="bell-badge">4</div></div>
+    <div class="nav-right">
+        <button class="nav-icon-btn" title="Notificări">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2V14h15v-1L16 11V8a6 6 0 0 0-6-6zm0 16a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 10 18z" fill="currentColor"/></svg>
+            <span class="badge-dot"></span>
+        </button>
         <div class="avatar">IA</div>
-      </div>
+        <button class="logout-btn">
+             <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Deconectare
+        </button>
     </div>
-    <div class="infobar">
-      <span class="infobar-text">Harta afișează amplasarea optimă calculată pe baza factorilor: stabilitate sol, seismicitate, eficiență energetică și minimizarea riscurilor.</span>
+</nav>
+
+<main class="main split-layout">
+
+    <div class="col-left">
+
+        <div class="page-header">
+            <div>
+                <h1 class="ph-title">Reactoare</h1>
+                <p class="ph-sub">Monitorizare în timp real · 8 reactoare · actualizat acum 30 sec</p>
+            </div>
+            <div class="ph-actions">
+                <button class="btn"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Reactor nou</button>
+                <button class="btn"><svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Export</button>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-tab active-tab">Toate (8)</div>
+            <div class="filter-tab tab-red">Alertă (1)</div>
+            <div class="filter-tab tab-amber">Mentenanță (1)</div>
+            <div class="filter-tab tab-green">Activ (5)</div>
+            <div class="filter-tab">Oprit (1)</div>
+            <input class="search-input" type="text" placeholder="Caută reactor...">
+        </div>
+
+        <div class="scroll-area">
+            <div class="reactor-grid" id="reactor-grid-container">
+
+                <article class="rcard border-crit">
+                    <header class="rcard-header">
+                        <div>
+                            <h3 class="rcard-name">Reactor 3</h3>
+                            <div class="rcard-id">ID: NW-R3 · Tip: PWR</div>
+                        </div>
+                        <span class="pill pill-alert">⚠ Alertă</span>
+                    </header>
+                    <div class="rcard-bar">
+                        <div class="bar-label"><span>Putere</span><span class="text-red">76%</span></div>
+                        <div class="bar-track"><div class="bar-fill bf-red" style="width:76%"></div></div>
+                    </div>
+                    <div class="rcard-body">
+                        <div class="param-box">
+                            <div class="param-label">Temperatură</div>
+                            <div class="param-val hot">412°C</div>
+                            <div class="param-unit">Limită: 380°C</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Presiune</div>
+                            <div class="param-val warn">158 bar</div>
+                            <div class="param-unit">Nominal: 155 bar</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Debit răcire</div>
+                            <div class="param-val">820 m³/h</div>
+                            <div class="param-unit">Normal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Radiație</div>
+                            <div class="param-val warn">2.4 mSv/h</div>
+                            <div class="param-unit">Limită: 2.0</div>
+                        </div>
+                    </div>
+                    <footer class="rcard-footer">
+                        <div class="rcard-upd"><div class="upd-dot dot-red"></div>Actualizat acum 30 sec</div>
+                        <a class="action-link action-crit" href="#">Intervine →</a>
+                    </footer>
+                </article>
+
+                <article class="rcard border-maint">
+                    <header class="rcard-header">
+                        <div>
+                            <h3 class="rcard-name">Reactor 4</h3>
+                            <div class="rcard-id">ID: NW-R4 · Tip: BWR</div>
+                        </div>
+                        <span class="pill pill-maint">Mentenanță</span>
+                    </header>
+                    <div class="rcard-bar">
+                        <div class="bar-label"><span>Putere</span><span class="text-amber">62%</span></div>
+                        <div class="bar-track"><div class="bar-fill bf-amber" style="width:62%"></div></div>
+                    </div>
+                    <div class="rcard-body">
+                        <div class="param-box">
+                            <div class="param-label">Temperatură</div>
+                            <div class="param-val ok">289°C</div>
+                            <div class="param-unit">Normal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Presiune</div>
+                            <div class="param-val ok">152 bar</div>
+                            <div class="param-unit">Nominal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Debit răcire</div>
+                            <div class="param-val">740 m³/h</div>
+                            <div class="param-unit">Redus</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Uzură estimată</div>
+                            <div class="param-val warn">34%</div>
+                            <div class="param-unit">Medie</div>
+                        </div>
+                    </div>
+                    <footer class="rcard-footer">
+                        <div class="rcard-upd"><div class="upd-dot dot-amber"></div>Actualizat acum 5 min</div>
+                        <a class="action-link" href="mentenanta.html">Programare →</a>
+                    </footer>
+                </article>
+
+                <article class="rcard">
+                    <header class="rcard-header">
+                        <div>
+                            <h3 class="rcard-name">Reactor 1</h3>
+                            <div class="rcard-id">ID: NW-R1 · Tip: PWR</div>
+                        </div>
+                        <span class="pill pill-active">Activ</span>
+                    </header>
+                    <div class="rcard-bar">
+                        <div class="bar-label"><span>Putere</span><span class="text-green">91%</span></div>
+                        <div class="bar-track"><div class="bar-fill bf-green" style="width:91%"></div></div>
+                    </div>
+                    <div class="rcard-body">
+                        <div class="param-box">
+                            <div class="param-label">Temperatură</div>
+                            <div class="param-val ok">302°C</div>
+                            <div class="param-unit">Normal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Presiune</div>
+                            <div class="param-val ok">154 bar</div>
+                            <div class="param-unit">Nominal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Debit răcire</div>
+                            <div class="param-val">910 m³/h</div>
+                            <div class="param-unit">Normal</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Uzură estimată</div>
+                            <div class="param-val ok">18%</div>
+                            <div class="param-unit">Bună</div>
+                        </div>
+                    </div>
+                    <footer class="rcard-footer">
+                        <div class="rcard-upd"><div class="upd-dot dot-green"></div>Actualizat acum 2 min</div>
+                        <a class="action-link" href="#">Detalii →</a>
+                    </footer>
+                </article>
+
+                <article class="rcard opacity-75">
+                    <header class="rcard-header">
+                        <div>
+                            <h3 class="rcard-name text-muted">Reactor 7</h3>
+                            <div class="rcard-id">ID: NW-R7 · Tip: VVER</div>
+                        </div>
+                        <span class="pill pill-off">Oprit</span>
+                    </header>
+                    <div class="rcard-bar">
+                        <div class="bar-label"><span>Putere</span><span>—</span></div>
+                        <div class="bar-track"><div class="bar-fill bf-gray" style="width:0%"></div></div>
+                    </div>
+                    <div class="rcard-body">
+                        <div class="param-box">
+                            <div class="param-label">Temperatură</div>
+                            <div class="param-val text-muted">—</div>
+                            <div class="param-unit">Inactiv</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Presiune</div>
+                            <div class="param-val text-muted">—</div>
+                            <div class="param-unit">Inactiv</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Motiv oprire</div>
+                            <div class="param-val text-sm-muted">Planificat</div>
+                            <div class="param-unit">Reparații</div>
+                        </div>
+                        <div class="param-box">
+                            <div class="param-label">Repornire est.</div>
+                            <div class="param-val text-sm-muted">19 apr</div>
+                            <div class="param-unit">2026</div>
+                        </div>
+                    </div>
+                    <footer class="rcard-footer">
+                        <div class="rcard-upd"><div class="upd-dot dot-gray"></div>Oprit acum 2h</div>
+                        <a class="action-link" href="mentenanta.html">Programare →</a>
+                    </footer>
+                </article>
+
+            </div>
+        </div>
     </div>
 
-    <div class="map-area">
-      <div class="map-panel">
-        <svg class="map-bg" viewBox="0 0 720 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="720" height="800" fill="#E8F0F7"/>
-          <polygon points="0,0 280,0 340,60 260,140 180,120 80,180 0,160" fill="#D1DDE8"/>
-          <polygon points="280,0 720,0 720,200 600,180 520,220 440,160 380,100 340,60" fill="#C4D4E3"/>
-          <polygon points="0,160 80,180 180,120 260,140 300,220 240,300 160,320 60,280 0,260" fill="#D8E5EF"/>
-          <polygon points="440,160 520,220 600,180 720,200 720,400 640,380 560,420 480,380 400,340 380,260 420,220" fill="#D1DDE8"/>
-          <polygon points="160,320 240,300 300,220 380,260 400,340 360,420 280,460 200,440 120,400 80,360" fill="#C4D4E3"/>
-          <polygon points="0,260 60,280 160,320 120,400 80,360 0,380" fill="#DDE8F0"/>
-          <polygon points="560,420 640,380 720,400 720,600 660,560 580,540 520,500 480,460" fill="#D8E5EF"/>
-          <polygon points="280,460 360,420 480,460 520,500 460,560 380,580 300,560 240,520" fill="#D1DDE8"/>
-          <polygon points="80,360 120,400 200,440 240,520 180,560 100,540 40,500 0,460 0,380" fill="#C4D4E3"/>
-          <polygon points="380,580 460,560 520,500 580,540 660,560 720,600 720,800 600,780 500,760 400,780 300,760 200,740 100,760 0,740 0,600 40,580 100,540 180,560 240,520 300,560" fill="#D8E5EF"/>
-          <ellipse cx="200" cy="500" rx="60" ry="20" fill="#C0D4E8" opacity=".5"/>
-          <ellipse cx="480" cy="300" rx="40" ry="14" fill="#C0D4E8" opacity=".4"/>
-          <line x1="0" y1="350" x2="720" y2="350" stroke="#C4D4E3" stroke-width=".5" stroke-dasharray="4 6"/>
-          <line x1="200" y1="0" x2="200" y2="800" stroke="#C4D4E3" stroke-width=".5" stroke-dasharray="4 6"/>
-          <line x1="440" y1="0" x2="440" y2="800" stroke="#C4D4E3" stroke-width=".5" stroke-dasharray="4 6"/>
 
-          <circle cx="130" cy="200" r="9" fill="#057A55" stroke="#fff" stroke-width="2"/>
-          <text x="130" y="218" text-anchor="middle" font-size="10" font-weight="600" fill="#057A55">R1</text>
-          <circle cx="290" cy="310" r="9" fill="#057A55" stroke="#fff" stroke-width="2"/>
-          <text x="290" y="328" text-anchor="middle" font-size="10" font-weight="600" fill="#057A55">R2</text>
-          <circle class="pulse-ring" cx="490" cy="230" r="14" fill="#C81E1E" fill-opacity=".18" stroke="#C81E1E" stroke-width="1"/>
-          <circle cx="490" cy="230" r="9" fill="#C81E1E" stroke="#fff" stroke-width="2"/>
-          <text x="490" y="248" text-anchor="middle" font-size="10" font-weight="600" fill="#C81E1E">R3</text>
-          <circle cx="560" cy="430" r="9" fill="#C27803" stroke="#fff" stroke-width="2"/>
-          <text x="560" y="448" text-anchor="middle" font-size="10" font-weight="600" fill="#C27803">R4</text>
-          <circle cx="370" cy="480" r="9" fill="#057A55" stroke="#fff" stroke-width="2"/>
-          <text x="370" y="498" text-anchor="middle" font-size="10" font-weight="600" fill="#057A55">R5</text>
-          <circle cx="200" cy="580" r="9" fill="#057A55" stroke="#fff" stroke-width="2"/>
-          <text x="200" y="598" text-anchor="middle" font-size="10" font-weight="600" fill="#057A55">R6</text>
-          <circle cx="620" cy="620" r="9" fill="#057A55" stroke="#fff" stroke-width="2"/>
-          <text x="620" y="638" text-anchor="middle" font-size="10" font-weight="600" fill="#057A55">R7</text>
-          <circle cx="100" cy="440" r="9" fill="#057A55" stroke="#fff" stroke-width="2"/>
-          <text x="100" y="458" text-anchor="middle" font-size="10" font-weight="600" fill="#057A55">R8</text>
-        </svg>
+    <div class="col-right">
+        
+        <div class="panel-card flex-fill">
+            
+            <div class="detail-section mb-12">
+                <header class="det-h">
+                    <div>
+                        <div class="det-t text-red">⚠ Reactor 3 — Alertă activă</div>
+                        <div class="det-s">Detalii parametri în timp real</div>
+                    </div>
+                    <span class="pill pill-alert">CRITIC</span>
+                </header>
+                <div class="gauge-row">
+                    <div class="gauge">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 64 64"><circle class="gauge-track" cx="32" cy="32" r="27"/><circle cx="32" cy="32" r="27" class="stroke-red" stroke-dashoffset="42"/></svg>
+                            <div class="gauge-val-wrap"><div class="gauge-num text-red">412</div><div class="gauge-unit">°C</div></div>
+                        </div>
+                        <div class="gauge-lbl">Temperatură</div>
+                    </div>
+                    <div class="gauge">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 64 64"><circle class="gauge-track" cx="32" cy="32" r="27"/><circle cx="32" cy="32" r="27" class="stroke-amber" stroke-dashoffset="52"/></svg>
+                            <div class="gauge-val-wrap"><div class="gauge-num text-amber">158</div><div class="gauge-unit">bar</div></div>
+                        </div>
+                        <div class="gauge-lbl">Presiune</div>
+                    </div>
+                    <div class="gauge">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 64 64"><circle class="gauge-track" cx="32" cy="32" r="27"/><circle cx="32" cy="32" r="27" class="stroke-amber" stroke-dashoffset="90"/></svg>
+                            <div class="gauge-val-wrap"><div class="gauge-num text-amber">2.4</div><div class="gauge-unit">mSv/h</div></div>
+                        </div>
+                        <div class="gauge-lbl">Radiație</div>
+                    </div>
+                </div>
+                <div class="hist-row">
+                    <div class="hist-item"><span class="hist-label">Putere</span><div class="hist-bar-bg"><div class="bar-fill bf-red" style="width:76%"></div></div><span class="hist-val">76%</span></div>
+                    <div class="hist-item"><span class="hist-label">Răcire</span><div class="hist-bar-bg"><div class="bar-fill bf-amber" style="width:82%"></div></div><span class="hist-val">820 m³/h</span></div>
+                    <div class="hist-item"><span class="hist-label">Uzură</span><div class="hist-bar-bg"><div class="bar-fill bf-amber" style="width:44%"></div></div><span class="hist-val">44%</span></div>
+                </div>
+            </div>
 
-        <div class="map-legend">
-          <div class="legend-row"><div class="lc" style="background:#057A55"></div>Activ</div>
-          <div class="legend-row"><div class="lc" style="background:#C27803"></div>Mentenanță</div>
-          <div class="legend-row"><div class="lc" style="background:#C81E1E"></div>Alertă</div>
-        </div>
-        <div class="map-zoom">
-          <div class="zoom-btn">+</div>
-          <div class="zoom-btn">−</div>
-        </div>
-        <div class="map-scale">
-          <div class="scale-bar"></div>
-          <span>0 — 50 km</span>
-        </div>
-      </div>
+            <div class="detail-section flex-fill">
+                <header class="det-h">
+                    <div>
+                        <div class="det-t">Jurnal evenimente</div>
+                        <div class="det-s">Ultimele 24h — Reactor 3</div>
+                    </div>
+                </header>
+                <div class="scroll-area" id="log-container">
+                    
+                    <div class="log-item">
+                        <span class="log-time">11:42</span>
+                        <div class="log-dot dot-red"></div>
+                        <div class="log-txt">Temperatură depășit pragul critic 380°C — alertă declanșată automat</div>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">11:38</span>
+                        <div class="log-dot dot-amber"></div>
+                        <div class="log-txt">Avertizare temperatură: 371°C (+2% față de ora 11:00)</div>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">10:15</span>
+                        <div class="log-dot dot-gray"></div>
+                        <div class="log-txt">Verificare programată senzori de temperatură efectuată</div>
+                    </div>
+                    <div class="log-item">
+                        <span class="log-time">09:00</span>
+                        <div class="log-dot dot-green"></div>
+                        <div class="log-txt">Pornire schimb de noapte — parametri în limite normale</div>
+                    </div>
 
-      <div class="right-panel">
-        <div class="rp-section">
-          <div class="rp-section-title">Reactor selectat</div>
-          <div class="selected-header">
-            <span class="selected-name">Reactor 3</span>
-            <span class="pill red">Alertă critică</span>
-          </div>
-          <div class="data-grid">
-            <div class="dg-item full"><div class="dg-label">Locație</div><div class="dg-val">Cernavodă, jud. Constanța</div></div>
-            <div class="dg-item"><div class="dg-label">Coordonate</div><div class="dg-val">44.33°N 28.06°E</div></div>
-            <div class="dg-item"><div class="dg-label">Tip sol</div><div class="dg-val">Argilă compactă</div></div>
-            <div class="dg-item"><div class="dg-label">Seismicitate</div><div class="dg-val">Zonă II</div></div>
-            <div class="dg-item"><div class="dg-label">Putere instalată</div><div class="dg-val">700 MW</div></div>
-            <div class="dg-item"><div class="dg-label">Eficiență curentă</div><div class="dg-val critical-value">76%</div></div>
-            <div class="dg-item"><div class="dg-label">Stare</div><div class="dg-val"><span class="pill red">Alertă</span></div></div>
-            <div class="dg-item"><div class="dg-label">Temperatură</div><div class="dg-val critical-value">412°C</div></div>
-          </div>
-          <button class="detail-btn">Vezi detalii complete →</button>
-        </div>
+                </div>
+            </div>
 
-        <div class="rp-section">
-          <div class="rp-section-title">Scor amplasare optimă</div>
-          <div class="score-row">
-            <div class="score-header"><span class="score-label">Stabilitate sol</span><span class="score-val amber">72/100</span></div>
-            <div class="bar-bg"><div class="bar-fill amber" style="width:72%"></div></div>
-          </div>
-          <div class="score-row">
-            <div class="score-header"><span class="score-label">Risc seismic</span><span class="score-val amber">68/100</span></div>
-            <div class="bar-bg"><div class="bar-fill amber" style="width:68%"></div></div>
-          </div>
-          <div class="score-row">
-            <div class="score-header"><span class="score-label">Eficiență energetică</span><span class="score-val amber">76/100</span></div>
-            <div class="bar-bg"><div class="bar-fill amber" style="width:76%"></div></div>
-          </div>
-          <div class="score-row">
-            <div class="score-header"><span class="score-label">Minimizare riscuri</span><span class="score-val red">61/100</span></div>
-            <div class="bar-bg"><div class="bar-fill red" style="width:61%"></div></div>
-          </div>
-          <div class="score-total">
-            <span class="score-total-label">Scor total</span>
-            <span class="score-total-val">69 / 100</span>
-          </div>
         </div>
-
-        <div class="rp-section">
-          <div class="rp-section-title">Adaugă amplasare nouă</div>
-          <div class="form-field">
-            <label class="form-label">Denumire</label>
-            <input type="text" placeholder="ex: Reactor 9 – Brăila"/>
-          </div>
-          <div class="form-field">
-            <label class="form-label">Coordonate GPS</label>
-            <input type="text" placeholder="lat, long"/>
-          </div>
-          <div class="form-field">
-            <label class="form-label">Tip analiză</label>
-            <select><option>Completă</option><option>Rapidă</option><option>Personalizată</option></select>
-          </div>
-          <button class="submit-btn">Analizează amplasare →</button>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
+
+</main>
 
 </body>
 </html>
