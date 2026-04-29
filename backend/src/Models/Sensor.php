@@ -1,5 +1,6 @@
 <?php
 
+<<<<<<< Updated upstream
 class Sensor{
     private int $id;
     private int $reactor_id;
@@ -61,3 +62,55 @@ class Sensor{
 
 
 }
+=======
+class Sensor
+{
+    private int $id;
+    private string $name;
+    private string $type;
+    private string $location;
+    private string $status;
+    private string $created_at;
+
+    public function __construct(int $id, string $name, string $type, string $location, string $status, string $created_at)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->type = $type;
+        $this->location = $location;
+        $this->status = $status;
+        $this->created_at = $created_at;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getLocation(): string
+    {
+        return $this->location;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function getCreatedAt(): string
+    {
+        return $this->created_at;
+    }
+}
+
+>>>>>>> Stashed changes
