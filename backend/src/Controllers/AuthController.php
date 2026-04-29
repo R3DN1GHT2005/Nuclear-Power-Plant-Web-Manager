@@ -1,4 +1,4 @@
-</php
+<?php
 namespace App\Controllers;
 use App\Services\AuthService;
 use Exception;
@@ -11,7 +11,7 @@ class AuthController{
     }
 
     public function login(){
-        $data=json.decode(file_get_contents("php://input"),true);
+        $data = json_decode(file_get_contents("php://input"), true) ?? [];
         $email=$data['email'];
         $password=$data['password'];
 
@@ -36,21 +36,28 @@ class AuthController{
     }
 
     public function register() {
-        $data = json_decode(file_get_contents("php://input"), true);
+        $data = json_decode(file_get_contents("php://input"), true) ?? [];
 
         $email = $data['email'];
         $password = $data['password'];
-        $fullName = $data['full_name'];
-        $role = $data['role']; 
+        $firstName = $data['first_name'] ?? null;
+        $lastName = $data['last_name'] ?? null;
+        $role = $data['role'] ?? 'viewer';
 
-        if (empty($email) || empty($password) || empty($fullName)) {
+        if ((!$firstName || !$lastName) && !empty($data['full_name'])) {
+            $parts = preg_split('/\s+/', trim($data['full_name']), 2);
+            $firstName = $firstName ?: ($parts[0] ?? null);
+            $lastName = $lastName ?: ($parts[1] ?? null);
+        }
+
+        if (empty($email) || empty($password) || empty($firstName) || empty($lastName)) {
             http_response_code(400);
-            echo json_encode(["error" => "Toate câmpurile sunt obligatorii!"]);
+            echo json_encode(["error" => "Email, password, first_name și last_name sunt obligatorii!"]);
             return;
         }
 
         try {
-            $newUserId = $this->authService->register($email, $password, $fullName, $role);
+            $newUserId = $this->authService->register($email, $password, $firstName, $lastName, $role);
             http_response_code(201);
             echo json_encode([
                 "message" => "Cont creat cu succes!",
