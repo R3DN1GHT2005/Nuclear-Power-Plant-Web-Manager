@@ -2,6 +2,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(150) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL, -- Parola criptată generată de PHP
+    salt VARCHAR(255) NOT NULL;
     full_name VARCHAR(100) NOT NULL,
     role VARCHAR(50) DEFAULT 'viewer',   -- Roluri acceptate: 'admin', 'technician', 'viewer'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -18,7 +19,8 @@ CREATE TABLE reactors (
     current_efficiency FLOAT DEFAULT 0, -- Eficiența curentă în %
     soil_stability FLOAT,               -- Scor stabilitate (1-100)
     seismic_risk FLOAT,                 -- Scor risc (1-100)
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_maintenance TIMESTAMP
 );
 
 CREATE TABLE sensors (

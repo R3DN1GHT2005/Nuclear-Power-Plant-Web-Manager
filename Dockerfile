@@ -17,9 +17,9 @@ RUN a2enmod rewrite
 # Pasul 4: Modificăm Document Root-ul Apache.
 # În structura ta, PHP-ul "intră" prin backend/public/index.php.
 # Spunem Apache-ului să privească direct acolo.
-ENV APACHE_DOCUMENT_ROOT /var/www/html/backend/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+#ENV APACHE_DOCUMENT_ROOT /var/www/html/backend/public
+#RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+#RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Pasul 5: Instalăm Composer (opțional, dar recomandat pentru Autoloading)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
