@@ -206,33 +206,33 @@ class ReactorRepository{
     }
 
     public function update(int $id, UpdateReactorDTO $dto): ?Reactor {
-    $stmt = $this->db->prepare("
-        UPDATE reactors SET
-            name               = :name,
-            location_name      = :location_name,
-            latitude           = :latitude,
-            longitude          = :longitude,
-            status             = :status,
-            installed_power    = :installed_power,
-            current_efficiency = :current_efficiency,
-            last_maintenance   = :last_maintenance
-        WHERE id = :id
-        RETURNING *
-    ");
+        $stmt = $this->db->prepare("
+            UPDATE reactors SET
+                name               = :name,
+                location_name      = :location_name,
+                latitude           = :latitude,
+                longitude          = :longitude,
+                status             = :status,
+                installed_power    = :installed_power,
+                current_efficiency = :current_efficiency,
+                last_maintenance   = :last_maintenance
+            WHERE id = :id
+            RETURNING *
+        ");
 
-    $stmt->execute([
-        'id'                 => $id,
-        'name'               => $dto->name,
-        'location_name'      => $dto->location_name,
-        'latitude'           => $dto->latitude,
-        'longitude'          => $dto->longitude,
-        'status'             => $dto->status,
-        'installed_power'    => $dto->installed_power,
-        'current_efficiency' => $dto->current_efficiency,
-        'last_maintenance'   => $dto->last_maintenance,
-    ]);
+        $stmt->execute([
+            'id'                 => $id,
+            'name'               => $dto->name,
+            'location_name'      => $dto->location_name,
+            'latitude'           => $dto->latitude,
+            'longitude'          => $dto->longitude,
+            'status'             => $dto->status,
+            'installed_power'    => $dto->installed_power,
+            'current_efficiency' => $dto->current_efficiency,
+            'last_maintenance'   => $dto->last_maintenance,
+        ]);
 
-    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-    return $row ? Reactor::fromArray($row) : null;
-}
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? Reactor::fromArray($row) : null;
+    }
 }
