@@ -175,4 +175,64 @@ class ReactorRepository{
     public function getStoppedReactors(){
         return $this->getReactorsByStatus('Oprit');
     }
+
+    public function create(CreateReactorDTO $dto, float $soilStability, float $seismicRisk): Reactor {
+        $stmt = $this->db->prepare("
+            INSERT INTO reactors 
+                (name, location_name, latitude, longitude, status,
+                installed_power, current_efficiency, soil_stability,
+                seismic_risk, last_maintenance)
+            VALUES 
+                (:name, :location_name, :latitude, :longitude, :status,
+                :installed_power, :current_efficiency, :soil_stability,
+                :seismic_risk, :last_maintenance)
+            RETURNING *
+        ");
+
+        $stmt->execute([
+            'name'               => $dto->name,
+            'location_name'      => $dto->location_name,
+            'latitude'           => $dto->latitude,
+            'longitude'          => $dto->longitude,
+            'status'             => $dto->status,
+            'installed_power'    => $dto->installed_power,
+            'current_efficiency' => $dto->current_efficiency,
+            'soil_stability'     => $soilStability,
+            'seismic_risk'       => $seismicRisk,
+            'last_maintenance'   => $dto->last_maintenance,
+        ]);
+
+        return Reactor::fromArray($stmt->fetch(\PDO::FETCH_ASSOC));
+    }
+
+    public function update(int $id, UpdateReactorDTO $dto): ?Reactor {
+        $stmt = $this->db->prepare("
+            UPDATE reactors SET
+                name               = :name,
+                location_name      = :location_name,
+                latitude           = :latitude,
+                longitude          = :longitude,
+                status             = :status,
+                installed_power    = :installed_power,
+                current_efficiency = :current_efficiency,
+                last_maintenance   = :last_maintenance
+            WHERE id = :id
+            RETURNING *
+        ");
+
+        $stmt->execute([
+            'id'                 => $id,
+            'name'               => $dto->name,
+            'location_name'      => $dto->location_name,
+            'latitude'           => $dto->latitude,
+            'longitude'          => $dto->longitude,
+            'status'             => $dto->status,
+            'installed_power'    => $dto->installed_power,
+            'current_efficiency' => $dto->current_efficiency,
+            'last_maintenance'   => $dto->last_maintenance,
+        ]);
+
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? Reactor::fromArray($row) : null;
+    }
 }
