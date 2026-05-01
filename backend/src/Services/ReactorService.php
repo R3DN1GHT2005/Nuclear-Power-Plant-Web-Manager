@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\DTOs\Request\CreateReactorDTO;
+use App\DTOs\Request\UpdateReactorDTO;
+use App\Models\Reactor;
 use App\Repositories\ReactorRepository;
 
 class ReactorService {
@@ -13,29 +15,25 @@ class ReactorService {
     }
 
     public function getAll(): array {
-        return array_map(fn($reactor) => $reactor->toArray(), $this->reactorsRepository->findAll());
+        return $this->reactorsRepository->findAll(); // Reactor[]
     }
 
-    public function getById(int $id): ?array {
-        $reactor = $this->reactorsRepository->findById($id);
-        return $reactor?->toArray();
+    public function getById(int $id): ?Reactor {
+        return $this->reactorsRepository->findById($id);
     }
 
-    public function create(CreateReactorDTO $dto): array {
-        // TODO: validare factorii de risc si stabilitate pentru amplasament dupa coordonate si apel la API extern
+    public function create(CreateReactorDTO $dto): Reactor {
+        // TODO: inlocuit cu GeoService cand alegi API-urile
         $soilStability = 0.75;
         $seismicRisk   = 0.10;
+        return $this->reactorsRepository->create($dto, $soilStability, $seismicRisk);
+    }
 
-        $reactor = $this->reactorsRepository->create($dto, $soilStability, $seismicRisk);
-        return $reactor->toArray();
+    public function update(int $id, UpdateReactorDTO $dto): ?Reactor {
+        return $this->reactorsRepository->update($id, $dto);
     }
 
     public function delete(int $id): bool {
         return $this->reactorsRepository->delete($id);
-    }
-
-    public function update(int $id, UpdateReactorDTO $dto): ?array {
-        $reactor = $this->reactorsRepository->update($id, $dto);
-        return $reactor?->toArray();
     }
 }
