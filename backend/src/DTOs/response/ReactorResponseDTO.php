@@ -16,6 +16,7 @@ class ReactorResponseDTO implements \JsonSerializable {
         public readonly float  $seismic_risk,
         public readonly string $created_at,
         public readonly string $last_maintenance,
+        public readonly array  $sensors = []
     ) {}
 
     public function jsonSerialize(): array {

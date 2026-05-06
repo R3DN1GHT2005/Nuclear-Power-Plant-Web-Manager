@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs\Request;
+namespace App\DTOs\Request\reactor;
 
 class UpdateReactorDTO {
     public function __construct(
