@@ -2,9 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Services\ReactorService;
-use App\DTOs\Request\CreateReactorDTO;
 use App\Core\Response;
+use App\DTOs\Request\CreateReactorDTO;
+use App\DTOs\Request\UpdateReactorDTO;
+use App\Mappers\ReactorMapper;
+use App\Services\ReactorService;
 
 class ReactorController {
     private ReactorService $reactorService;
@@ -16,7 +18,7 @@ class ReactorController {
     // GET /api/reactors
     public function getAllReactors(): void {
         $reactors = $this->reactorService->getAll();
-        Response::json($reactors);
+        Response::json(ReactorMapper::toResponseList($reactors));
     }
 
     // GET /api/reactors/{id}
@@ -28,7 +30,7 @@ class ReactorController {
             return;
         }
 
-        Response::json($reactor);
+        Response::json(ReactorMapper::toResponse($reactor));
     }
 
     // POST /api/reactors
@@ -42,19 +44,7 @@ class ReactorController {
 
         $dto     = CreateReactorDTO::fromArray($data);
         $reactor = $this->reactorService->create($dto);
-        Response::json($reactor, 201);
-    }
-
-    // DELETE /api/reactors/{id}
-    public function deleteReactor(int $id): void {
-        $deleted = $this->reactorService->delete($id);
-
-        if (!$deleted) {
-            Response::json(['error' => 'Reactor negăsit'], 404);
-            return;
-        }
-
-        Response::json(['message' => 'Reactor șters cu succes']);
+        Response::json(ReactorMapper::toResponse($reactor), 201);
     }
 
     // PUT /api/reactors/{id}
@@ -74,6 +64,18 @@ class ReactorController {
             return;
         }
 
-        Response::json($reactor);
+        Response::json(ReactorMapper::toResponse($reactor));
+    }
+
+    // DELETE /api/reactors/{id}
+    public function deleteReactor(int $id): void {
+        $deleted = $this->reactorService->delete($id);
+
+        if (!$deleted) {
+            Response::json(['error' => 'Reactor negăsit'], 404);
+            return;
+        }
+
+        Response::json(['message' => 'Reactor șters cu succes']);
     }
 }

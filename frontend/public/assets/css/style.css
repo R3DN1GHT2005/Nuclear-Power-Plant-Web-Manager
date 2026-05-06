@@ -59,8 +59,8 @@ body {
   display: grid; 
   grid-template-columns: 6fr 4fr; /* Dashboard implicit 60/40 */
   gap: 16px;
-  padding: 20px 24px;
-  max-width: 1440px;
+  padding: 20px 40px;
+  width: 100vw;
   margin: 0 auto;
   height: calc(100vh - var(--nav-h));
 }

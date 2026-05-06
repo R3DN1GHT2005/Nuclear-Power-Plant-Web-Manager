@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Dacă fișierul sau folderul nu există fizic pe disc...
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# ...redirecționează totul către index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
