@@ -4,6 +4,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\ReactorController;
+use App\Controllers\SensorController;
 use App\Core\Router;
 
 header("Access-Control-Allow-Origin: *");
@@ -33,7 +34,17 @@ try {
     $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor');
     $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor');
 
+    $router->get('/api/sensors', SensorController::class, 'getAllSensors');
+    $router->post('/api/sensors', SensorController::class, 'addSensor');
+    $router->get('/api/sensors/{id}', SensorController::class, 'getSensorById');
+    $router->put('/api/sensors/{id}', SensorController::class, 'updateSensor');
+    $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor');
+    $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue');
+
+
     $router->dispatch($uri, $method);
+
+
 
 } catch (Exception $e) {
     http_response_code(500);

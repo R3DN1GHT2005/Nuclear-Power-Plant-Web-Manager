@@ -15,7 +15,7 @@ class Reactor {
     private float $seismic_risk;
     private \DateTime $created_at;
     private \DateTime $last_maintenance;
-
+    private array $sensors = [];
     public function __construct(
         int $id,
         string $name,
@@ -73,4 +73,11 @@ class Reactor {
     public function getSeismicRisk(): float       { return $this->seismic_risk; }
     public function getCreatedAt(): \DateTime     { return $this->created_at; }
     public function getLastMaintenance(): \DateTime { return $this->last_maintenance; }
+    public function setSensors(array $sensors): void {
+        $this->sensors = $sensors;
+    }
+
+    public function getSensors(): array {
+        return $this->sensors;
+    }
 }

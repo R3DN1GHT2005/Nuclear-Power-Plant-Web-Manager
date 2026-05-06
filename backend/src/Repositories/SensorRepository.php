@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Core\Database;
-use App\DTOs\Request\Sensor\CreateSensorDTO;
-use App\DTOs\Request\Sensor\UpdateSensorDTO;
+use App\DTOs\Request\sensor\CreateSensorDTO;
+use App\DTOs\Request\sensor\UpdateSensorDTO;
 use App\Models\Sensor;
 use PDO;
 
