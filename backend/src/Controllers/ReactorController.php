@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\DTOs\Request\CreateReactorDTO;
-use App\DTOs\Request\UpdateReactorDTO;
+use App\DTOs\Request\reactor\CreateReactorDTO;
+use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Mappers\ReactorMapper;
 use App\Services\ReactorService;
 

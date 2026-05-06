@@ -26,8 +26,13 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
         } catch (PDOException $e) {
-            // În producție nu afișăm eroarea direct, dar pentru testare ne ajută
-            die(json_encode(['error' => 'Eroare conexiune DB: ' . $e->getMessage()]));
+           http_response_code(500);
+            
+            die(json_encode([
+                'success' => false,
+                'error' => 'Eroare critică: Nu ne-am putut conecta la baza de date.',
+                'details' => $e->getMessage() 
+            ]));
         }
     }
 
@@ -40,5 +45,11 @@ class Database {
 
     public function getConnection(): PDO {
         return $this->connection;
+    }
+
+    private function __clone() {}
+    //cand se face deserializarea obiectului, metoda __wakeup() este apelată automat. În acest caz, o facem privată pentru a preveni deserializarea obiectului Database, ceea ce ar putea duce la crearea unei noi conexiuni la baza de date și ar încălca principiul singleton-ului.
+    public function __wakeup() {
+        throw new \Exception("Deserializarea obiectului Singletone Database este interzisă.");
     }
 }
