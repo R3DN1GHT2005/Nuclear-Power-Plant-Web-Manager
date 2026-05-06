@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\DTOs\Request\CreateSensorDTO;
-use App\DTOs\Request\UpdateSensorDTO;
+use App\DTOs\Request\sensor\CreateSensorDTO;
+use App\DTOs\Request\sensor\UpdateSensorDTO;
+
 use App\Models\Sensor;
 use App\Repositories\SensorRepository;
 

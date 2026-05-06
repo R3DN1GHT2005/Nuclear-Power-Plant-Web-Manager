@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Core\Database;
-use App\DTOs\Request\CreateReactorDTO;
-use App\DTOs\Request\UpdateReactorDTO;
+use App\DTOs\Request\reactor\CreateReactorDTO;
+use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Models\Reactor;
 use PDO;
 

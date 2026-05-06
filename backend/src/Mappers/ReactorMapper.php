@@ -7,6 +7,11 @@ use App\DTOs\Response\ReactorResponseDTO;
 
 class ReactorMapper {
     public static function toResponse(Reactor $reactor): ReactorResponseDTO {
+        $sensorsDTO = array_map(
+        fn($s) => SensorMapper::toResponse($s), 
+        $reactor->getSensors()
+        );
+
         return new ReactorResponseDTO(
             id:                 $reactor->getId(),
             name:               $reactor->getName(),
@@ -20,6 +25,7 @@ class ReactorMapper {
             seismic_risk:       $reactor->getSeismicRisk(),
             created_at:         $reactor->getCreatedAt()->format('Y-m-d H:i:s'),
             last_maintenance:   $reactor->getLastMaintenance()->format('Y-m-d H:i:s'),
+            sensors:            $sensorsDTO
         );
     }
 
