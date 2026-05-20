@@ -162,63 +162,69 @@
 
     <div class="col-right">
 
-        <div class="panel-card flex-fill">
+        <section class="panel-card flex-fill" aria-labelledby="alerts-heading">
             <div class="section-header">
                 <div>
-                    <div class="section-title">Alerte operative</div>
+                    <h3 id="alerts-heading" class="section-title">Alerte operative</h3>
                     <div class="section-sub">Notificări sistem — necesită acțiune</div>
                 </div>
                 <a class="see-all" href="#">Toate →</a>
             </div>
 
-            <div class="scroll-area">
-                <div class="alert-section-divider">Critic</div>
-                <div class="alert-item">
-                    <div class="alert-bar ab-red"></div>
-                    <div class="alert-content">
-                        <div class="alert-body">
-                            <div class="alert-title critical">Reactor 3: temperatură critică depășită <span class="alert-tag tag-c">CRITIC</span></div>
-                            <div class="alert-time">acum 2 min · acțiune imediată necesară</div>
+            <div class="scroll-area" role="region" aria-labelledby="alerts-heading">
+                <h4 class="alert-section-divider">Critic</h4>
+                <ul class="alerts-list" style="list-style:none;padding:0;margin:0 0 12px 0">
+                    <li class="alert-item" role="article">
+                        <span class="alert-bar ab-red" aria-hidden="true"></span>
+                        <div class="alert-content">
+                            <div class="alert-body">
+                                <div class="alert-title critical">Reactor 3: temperatură critică depășită <span class="alert-tag tag-c">CRITIC</span></div>
+                                <div class="alert-time">acum 2 min · acțiune imediată necesară</div>
+                            </div>
+                            <a class="alert-action aa-red" href="#">Intervenție →</a>
                         </div>
-                        <a class="alert-action aa-red" href="#">Intervenție →</a>
-                    </div>
-                </div>
+                    </li>
+                </ul>
 
-                <div class="alert-section-divider">Avertizare</div>
-                <div class="alert-item">
-                    <div class="alert-bar ab-amber"></div>
-                    <div class="alert-content">
-                        <div class="alert-body">
-                            <div class="alert-title">Reactor 4: presiune ușor crescută <span class="alert-tag tag-w">AVERTIZARE</span></div>
-                            <div class="alert-time">acum 34 min</div>
+                <h4 class="alert-section-divider">Avertizare</h4>
+                <ul class="alerts-list" style="list-style:none;padding:0;margin:0 0 12px 0">
+                    <li class="alert-item" role="article">
+                        <span class="alert-bar ab-amber" aria-hidden="true"></span>
+                        <div class="alert-content">
+                            <div class="alert-body">
+                                <div class="alert-title">Reactor 4: presiune ușor crescută <span class="alert-tag tag-w">AVERTIZARE</span></div>
+                                <div class="alert-time">acum 34 min</div>
+                            </div>
+                            <a class="alert-action aa-amber" href="#">Detalii →</a>
                         </div>
-                        <a class="alert-action aa-amber" href="#">Detalii →</a>
-                    </div>
-                </div>
-                <div class="alert-item">
-                    <div class="alert-bar ab-amber"></div>
-                    <div class="alert-content">
-                        <div class="alert-body">
-                            <div class="alert-title">Reactor 7: oprire planificată inițiată <span class="alert-tag tag-w">PLANIFICAT</span></div>
-                            <div class="alert-time">acum 2h</div>
+                    </li>
+                    <li class="alert-item" role="article">
+                        <span class="alert-bar ab-amber" aria-hidden="true"></span>
+                        <div class="alert-content">
+                            <div class="alert-body">
+                                <div class="alert-title">Reactor 7: oprire planificată inițiată <span class="alert-tag tag-w">PLANIFICAT</span></div>
+                                <div class="alert-time">acum 2h</div>
+                            </div>
+                            <a class="alert-action aa-amber" href="#">Detalii →</a>
                         </div>
-                        <a class="alert-action aa-amber" href="#">Detalii →</a>
-                    </div>
-                </div>
+                    </li>
+                </ul>
 
-                <div class="alert-section-divider">Informativ</div>
-                <div class="alert-item">
-                    <div class="alert-bar ab-green"></div>
-                    <div class="alert-content">
-                        <div class="alert-body">
-                            <div class="alert-title">Mentenanță Reactor 4 programată <span class="alert-tag tag-i">INFO</span></div>
-                            <div class="alert-time">ieri, 14:22</div>
+                <h4 class="alert-section-divider">Informativ</h4>
+                <ul class="alerts-list" style="list-style:none;padding:0;margin:0">
+                    <li class="alert-item" role="article">
+                        <span class="alert-bar ab-green" aria-hidden="true"></span>
+                        <div class="alert-content">
+                            <div class="alert-body">
+                                <div class="alert-title">Mentenanță Reactor 4 programată <span class="alert-tag tag-i">INFO</span></div>
+                                <div class="alert-time">ieri, 14:22</div>
+                            </div>
+                            <a class="alert-action aa-blue" href="#">Detalii →</a>
                         </div>
-                        <a class="alert-action aa-blue" href="#">Detalii →</a>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
-        </div>
+        </section>
 
         <div class="panel-card flex-fill">
             <div class="rss-header">
