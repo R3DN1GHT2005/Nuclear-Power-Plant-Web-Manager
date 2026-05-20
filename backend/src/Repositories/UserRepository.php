@@ -147,4 +147,45 @@ class UserRepository{
         $results = $this->searchByName($name);
         return $results ? $results[0] : false;
     }
+
+    // Password reset token storage
+    public function createPasswordReset($email, $tokenHash, $expiresAt){
+        // delete existing
+        $sqlDel = "DELETE FROM password_resets WHERE email = :email";
+        $stmtDel = $this->db->prepare($sqlDel);
+        $stmtDel->bindParam(':email', $email);
+        $stmtDel->execute();
+
+        $sql = "INSERT INTO password_resets (email, token_hash, expires_at) VALUES (:email, :token_hash, :expires_at)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':token_hash', $tokenHash);
+        $stmt->bindParam(':expires_at', $expiresAt);
+        return $stmt->execute();
+    }
+
+    public function findPasswordResetByEmail($email){
+        $sql = "SELECT * FROM password_resets WHERE email = :email LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public function findPasswordResetByEmailAndToken($email, $token){
+        $row = $this->findPasswordResetByEmail($email);
+        if (!$row) return false;
+        // Verify token against stored hash
+        if (password_verify($token, $row['token_hash'])){
+            return $row;
+        }
+        return false;
+    }
+
+    public function deletePasswordReset($email){
+        $sql = "DELETE FROM password_resets WHERE email = :email";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        return $stmt->execute();
+    }
 }

@@ -69,4 +69,44 @@ class AuthController{
             echo json_encode(["error" => $e->getMessage()]);
         }
     }
+
+    public function forgot(){
+        $data = json_decode(file_get_contents("php://input"), true) ?? [];
+        $email = $data['email'] ?? null;
+        if (!$email){
+            http_response_code(400);
+            echo json_encode(["error"=>"Email este necesar"]);
+            return;
+        }
+
+        $code = $this->authService->sendPasswordResetCode($email);
+        // In production we would not return the code. For demo, we return it so UI can show it.
+        http_response_code(200);
+        echo json_encode(["message"=>"Dacă există un cont, s-a trimis un cod de resetare.", "code"=>$code]);
+    }
+
+    public function reset(){
+        $data = json_decode(file_get_contents("php://input"), true) ?? [];
+        $email = $data['email'] ?? null;
+        $code = $data['code'] ?? null;
+        $newPassword = $data['new_password'] ?? null;
+
+        if (!$email || !$code || !$newPassword){
+            http_response_code(400);
+            echo json_encode(["error"=>"Email, code și new_password sunt necesare"]);
+            return;
+        }
+
+        $res = $this->authService->resetPasswordWithCode($email, $code, $newPassword);
+        if ($res === true){
+            http_response_code(200);
+            echo json_encode(["message"=>"Parola a fost resetată cu succes."]);            
+        } elseif ($res === 'expired'){
+            http_response_code(410);
+            echo json_encode(["error"=>"Codul a expirat"]);
+        } else {
+            http_response_code(401);
+            echo json_encode(["error"=>"Cod invalid sau email incorect"]);
+        }
+    }
 }

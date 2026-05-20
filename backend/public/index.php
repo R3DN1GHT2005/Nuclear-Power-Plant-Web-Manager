@@ -41,6 +41,12 @@ try {
     $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor');
     $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue');
 
+    // Auth
+    $router->post('/api/auth/login', App\Controllers\AuthController::class, 'login');
+    $router->post('/api/auth/register', App\Controllers\AuthController::class, 'register');
+    $router->post('/api/auth/forgot', App\Controllers\AuthController::class, 'forgot');
+    $router->post('/api/auth/reset', App\Controllers\AuthController::class, 'reset');
+
 
     $router->dispatch($uri, $method);
 
