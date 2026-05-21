@@ -19,5 +19,25 @@ const NuclearAPI = {
        
         const response = await fetch(`${API_URL}/sensors?reactor_id=${reactorId}`);
         return await response.json();
+    },
+
+    async createReactor(reactorData) {
+        try {
+            const response = await fetch(`${API_URL}/reactors`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reactorData)
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Eroare de la Backend:", errorText);
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+            return true;
+        } catch (error) {
+            console.error("Eroare la creare API:", error);
+            return false;
+        }
     }
 };
