@@ -1,12 +1,12 @@
 <?php
 namespace App\Repositories;
-use App\Core\DataBase;
+use App\Core\Database;
 use PDO;
 
 class UserRepository{
     private $db;
     public function __construct(){
-        $this->db=DataBase::getInstance()->getConnection();
+        $this->db=Database::getInstance()->getConnection();
     }
     public function findByEmail($email){
         $sql="SELECT * FROM users WHERE email=:email";

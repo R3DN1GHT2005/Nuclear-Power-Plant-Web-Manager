@@ -5,6 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
+use App\Controllers\AlertController;
 use App\Core\Router;
 
 header("Access-Control-Allow-Origin: *");
@@ -41,6 +42,11 @@ try {
     $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor');
     $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue');
 
+    $router->get('/api/alerts', AlertController::class, 'getAllAlerts');
+    $router->post('/api/alerts', AlertController::class, 'createAlert');
+    $router->get('/api/alerts/{id}', AlertController::class, 'getAlertById');
+    $router->put('/api/alerts/{id}', AlertController::class, 'updateAlert');
+    $router->delete('/api/alerts/{id}', AlertController::class, 'deleteAlert');
 
     $router->dispatch($uri, $method);
 

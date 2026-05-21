@@ -3,7 +3,7 @@ services:
     build: .
     container_name: nuclear_web
     ports:
-      - "${APP_PORT_WEB:-8080}:80"
+      - "${APP_PORT_WEB:-4500}:80"
     volumes:
       - .:/var/www/html
       # Am comentat linia de mai jos pentru ca acum setam DocumentRoot direct din Dockerfile, 
@@ -23,7 +23,7 @@ services:
     image: nginx:stable-alpine
     container_name: nuclear_frontend
     ports:
-      - "${APP_PORT_FRONTEND:-8083}:80"
+      - "${APP_PORT_FRONTEND:-4000}:80"
     volumes:
       - ./frontend/public:/usr/share/nginx/html:ro
     restart: unless-stopped

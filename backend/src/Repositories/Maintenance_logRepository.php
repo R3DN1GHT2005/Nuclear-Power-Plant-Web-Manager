@@ -1,7 +1,7 @@
 <?php
 namespace App\Repositories;
 
-use App\Core\DataBase;
+use App\Core\Database;
 use PDO;
 
 class Maintenance_logRepository{
@@ -10,7 +10,7 @@ class Maintenance_logRepository{
 	private $db;
 
 	public function __construct(){
-		$this->db = DataBase::getInstance()->getConnection();
+		$this->db = Database::getInstance()->getConnection();
 	}
 
 	public function getAllowedPriorities(){
