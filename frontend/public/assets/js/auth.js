@@ -40,7 +40,7 @@ if (registerForm){
         const r = await postJson('/api/auth/register', payload);
         if (r.ok){
             alert('Înregistrare reușită. Poți să te autentifici.');
-            window.location.href = 'login.html';
+            // window.location.href = 'login.html'; // COMENTAT — vezi comentat.md
         } else {
             alert(r.body?.error || 'Eroare la înregistrare');
         }
@@ -79,7 +79,7 @@ if (step2){
         const r = await postJson('/api/auth/reset', {email, code, new_password});
         if (r.ok){
             alert('Parola schimbată cu succes. Te poți conecta.');
-            window.location.href = 'login.html';
+            // window.location.href = 'login.html'; // COMENTAT — vezi comentat.md
         } else {
             alert(r.body?.error || 'Eroare la resetare');
         }

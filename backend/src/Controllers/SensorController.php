@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\DTOs\Request\sensor\CreateSensorDTO;
-use App\DTOs\Request\sensor\UpdateSensorDTO;
+use App\DTOs\Request\Sensor\CreateSensorRequestDTO;
+use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
 use App\Mappers\SensorMapper;
 use App\Services\SensorService;
 
@@ -15,13 +15,16 @@ class SensorController {
         $this->sensorService = new SensorService();
     }
 
-    // GET /api/sensors
     public function getAllSensors(): void {
         $sensors = $this->sensorService->getAll();
         Response::json(SensorMapper::toResponseList($sensors));
     }
 
-    // GET /api/sensors/{id}
+    public function getSensorsByReactor(int $reactorId): void {
+        $sensors = $this->sensorService->getByReactorId($reactorId);
+        Response::json(SensorMapper::toResponseList($sensors));
+    }
+
     public function getSensorById(int $id): void {
         $sensor = $this->sensorService->getById($id);
 
@@ -33,8 +36,24 @@ class SensorController {
         Response::json(SensorMapper::toResponse($sensor));
     }
 
-    // POST /api/sensors
     public function addSensor(): void {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!$data || !isset($data['reactor_id'])) {
+            Response::json(['error' => 'Date invalide'], 400);
+            return;
+        }
+
+        try {
+            $dto = CreateSensorRequestDTO::fromArray($data);
+            $sensor = $this->sensorService->create((int) $data['reactor_id'], $dto);
+            Response::json(SensorMapper::toResponse($sensor), 201);
+        } catch (\Exception $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function addSensorToReactor(int $reactorId): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
         if (!$data) {
@@ -42,12 +61,15 @@ class SensorController {
             return;
         }
 
-        $dto    = CreateSensorDTO::fromArray($data);
-        $sensor = $this->sensorService->create($dto);
-        Response::json(SensorMapper::toResponse($sensor), 201);
+        try {
+            $dto = CreateSensorRequestDTO::fromArray($data);
+            $sensor = $this->sensorService->create($reactorId, $dto);
+            Response::json(SensorMapper::toResponse($sensor), 201);
+        } catch (\Exception $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        }
     }
 
-    // PUT /api/sensors/{id}
     public function updateSensor(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -56,7 +78,7 @@ class SensorController {
             return;
         }
 
-        $dto    = UpdateSensorDTO::fromArray($data);
+        $dto = UpdateSensorRequestDTO::fromArray($data);
         $sensor = $this->sensorService->update($id, $dto);
 
         if (!$sensor) {
@@ -67,7 +89,10 @@ class SensorController {
         Response::json(SensorMapper::toResponse($sensor));
     }
 
-    // DELETE /api/sensors/{id}
+    public function patchSensor(int $id): void {
+        $this->updateSensor($id);
+    }
+
     public function deleteSensor(int $id): void {
         $deleted = $this->sensorService->delete($id);
 
@@ -79,9 +104,6 @@ class SensorController {
         Response::json(['message' => 'Senzor șters cu succes']);
     }
 
-    // --- TELEMETRIE (Specifica aparatelor IoT) ---
-
-    // PUT /api/sensors/{id}/data
     public function recordValue(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 

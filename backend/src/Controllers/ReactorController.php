@@ -3,10 +3,11 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\DTOs\Request\reactor\CreateReactorDTO;
+use App\DTOs\Request\reactor\CreateReactorRequestDTO;
 use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Mappers\ReactorMapper;
 use App\Services\ReactorService;
+use App\Exceptions\ValidationException;
 
 class ReactorController {
     private ReactorService $reactorService;
@@ -37,15 +38,20 @@ class ReactorController {
     public function addReactor(): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
-        if (!$data) {
-            Response::json(['error' => 'Date invalide'], 400);
+        try {
+            $dto = CreateReactorRequestDTO::fromArray($data);
+            $reactor = $this->reactorService->create($dto);
+
+            Response::json(ReactorMapper::toResponse($reactor), 201);
+            return;
+        } catch (ValidationException $ve) {
+            Response::json(['success' => false, 'error' => $ve->getMessage()], 400);
+            return;
+        } catch (\Exception $e) {
+            Response::json(['success' => false, 'error' => $e->getMessage()], 400);
             return;
         }
-
-        $dto     = CreateReactorDTO::fromArray($data);
-        $reactor = $this->reactorService->create($dto);
-        Response::json(ReactorMapper::toResponse($reactor), 201);
-    }
+}
 
     // PUT /api/reactors/{id}
     public function updateReactor(int $id): void {

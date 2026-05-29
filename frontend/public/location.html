@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuclearWatch — Amplasare</title>
+    <title>NuclearWatch - Amplasare</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/location.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
-
 <nav class="navbar" id="top-navbar">
     <div class="nav-left">
-        <a class="logo" href="#">
+        <a class="logo" href="#" aria-label="NuclearWatch">
             <div class="logo-icon">
                 <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
-                    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"></circle>
+                    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42" stroke="white" stroke-width="1.3" stroke-linecap="round"></path>
                 </svg>
             </div>
             NuclearWatch
@@ -26,280 +27,213 @@
         <a class="nav-link" href="reactors.html">Reactoare</a>
         <a class="nav-link" href="stats.html">Statistici</a>
         <a class="nav-link active" href="location.html">Amplasare</a>
-        <a class="nav-link" href="maintenance.html">Mentenanță</a>
-        <a class="nav-link" href="rss.html">Flux RSS</a>
+        <a class="nav-link" href="alerts.html">Alerte</a>
     </div>
     <div class="nav-right">
-        <button class="nav-icon-btn" title="Notificări">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2V14h15v-1L16 11V8a6 6 0 0 0-6-6zm0 16a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 10 18z" fill="currentColor"/></svg>
-            <span class="badge-dot"></span>
-        </button>
         <div class="avatar">IA</div>
-        <button class="logout-btn">
-             <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Deconectare
-        </button>
     </div>
 </nav>
 
-<main class="main split-layout">
-
-    <div class="col-left">
-
-        <div class="page-header">
-            <div>
-                <h1 class="ph-title">Amplasare reactoare</h1>
-                <p class="ph-sub">Hartă amplasament · factori de optim · zone de excludere</p>
+<main class="main single-col">
+    <section class="location-layout">
+        <div class="location-left">
+            <div class="location-page-header">
+                <div>
+                    <h1 class="ph-title">Amplasare reactoare</h1>
+                    <p class="ph-sub">Actualizare automată la fiecare 5 secunde, fără refresh</p>
+                </div>
+                <div class="location-actions">
+                    <span class="pill pill-blue" id="last-refresh-pill">Ultima actualizare: -</span>
+                    <button class="btn btn-prim" id="open-add-reactor" type="button">Adauga Reactor</button>
+                </div>
             </div>
-            <div class="ph-actions">
-                <button class="btn"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M8 3v2M8 11v2M3 8h2M11 8h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Zonă nouă</button>
-                <button class="btn btn-prim"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Analiză amplasare</button>
-            </div>
+
+            <article class="panel-card location-map-card">
+                <header class="panel-header">
+                    <div>
+                        <h3 class="panel-title">Harta reactoare</h3>
+                        <p class="panel-sub">Click pe pin pentru detalii complete</p>
+                    </div>
+                </header>
+                <div class="location-map-wrap">
+                    <div id="reactors-map" aria-label="Harta reactoarelor"></div>
+                    <div class="map-overlay-legend" aria-label="Legenda statusuri">
+                        <div class="legend-item"><span class="legend-dot dot-gray"></span>Oprit</div>
+                        <div class="legend-item"><span class="legend-dot dot-green"></span>Activ</div>
+                        <div class="legend-item"><span class="legend-dot dot-yellow"></span>Mentenanta</div>
+                        <div class="legend-item"><span class="legend-dot dot-red"></span>Alerta / Stare critica</div>
+                        <div class="legend-item"><span class="legend-dot dot-blue"></span>In Constructie</div>
+                    </div>
+                </div>
+            </article>
         </div>
 
-        <div class="scroll-area">
-            <article class="panel-card mb-12">
+        <aside class="location-right">
+            <article class="panel-card">
                 <header class="panel-header">
                     <div>
-                        <h3 class="panel-title">Hartă amplasament — Centrala NW-01</h3>
-                        <p class="panel-sub">Cernavodă, România · 44.33°N, 28.05°E</p>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <span class="pill pill-active">8 reactoare active</span>
-                        <span class="pill pill-blue">1 candidat</span>
+                        <h3 class="panel-title">Sumar statusuri</h3>
+                        <p class="panel-sub">Valori calculate din răspunsul API</p>
                     </div>
                 </header>
-                
-                <div class="map-area" id="interactive-map">
-                    <div class="map-road-vert"></div>
-                    <div class="map-road-horiz"></div>
-                    <div class="map-river"></div>
-                    <div class="map-river-lbl">Dunăre →</div>
-
-                    <div class="excl-zone" style="width:80px; height:80px; top:28%; left:28%;"></div>
-
-                    <div class="map-pin pin-alert" style="top:30%; left:32%;" data-lat="44.331" data-lng="28.051">
-                        <div class="pin-circle">R3</div><div class="pin-label text-red">Alertă</div>
-                    </div>
-                    <div class="map-pin pin-maint" style="top:38%; left:22%;">
-                        <div class="pin-circle">R4</div><div class="pin-label text-amber">Mentenanță</div>
-                    </div>
-                    <div class="map-pin pin-active" style="top:22%; left:42%;">
-                        <div class="pin-circle">R1</div><div class="pin-label">Activ</div>
-                    </div>
-                    <div class="map-pin pin-active" style="top:22%; left:55%;">
-                        <div class="pin-circle">R2</div><div class="pin-label">Activ</div>
-                    </div>
-                    <div class="map-pin pin-active" style="top:40%; left:58%;">
-                        <div class="pin-circle">R5</div><div class="pin-label">Activ</div>
-                    </div>
-                    <div class="map-pin pin-active" style="top:55%; left:48%;">
-                        <div class="pin-circle">R6</div><div class="pin-label">Activ</div>
-                    </div>
-                    <div class="map-pin pin-off" style="top:55%; left:35%;">
-                        <div class="pin-circle">R7</div><div class="pin-label text-muted">Oprit</div>
-                    </div>
-                    <div class="map-pin pin-active" style="top:48%; left:70%;">
-                        <div class="pin-circle">R8</div><div class="pin-label">Activ</div>
-                    </div>
-
-                    <div class="map-pin pin-candidate" style="top:20%; left:72%;">
-                        <div class="pin-circle">R9</div><div class="pin-label text-blue">Candidat</div>
-                    </div>
-
-                    <div class="map-legend">
-                        <div class="ml-item"><div class="ml-dot bg-red"></div>Alertă critică</div>
-                        <div class="ml-item"><div class="ml-dot bg-amber"></div>Mentenanță</div>
-                        <div class="ml-item"><div class="ml-dot bg-green"></div>Activ</div>
-                        <div class="ml-item"><div class="ml-dot bg-gray"></div>Oprit</div>
-                        <div class="ml-item"><div class="ml-dot bg-blue"></div>Candidat</div>
-                    </div>
-                </div>
+                <div class="status-grid" id="status-grid"></div>
             </article>
 
-            <article class="panel-card mb-0">
+            <article class="panel-card flex-fill">
                 <header class="panel-header">
                     <div>
-                        <h3 class="panel-title">Factori de amplasare per reactor</h3>
-                        <p class="panel-sub">Scor compozit 0–10 · geologie, hidrologie, populație, seismicitate</p>
+                        <h3 class="panel-title">Reactoare monitorizate</h3>
+                        <p class="panel-sub">Lista se actualizează automat</p>
                     </div>
                 </header>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Reactor</th>
-                            <th>Sol / Geologie</th>
-                            <th>Apă / Răcire</th>
-                            <th>Seismicitate</th>
-                            <th>Populație</th>
-                            <th>Scor final</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="fw-500 text-red">Reactor 3</td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:80%"></div></div><span>8.0</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:90%"></div></div><span>9.0</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:75%"></div></div><span>7.5</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:85%"></div></div><span>8.5</span></div></td>
-                            <td class="fw-600 text-green">8.3</td>
-                        </tr>
-                        <tr>
-                            <td class="fw-500">Reactor 1</td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:90%"></div></div><span>9.0</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:88%"></div></div><span>8.8</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:80%"></div></div><span>8.0</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:90%"></div></div><span>9.0</span></div></td>
-                            <td class="fw-600 text-green">8.7</td>
-                        </tr>
-                        <tr>
-                            <td class="fw-500">Reactor 5</td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:95%"></div></div><span>9.5</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:92%"></div></div><span>9.2</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:85%"></div></div><span>8.5</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:88%"></div></div><span>8.8</span></div></td>
-                            <td class="fw-600 text-green">9.0</td>
-                        </tr>
-                        <tr class="bg-blue-light">
-                            <td class="fw-500 text-blue">Reactor 9 <span class="text-xs">(candidat)</span></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:88%"></div></div><span>8.8</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:94%"></div></div><span>9.4</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:82%"></div></div><span>8.2</span></div></td>
-                            <td><div class="score-wrap"><div class="score-track"><div class="score-fill bg-green" style="width:91%"></div></div><span>9.1</span></div></td>
-                            <td class="fw-600 text-blue">8.9</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="scroll-area reactor-list" id="reactor-list"></div>
             </article>
-
-        </div>
-    </div>
-
-    <div class="col-right">
-        <div class="scroll-area">
-            
-            <article class="panel-card mb-12">
-                <header class="panel-header">
-                    <div>
-                        <h3 class="panel-title">Locații candidate</h3>
-                        <p class="panel-sub">Analiză pentru extindere capacitate</p>
-                    </div>
-                    <button class="action-btn text-blue">+ Adaugă</button>
-                </header>
-                <div class="loc-list">
-                    <div class="loc-item">
-                        <div class="loc-num bg-blue">1</div>
-                        <div class="loc-body">
-                            <div class="loc-name">Sector Nord-Est (R9)</div>
-                            <div class="loc-meta">44.36°N, 28.09°E · Sol: Stâncos · Dist. Dunăre: 1.2km</div>
-                        </div>
-                        <div class="loc-score text-green">8.9</div>
-                    </div>
-                    <div class="loc-item">
-                        <div class="loc-num bg-gray">2</div>
-                        <div class="loc-body">
-                            <div class="loc-name">Sector Sud (R10)</div>
-                            <div class="loc-meta">44.29°N, 28.03°E · Sol: Aluvionar · Dist. Dunăre: 0.8km</div>
-                        </div>
-                        <div class="loc-score text-amber">7.2</div>
-                    </div>
-                    <div class="loc-item">
-                        <div class="loc-num bg-gray">3</div>
-                        <div class="loc-body">
-                            <div class="loc-name">Sector Vest (R11)</div>
-                            <div class="loc-meta">44.32°N, 27.98°E · Sol: Argilos · Dist. Dunăre: 2.1km</div>
-                        </div>
-                        <div class="loc-score text-amber">6.8</div>
-                    </div>
-                </div>
-            </article>
-
-            <article class="panel-card mb-12">
-                <header class="panel-header">
-                    <div>
-                        <h3 class="panel-title">Factori de decizie</h3>
-                        <p class="panel-sub">Greutate în scorul compozit</p>
-                    </div>
-                </header>
-                <div class="factor-list">
-                    <div class="factor-row">
-                        <div class="factor-icon bg-green-light">🪨</div>
-                        <div class="factor-body">
-                            <div class="factor-name">Geologie sol</div>
-                            <div class="factor-desc">Stabilitate, rezistență seismică</div>
-                        </div>
-                        <div class="factor-val text-green">25%</div>
-                    </div>
-                    <div class="factor-row">
-                        <div class="factor-icon bg-blue-light">💧</div>
-                        <div class="factor-body">
-                            <div class="factor-name">Sursă apă răcire</div>
-                            <div class="factor-desc">Debit, distanță, calitate</div>
-                        </div>
-                        <div class="factor-val text-blue">25%</div>
-                    </div>
-                    <div class="factor-row">
-                        <div class="factor-icon bg-amber-light">🏘️</div>
-                        <div class="factor-body">
-                            <div class="factor-name">Zonă populată</div>
-                            <div class="factor-desc">Densitate pop. în raza 30km</div>
-                        </div>
-                        <div class="factor-val text-amber">20%</div>
-                    </div>
-                    <div class="factor-row">
-                        <div class="factor-icon bg-red-light">📡</div>
-                        <div class="factor-body">
-                            <div class="factor-name">Seismicitate</div>
-                            <div class="factor-desc">Risc seismic zonal</div>
-                        </div>
-                        <div class="factor-val text-red">15%</div>
-                    </div>
-                    <div class="factor-row">
-                        <div class="factor-icon bg-purple-light">🔌</div>
-                        <div class="factor-body">
-                            <div class="factor-name">Infrastructură</div>
-                            <div class="factor-desc">Rețea electrică, transport</div>
-                        </div>
-                        <div class="factor-val text-purple">10%</div>
-                    </div>
-                </div>
-            </article>
-
-            <article class="panel-card mb-0">
-                <header class="panel-header">
-                    <div>
-                        <h3 class="panel-title">Zone de excludere</h3>
-                        <p class="panel-sub">Restricții reglementare în vigoare</p>
-                    </div>
-                </header>
-                <div class="exclusion-list">
-                    <div class="excl-alert border-l-red bg-red-light">
-                        <span class="excl-icon">🚫</span>
-                        <div>
-                            <div class="excl-title text-red">Raza de siguranță 3km</div>
-                            <div class="excl-desc text-red">Interdicție construire reactoare noi în raza 3km față de așezări >5000 loc.</div>
-                        </div>
-                    </div>
-                    <div class="excl-alert border-l-amber bg-amber-light">
-                        <span class="excl-icon">⚠️</span>
-                        <div>
-                            <div class="excl-title text-amber">Zonă inundabilă</div>
-                            <div class="excl-desc text-amber">Distanță minimă 500m față de nivelul maxim Dunăre (cota 28m)</div>
-                        </div>
-                    </div>
-                    <div class="excl-alert border-l-green bg-green-light">
-                        <span class="excl-icon">✅</span>
-                        <div>
-                            <div class="excl-title text-green">Sector Nord-Est — eligibil</div>
-                            <div class="excl-desc text-green">Toate criteriile CNCAN îndeplinite. Recomandare: reactor R9.</div>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-        </div>
-    </div>
-
+        </aside>
+    </section>
 </main>
+
+<div class="modal-overlay" id="reactor-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reactor-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="reactor-modal-title">Adauga Reactor</h2>
+                <p class="modal-subtitle">Completeaza formularul și trimite datele către backend</p>
+            </div>
+            <button class="icon-close" type="button" id="close-reactor-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-error" id="reactor-form-error"></div>
+            <form id="reactor-form" novalidate>
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="name">name</label>
+                        <input id="name" name="name" type="text" required maxlength="255">
+                    </div>
+
+                    <div class="field full">
+                        <label for="location_name">location_name</label>
+                        <input id="location_name" name="location_name" type="text" required maxlength="255">
+                    </div>
+
+                    <div class="field">
+                        <label for="reactor_type">reactor_type</label>
+                        <select id="reactor_type" name="reactor_type" required>
+                            <option value="">Selecteaza tipul</option>
+                            <option value="CANDU">CANDU</option>
+                            <option value="SMR">SMR</option>
+                            <option value="PWR">PWR</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="installed_power">installed_power (MW)</label>
+                        <input id="installed_power" name="installed_power" type="number" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="field full">
+                        <label>Coordonate (latitude, longitude)</label>
+                        <div class="coords-row">
+                            <input id="latitude" name="latitude" type="number" step="any" placeholder="latitude" required>
+                            <input id="longitude" name="longitude" type="number" step="any" placeholder="longitude" required>
+                            <button class="btn" id="open-picker" type="button">Alege de pe harta</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn" type="button" id="cancel-reactor-modal">Renunta</button>
+                    <button class="btn btn-success" type="submit" id="submit-reactor-btn">Salveaza</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="picker-modal" aria-hidden="true" style="z-index:1300;">
+    <div class="modal-card modal-card-small" role="dialog" aria-modal="true" aria-labelledby="picker-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="picker-modal-title">Alege coordonate de pe hartă</h2>
+                <p class="modal-subtitle">Click pe hartă pentru a prelua latitude și longitude</p>
+            </div>
+            <button class="icon-close" type="button" id="close-picker-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="picker-hint">După click, modalul se închide automat și valorile sunt completate în formular.</p>
+            <div id="picker-map"></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast-success">Reactor adăugat cu succes</div>
+
+<div class="modal-overlay" id="sensor-modal" aria-hidden="true" style="z-index:1350;">
+    <div class="modal-card modal-card-large" role="dialog" aria-modal="true" aria-labelledby="sensor-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="sensor-modal-title">Gestiune Senzori</h2>
+                <p class="modal-subtitle" id="sensor-modal-subtitle">Selecteaza un reactor pentru a vedea senzorii</p>
+            </div>
+            <button class="icon-close" type="button" id="close-sensor-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body sensor-modal-body">
+            <div class="modal-error" id="sensor-form-error"></div>
+
+            <section class="sensor-section">
+                <div class="section-head">
+                    <h3 class="section-title">Lista senzorilor activi</h3>
+                    <span class="pill pill-blue" id="sensor-count-pill">0 senzori</span>
+                </div>
+                <div class="sensor-table-wrap">
+                    <table class="sensor-table">
+                        <thead>
+                            <tr>
+                                <th>Tip</th>
+                                <th>Unitate</th>
+                                <th>Limite</th>
+                                <th>Curent</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sensor-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="sensor-section">
+                <div class="section-head">
+                    <h3 class="section-title">Adaugă senzor</h3>
+                </div>
+                <form id="sensor-form" class="sensor-form" novalidate>
+                    <div class="form-grid sensor-grid">
+                        <div class="field full">
+                            <label for="sensor_type">sensor_type</label>
+                            <input id="sensor_type" name="sensor_type" type="text" required maxlength="100">
+                        </div>
+                        <div class="field">
+                            <label for="sensor_unit">unit</label>
+                            <input id="sensor_unit" name="unit" type="text" maxlength="20">
+                        </div>
+                        <div class="field">
+                            <label for="min_safe_value">min_safe_value</label>
+                            <input id="min_safe_value" name="min_safe_value" type="number" step="any" required>
+                        </div>
+                        <div class="field">
+                            <label for="max_safe_value">max_safe_value</label>
+                            <input id="max_safe_value" name="max_safe_value" type="number" step="any" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" id="submit-sensor-btn">Adaugă</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script src="./assets/js/api.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="./assets/js/location.js"></script>
 </body>
 </html>

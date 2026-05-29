@@ -25,13 +25,24 @@ CREATE TABLE IF NOT EXISTS reactors (
     location_name VARCHAR(255),
     latitude DECIMAL(11, 8),
     longitude DECIMAL(11, 8),
-    status VARCHAR(50) DEFAULT 'Activ',
+    status VARCHAR(50) DEFAULT 'În construcție',
     installed_power FLOAT,
     current_efficiency FLOAT DEFAULT 0,
     soil_stability FLOAT,
     seismic_risk FLOAT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_maintenance TIMESTAMP
+    last_maintenance TIMESTAMP,
+    reactor_type VARCHAR(50),
+    cooling_water_source VARCHAR(100), //rau lac mare ocean etc
+    distance_to_nearest_city_km FLOAT,
+    elevation_meters FLOAT
+);
+
+CREATE TABLE IF NOT EXISTS reactor_personnel (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    reactor_id INTEGER REFERENCES reactors(id) ON DELETE CASCADE,
+    intervention_role VARCHAR(100) NOT NULL
 );
 
 -- 4. TABELA SENZORI (ACTUALIZATĂ)

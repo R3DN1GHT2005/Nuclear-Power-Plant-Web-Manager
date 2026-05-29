@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Core\Database;
-use App\DTOs\Request\reactor\CreateReactorDTO;
+use App\DTOs\Request\reactor\InsertReactorDTO;
 use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Models\Reactor;
 use PDO;
@@ -54,54 +54,97 @@ class ReactorRepository {
         return array_map(fn($row) => Reactor::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    public function create(CreateReactorDTO $dto, float $soilStability, float $seismicRisk): Reactor {
+    public function create(InsertReactorDTO $dto): Reactor {
         $stmt = $this->db->prepare("
             INSERT INTO reactors 
-                (name, location_name, latitude, longitude, status,
-                 installed_power, current_efficiency, soil_stability,
-                 seismic_risk, last_maintenance)
+                 (name, location_name, latitude, longitude, status,
+                  installed_power, soil_stability, seismic_risk,
+                  reactor_type, cooling_water_source, distance_to_nearest_city_km, elevation_meters)
             VALUES 
-                (:name, :location_name, :latitude, :longitude, :status,
-                 :installed_power, :current_efficiency, :soil_stability,
-                 :seismic_risk, :last_maintenance)
+                 (:name, :location_name, :latitude, :longitude, :status,
+                  :installed_power, :soil_stability, :seismic_risk,
+                  :reactor_type, :cooling_water_source, :distance_to_nearest_city_km, :elevation_meters)
             RETURNING *
         ");
 
         $stmt->execute([
-            'name'               => $dto->name,
-            'location_name'      => $dto->location_name,
-            'latitude'           => $dto->latitude,
-            'longitude'          => $dto->longitude,
-            'status'             => $dto->status,
-            'installed_power'    => $dto->installed_power,
-            'current_efficiency' => $dto->current_efficiency,
-            'soil_stability'     => $soilStability,
-            'seismic_risk'       => $seismicRisk,
-            'last_maintenance'   => $dto->last_maintenance,
+              'name' => $dto->name,
+              'location_name' => $dto->location_name,
+              'latitude' => $dto->latitude,
+              'longitude' => $dto->longitude,
+              'status' => $dto->status,
+              'installed_power' => $dto->installed_power,
+              'soil_stability' => $dto->soil_stability,
+              'seismic_risk' => $dto->seismic_risk,
+              'reactor_type' => $dto->reactor_type,
+              'cooling_water_source' => $dto->cooling_water_source,
+              'distance_to_nearest_city_km' => $dto->distance_to_nearest_city_km,
+              'elevation_meters' => $dto->elevation_meters,
         ]);
 
         return Reactor::fromArray($stmt->fetch(PDO::FETCH_ASSOC));
     }
 
+    public function updateCalculatedFields(
+        int $id,
+        float $soilStability,
+        float $seismicRisk,
+        string $coolingWaterSource,
+        float $distanceToNearestCityKm,
+        float $elevationMeters
+    ): ?Reactor {
+        $stmt = $this->db->prepare("\n            UPDATE reactors SET\n                soil_stability = :soil_stability,\n                seismic_risk = :seismic_risk,\n                cooling_water_source = :cooling_water_source,\n                distance_to_nearest_city_km = :distance_to_nearest_city_km,\n                elevation_meters = :elevation_meters\n            WHERE id = :id\n            RETURNING *\n        ");
+
+        $stmt->execute([
+            'id' => $id,
+            'soil_stability' => $soilStability,
+            'seismic_risk' => $seismicRisk,
+            'cooling_water_source' => $coolingWaterSource,
+            'distance_to_nearest_city_km' => $distanceToNearestCityKm,
+            'elevation_meters' => $elevationMeters,
+        ]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? Reactor::fromArray($row) : null;
+    }
+
     public function update(int $id, UpdateReactorDTO $dto): ?Reactor {
         $stmt = $this->db->prepare("
             UPDATE reactors SET
-                name               = :name,
-                status             = :status,
-                installed_power    = :installed_power,
-                current_efficiency = :current_efficiency,
-                last_maintenance   = :last_maintenance
+                name                      = :name,
+                location_name             = :location_name,
+                latitude                  = :latitude,
+                longitude                 = :longitude,
+                status                    = :status,
+                installed_power           = :installed_power,
+                current_efficiency        = :current_efficiency,
+                last_maintenance          = :last_maintenance,
+                soil_stability            = :soil_stability,
+                seismic_risk              = :seismic_risk,
+                reactor_type              = :reactor_type,
+                cooling_water_source      = :cooling_water_source,
+                distance_to_nearest_city_km = :distance_to_nearest_city_km,
+                elevation_meters          = :elevation_meters
             WHERE id = :id
             RETURNING *
         ");
 
         $stmt->execute([
-            'id'                 => $id,
-            'name'               => $dto->name,
-            'status'             => $dto->status,
-            'installed_power'    => $dto->installed_power,
-            'current_efficiency' => $dto->current_efficiency,
-            'last_maintenance'   => $dto->last_maintenance,
+            'id'                         => $id,
+            'name'                       => $dto->name,
+            'location_name'              => $dto->location_name,
+            'latitude'                   => $dto->latitude,
+            'longitude'                  => $dto->longitude,
+            'status'                     => $dto->status,
+            'installed_power'            => $dto->installed_power,
+            'current_efficiency'         => $dto->current_efficiency,
+            'last_maintenance'           => $dto->last_maintenance,
+            'soil_stability'             => $dto->soil_stability,
+            'seismic_risk'               => $dto->seismic_risk,
+            'reactor_type'               => $dto->reactor_type,
+            'cooling_water_source'       => $dto->cooling_water_source,
+            'distance_to_nearest_city_km' => $dto->distance_to_nearest_city_km,
+            'elevation_meters'           => $dto->elevation_meters,
         ]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);

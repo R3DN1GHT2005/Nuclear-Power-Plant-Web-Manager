@@ -20,7 +20,7 @@ const NuclearAPI = {
             
             if (response.status === 401) {
                 // Dacă token-ul a expirat, îl trimitem pe utilizator înapoi la logare
-                window.location.href = 'login.html';
+                // window.location.href = 'login.html'; // COMENTAT — vezi comentat.md
                 return [];
             }
             
