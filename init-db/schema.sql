@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS reactors (
     location_name VARCHAR(255),
     latitude DECIMAL(11, 8),
     longitude DECIMAL(11, 8),
-    status VARCHAR(50) DEFAULT 'Activ',
+    status VARCHAR(50) DEFAULT 'În construcție',
     installed_power FLOAT,
     current_efficiency FLOAT DEFAULT 0,
     soil_stability FLOAT,
