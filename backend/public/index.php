@@ -22,7 +22,7 @@ use App\Core\Router;
 // --- Configurare CORS și Headere ---
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // Gestionarea cererilor de tip preflight (OPTIONS) făcute de browser
@@ -55,9 +55,13 @@ try {
     $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor'); // COMENTAT: [AdminMiddleware::class]
     $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor'); // COMENTAT: [AdminMiddleware::class]
 
+    // Senzori per reactor
+    $router->get('/api/reactors/{id}/sensors', SensorController::class, 'getSensorsByReactor'); // COMENTAT: [AuthMiddleware::class]
+    $router->post('/api/reactors/{id}/sensors', SensorController::class, 'addSensorToReactor'); // COMENTAT: [AdminMiddleware::class]
+
     // Operațiuni critice pe senzori
     $router->post('/api/sensors', SensorController::class, 'addSensor'); // COMENTAT: [AdminMiddleware::class]
-    $router->put('/api/sensors/{id}', SensorController::class, 'updateSensor'); // COMENTAT: [AdminMiddleware::class]
+    $router->patch('/api/sensors/{id}', SensorController::class, 'patchSensor'); // COMENTAT: [AdminMiddleware::class]
     $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor'); // COMENTAT: [AdminMiddleware::class]
 
 

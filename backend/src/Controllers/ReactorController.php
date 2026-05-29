@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\DTOs\Request\reactor\CreateReactorDTO;
+use App\DTOs\Request\reactor\CreateReactorRequestDTO;
 use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Mappers\ReactorMapper;
 use App\Services\ReactorService;
@@ -38,7 +38,7 @@ class ReactorController {
         $data = json_decode(file_get_contents('php://input'), true);
 
         try {
-        $dto = CreateReactorDTO::fromArray($data);
+        $dto = CreateReactorRequestDTO::fromArray($data);
         $reactor = $this->reactorService->create($dto);
         
         Response::json(ReactorMapper::toResponse($reactor), 201);

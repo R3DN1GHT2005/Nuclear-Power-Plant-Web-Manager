@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Core\Database;
-use App\DTOs\Request\sensor\CreateSensorDTO;
-use App\DTOs\Request\sensor\UpdateSensorDTO;
+use App\DTOs\Request\Sensor\InsertSensorDTO;
+use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
 use App\Models\Sensor;
 use PDO;
 
@@ -42,51 +42,60 @@ class SensorRepository {
         return array_map(fn($row) => Sensor::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
-    public function create(CreateSensorDTO $dto): Sensor {
-        $stmt = $this->db->prepare("
-            INSERT INTO sensors 
-                (reactor_id, sensor_type, current_value, unit)
-            VALUES 
-                (:reactor_id, :sensor_type, :current_value, :unit)
-            RETURNING *
-        ");
+    public function create(InsertSensorDTO $dto): Sensor {
+        $stmt = $this->db->prepare("\n            INSERT INTO sensors \n                (reactor_id, sensor_type, unit, min_safe_value, max_safe_value)\n            VALUES \n                (:reactor_id, :sensor_type, :unit, :min_safe_value, :max_safe_value)\n            RETURNING *\n        ");
 
         $stmt->execute([
-            'reactor_id'    => $dto->reactor_id,
-            'sensor_type'   => $dto->sensor_type,
-            'current_value' => $dto->current_value,
-            'unit'          => $dto->unit,
+            'reactor_id' => $dto->reactor_id,
+            'sensor_type' => $dto->sensor_type,
+            'unit' => $dto->unit,
+            'min_safe_value' => $dto->min_safe_value,
+            'max_safe_value' => $dto->max_safe_value,
         ]);
 
         return Sensor::fromArray($stmt->fetch(PDO::FETCH_ASSOC));
     }
 
-    public function update(int $id, UpdateSensorDTO $dto): ?Sensor {
-        $stmt = $this->db->prepare("
-            UPDATE sensors SET
-                sensor_type   = :sensor_type,
-                unit          = :unit,
-                last_update   = CURRENT_TIMESTAMP
-            WHERE id = :id
-            RETURNING *
-        ");
+    public function update(int $id, UpdateSensorRequestDTO $dto): ?Sensor {
+        $setParts = [];
+        $params = ['id' => $id];
 
-        $stmt->execute([
-            'id'          => $id,
-            'sensor_type' => $dto->sensor_type,
-            'unit'        => $dto->unit
-        ]);
+        if ($dto->sensor_type !== null) {
+            $setParts[] = 'sensor_type = :sensor_type';
+            $params['sensor_type'] = $dto->sensor_type;
+        }
+
+        if ($dto->unit !== null) {
+            $setParts[] = 'unit = :unit';
+            $params['unit'] = $dto->unit;
+        }
+
+        if ($dto->min_safe_value !== null) {
+            $setParts[] = 'min_safe_value = :min_safe_value';
+            $params['min_safe_value'] = $dto->min_safe_value;
+        }
+
+        if ($dto->max_safe_value !== null) {
+            $setParts[] = 'max_safe_value = :max_safe_value';
+            $params['max_safe_value'] = $dto->max_safe_value;
+        }
+
+        if (!$setParts) {
+            return $this->findById($id);
+        }
+
+        $setParts[] = 'last_update = CURRENT_TIMESTAMP';
+
+        $stmt = $this->db->prepare("\n            UPDATE sensors SET\n                " . implode(",\n                ", $setParts) . "\n            WHERE id = :id\n            RETURNING *\n        ");
+
+        $stmt->execute($params);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? Sensor::fromArray($row) : null;
     }
 
     public function updateValue(int $id, float $newValue): bool {
-        $stmt = $this->db->prepare("
-            UPDATE sensors 
-            SET current_value = :val, last_update = CURRENT_TIMESTAMP 
-            WHERE id = :id
-        ");
+        $stmt = $this->db->prepare("\n            UPDATE sensors \n            SET current_value = :val, last_update = CURRENT_TIMESTAMP \n            WHERE id = :id\n        ");
         $stmt->bindParam(':val', $newValue);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();

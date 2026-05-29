@@ -18,6 +18,10 @@ class Router {
         $this->addRoute('PUT', $path, $controller, $action, $middlewares);
     }
 
+    public function patch(string $path, string $controller, string $action, array $middlewares = []): void {
+        $this->addRoute('PATCH', $path, $controller, $action, $middlewares);
+    }
+
     public function delete(string $path, string $controller, string $action, array $middlewares = []): void {
         $this->addRoute('DELETE', $path, $controller, $action, $middlewares);
     }

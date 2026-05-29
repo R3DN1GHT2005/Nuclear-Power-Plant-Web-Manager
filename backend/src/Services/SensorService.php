@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\DTOs\Request\sensor\CreateSensorDTO;
-use App\DTOs\Request\sensor\UpdateSensorDTO;
-
+use App\DTOs\Request\Sensor\CreateSensorRequestDTO;
+use App\DTOs\Request\Sensor\InsertSensorDTO;
+use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
 use App\Models\Sensor;
 use App\Repositories\SensorRepository;
 
@@ -23,7 +23,6 @@ class SensorService {
         return $this->sensorRepository->findById($id);
     }
 
-   
     public function getByReactorId(int $reactorId): array {
         return $this->sensorRepository->findByReactorId($reactorId);
     }
@@ -32,20 +31,23 @@ class SensorService {
         return $this->sensorRepository->findByType($type);
     }
 
+    public function create(int $reactorId, CreateSensorRequestDTO $dto): Sensor {
+        $insertDto = new InsertSensorDTO(
+            reactor_id: $reactorId,
+            sensor_type: $dto->sensor_type,
+            unit: $dto->unit,
+            min_safe_value: $dto->min_safe_value,
+            max_safe_value: $dto->max_safe_value,
+        );
 
-    public function create(CreateSensorDTO $dto): Sensor {
-        //TO DO: de adaugat logica de business
-        
-        return $this->sensorRepository->create($dto);
+        return $this->sensorRepository->create($insertDto);
     }
 
-    public function update(int $id, UpdateSensorDTO $dto): ?Sensor {
+    public function update(int $id, UpdateSensorRequestDTO $dto): ?Sensor {
         return $this->sensorRepository->update($id, $dto);
     }
 
     public function recordValue(int $id, float $newValue): bool {
-        //TO DO: de adaugat logica de business pentru validare, alerte, etc.
-        //ex: un reactor depaseste 600 grade, trimitem o alerta catre operatori
         return $this->sensorRepository->updateValue($id, $newValue);
     }
 
