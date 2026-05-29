@@ -49,6 +49,11 @@ try {
     $router->post('/api/auth/refresh', AuthController::class, 'refresh');
     $router->post('/api/auth/logout', AuthController::class, 'logout');
 
+    $router->get('/api/alerts', AlertController::class, 'getAllAlerts');
+    $router->post('/api/alerts', AlertController::class, 'createAlert');
+    $router->get('/api/alerts/{id}', AlertController::class, 'getAlertById');
+    $router->put('/api/alerts/{id}', AlertController::class, 'updateAlert');
+    $router->delete('/api/alerts/{id}', AlertController::class, 'deleteAlert');
 
     // ==========================================
     // 2. RUTE DE ADMIN (Protejate de AdminMiddleware)

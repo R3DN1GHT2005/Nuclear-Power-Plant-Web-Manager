@@ -1,6 +1,6 @@
 // frontend/assets/js/api.js
 
-const API_URL = "http://localhost:8083/api";
+const API_URL = "http://localhost:4500/api";
 
 const NuclearAPI = {
     async getReactors() {
