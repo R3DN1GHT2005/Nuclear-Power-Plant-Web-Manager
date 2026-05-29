@@ -2,8 +2,8 @@
 
 namespace App\Validators\Reactors;
 
-use App\DTOs\Request\reactor\CreateReactorDTO;
+use App\DTOs\Request\reactor\CreateReactorRequestDTO;
 
 interface ReactorValidatorInterface {
-    public function validate(CreateReactorDTO $dto): void;
+    public function validate(CreateReactorRequestDTO $dto): void;
 }

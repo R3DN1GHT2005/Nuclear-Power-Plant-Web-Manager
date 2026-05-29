@@ -7,6 +7,7 @@ use App\DTOs\Request\reactor\CreateReactorRequestDTO;
 use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Mappers\ReactorMapper;
 use App\Services\ReactorService;
+use App\Exceptions\ValidationException;
 
 class ReactorController {
     private ReactorService $reactorService;
@@ -38,12 +39,17 @@ class ReactorController {
         $data = json_decode(file_get_contents('php://input'), true);
 
         try {
-        $dto = CreateReactorRequestDTO::fromArray($data);
-        $reactor = $this->reactorService->create($dto);
-        
-        Response::json(ReactorMapper::toResponse($reactor), 201);
+            $dto = CreateReactorRequestDTO::fromArray($data);
+            $reactor = $this->reactorService->create($dto);
+
+            Response::json(ReactorMapper::toResponse($reactor), 201);
+            return;
+        } catch (ValidationException $ve) {
+            Response::json(['success' => false, 'error' => $ve->getMessage()], 400);
+            return;
         } catch (\Exception $e) {
-        Response::json(['error' => $e->getMessage()], 400);
+            Response::json(['success' => false, 'error' => $e->getMessage()], 400);
+            return;
         }
 }
 
