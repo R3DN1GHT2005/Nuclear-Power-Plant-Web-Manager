@@ -1,49 +1,113 @@
 <?php
 namespace App\Controllers;
+
 use App\Services\AuthService;
+use App\Services\SessionService;
 use Exception;
 
-class AuthController{
-    private $authService;
+class AuthController {
 
-    public function __construct(){
-        $this->authService=new AuthService();
+    private $authService;
+    private $sessionService;
+
+    public function __construct() {
+        $this->authService = new AuthService();
+        $this->sessionService = new SessionService();
     }
 
-    public function login(){
+    public function login() {
         $data = json_decode(file_get_contents("php://input"), true) ?? [];
-        $email=$data['email'];
-        $password=$data['password'];
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
 
         if (empty($email) || empty($password)){
             http_response_code(400);
-            echo json_encode(["error"=>"Email and password are required"]);
+            echo json_encode(["error" => "Email și parola sunt obligatorii!"]);
             return;
         }
 
-        $user=$this->authService->login($email,$password);
-        if($user){
+        $user = $this->authService->login($email, $password);
+        
+        if ($user) {
+            // Creăm sesiunea (Access Token scurt + Refresh Token lung)
+            $session = $this->sessionService->createSession($user['id'], $user['role'] ?? 'viewer');
+
+            // Setăm Refresh Token-ul într-un cookie sigur (HttpOnly)
+            setcookie('refresh_token', $session['refresh_token'], [
+                'expires'  => $session['cookie_expires'],
+                'path'     => '/api/auth/refresh', // Cookie-ul e trimis doar pe ruta de refresh
+                'secure'   => true, 
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+
             http_response_code(200);
             echo json_encode([
                 "message" => "Logare cu succes!",
+                "access_token" => $session['access_token'],
                 "user" => $user
             ]);
-        }
-        else{
-            http_response_code(401); // Unauthorized
+        } else {
+            http_response_code(401);
             echo json_encode(["error" => "Email sau parolă incorectă!"]);
         }
     }
 
+    public function refresh() {
+        // Preluăm token-ul de refresh din cookie (generat automat de browser)
+        $refreshToken = $_COOKIE['refresh_token'] ?? null;
+
+        if (!$refreshToken) {
+            http_response_code(401);
+            echo json_encode(["error" => "Refresh token lipsă."]);
+            return;
+        }
+
+        // Generăm un nou Access Token dacă Refresh Token-ul e valid
+        $newAccessToken = $this->sessionService->refreshSession($refreshToken);
+
+        if (!$newAccessToken) {
+            // Dacă token-ul a expirat sau nu există în DB, ștergem cookie-ul
+            setcookie('refresh_token', '', time() - 3600, '/api/auth/refresh');
+            http_response_code(401);
+            echo json_encode(["error" => "Sesiune expirată sau invalidă. Vă rugăm să vă relogați."]);
+            return;
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            "access_token" => $newAccessToken
+        ]);
+    }
+
+    public function logout() {
+        $refreshToken = $_COOKIE['refresh_token'] ?? null;
+
+        if ($refreshToken) {
+            // Ștergem sesiunea din baza de date
+            $this->sessionService->destroySession($refreshToken);
+            // Ștergem cookie-ul din browserul utilizatorului
+            setcookie('refresh_token', '', time() - 3600, '/api/auth/refresh');
+        }
+
+        http_response_code(200);
+        echo json_encode(["message" => "Delogare cu succes!"]);
+    }
+
+    // ==========================================
+    // RUTE PROTEJATE DE ADMIN MIDDLEWARE
+    // ==========================================
+
     public function register() {
         $data = json_decode(file_get_contents("php://input"), true) ?? [];
 
-        $email = $data['email'];
-        $password = $data['password'];
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
         $firstName = $data['first_name'] ?? null;
         $lastName = $data['last_name'] ?? null;
         $role = $data['role'] ?? 'viewer';
 
+        // Logica pentru cazul în care front-end-ul trimite "full_name" în loc de nume separat
         if ((!$firstName || !$lastName) && !empty($data['full_name'])) {
             $parts = preg_split('/\s+/', trim($data['full_name']), 2);
             $firstName = $firstName ?: ($parts[0] ?? null);
@@ -58,6 +122,7 @@ class AuthController{
 
         try {
             $newUserId = $this->authService->register($email, $password, $firstName, $lastName, $role);
+            
             http_response_code(201);
             echo json_encode([
                 "message" => "Cont creat cu succes!",
@@ -65,48 +130,31 @@ class AuthController{
             ]);
 
         } catch (Exception $e) {
-            http_response_code(409);
+            http_response_code(409); // Conflict (ex: email-ul există deja)
             echo json_encode(["error" => $e->getMessage()]);
         }
     }
 
-    public function forgot(){
+    public function updatePassword() {
         $data = json_decode(file_get_contents("php://input"), true) ?? [];
-        $email = $data['email'] ?? null;
-        if (!$email){
-            http_response_code(400);
-            echo json_encode(["error"=>"Email este necesar"]);
-            return;
-        }
-
-        $code = $this->authService->sendPasswordResetCode($email);
-        // In production we would not return the code. For demo, we return it so UI can show it.
-        http_response_code(200);
-        echo json_encode(["message"=>"Dacă există un cont, s-a trimis un cod de resetare.", "code"=>$code]);
-    }
-
-    public function reset(){
-        $data = json_decode(file_get_contents("php://input"), true) ?? [];
-        $email = $data['email'] ?? null;
-        $code = $data['code'] ?? null;
+        
+        $targetUserId = $data['user_id'] ?? null; 
         $newPassword = $data['new_password'] ?? null;
 
-        if (!$email || !$code || !$newPassword){
+        if (!$targetUserId || !$newPassword) {
             http_response_code(400);
-            echo json_encode(["error"=>"Email, code și new_password sunt necesare"]);
+            echo json_encode(["error" => "Câmpurile user_id și new_password sunt obligatorii!"]);
             return;
         }
 
-        $res = $this->authService->resetPasswordWithCode($email, $code, $newPassword);
-        if ($res === true){
+        try {
+            $this->authService->adminUpdatePassword($targetUserId, $newPassword);
+            
             http_response_code(200);
-            echo json_encode(["message"=>"Parola a fost resetată cu succes."]);            
-        } elseif ($res === 'expired'){
-            http_response_code(410);
-            echo json_encode(["error"=>"Codul a expirat"]);
-        } else {
-            http_response_code(401);
-            echo json_encode(["error"=>"Cod invalid sau email incorect"]);
+            echo json_encode(["message" => "Parola utilizatorului a fost actualizată cu succes!"]);
+        } catch (Exception $e) {
+            http_response_code(404); // Not Found (dacă user_id nu există)
+            echo json_encode(["error" => $e->getMessage()]);
         }
     }
 }

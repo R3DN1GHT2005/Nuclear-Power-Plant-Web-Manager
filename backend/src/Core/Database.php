@@ -10,14 +10,16 @@ class Database {
     private PDO $connection;
 
     private function __construct() {
-        // Preluăm variabilele de mediu din Docker
+        // Preluăm variabilele de mediu din Docker (.env)
         $host = getenv('DB_HOST') ?: 'db';
         $db   = getenv('DB_NAME') ?: 'nuclear_watch';
         $user = getenv('DB_USER') ?: 'admin';
         $pass = getenv('DB_PASSWORD') ?: 'secretpassword';
         $port = getenv('DB_PORT') ?: '5432';
 
-        $dsn = "pgsql:host=$host;port=$port;dbname=$db";
+        // --- AICI ESTE MODIFICAREA CRITICĂ PENTRU NEON ---
+        // Am adăugat sslmode=require și channel_binding=require
+        $dsn = "pgsql:host=$host;port=$port;dbname=$db;sslmode=require;channel_binding=require";
 
         try {
             $this->connection = new PDO($dsn, $user, $pass, [
@@ -26,7 +28,7 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
         } catch (PDOException $e) {
-           http_response_code(500);
+            http_response_code(500);
             
             die(json_encode([
                 'success' => false,
@@ -48,7 +50,7 @@ class Database {
     }
 
     private function __clone() {}
-    //cand se face deserializarea obiectului, metoda __wakeup() este apelată automat. În acest caz, o facem privată pentru a preveni deserializarea obiectului Database, ceea ce ar putea duce la crearea unei noi conexiuni la baza de date și ar încălca principiul singleton-ului.
+    
     public function __wakeup() {
         throw new \Exception("Deserializarea obiectului Singletone Database este interzisă.");
     }
