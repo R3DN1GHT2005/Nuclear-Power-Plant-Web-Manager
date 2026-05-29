@@ -32,13 +32,13 @@
     <div class="nav-right">
         <button class="nav-icon-btn" title="Notificări">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2V14h15v-1L16 11V8a6 6 0 0 0-6-6zm0 16a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 10 18z" fill="currentColor"/></svg>
-            <span class="badge-dot"></span>
+            <span class="badge-dot" id="nav-badge-dot" style="display: none;"></span>
         </button>
         <button class="nav-icon-btn" title="Setări">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="1.5"/><path d="M17.66 10c0-.34-.03-.67-.08-1l2.13-1.63-2-3.46-2.49 1a7.1 7.1 0 0 0-1.73-1l-.38-2.65h-4l-.38 2.65a7.1 7.1 0 0 0-1.73 1l-2.49-1-2 3.46L4.42 9a7.2 7.2 0 0 0 0 2L2.3 12.63l2 3.46 2.49-1a7.1 7.1 0 0 0 1.73 1l.38 2.65h4l.38-2.65a7.1 7.1 0 0 0 1.73-1l2.49 1 2-3.46L17.74 11c.05-.32.08-.65.08-.99-.01-.01 0-.01-.16 0z" stroke="currentColor" stroke-width="1.5"/></svg>
         </button>
-        <div class="avatar">IA</div>
-        <button class="logout-btn">
+        <div class="avatar" id="user-avatar">...</div>
+        <button class="logout-btn" id="logoutBtn">
             <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Deconectare
         </button>
@@ -59,7 +59,7 @@
                     <div class="section-title">Starea reactoarelor</div>
                     <div class="section-sub">Ordonat după prioritate: alertă → mentenanță → oprit → activ</div>
                 </div>
-                <a class="see-all" href="#">Vezi toate →</a>
+                <a class="see-all" href="reactors.html">Vezi toate →</a>
             </div>
 
             <div class="legend">
@@ -71,7 +71,7 @@
 
             <div class="scroll-area">
                 <table class="reactor-table">
-                   <tbody id="dashboard-reactor-table">
+                    <tbody id="dashboard-reactor-table">
                         <tr><td colspan="6" style="text-align:center;">Se încarcă lista reactoarelor...</td></tr>
                     </tbody>
                 </table>
@@ -91,58 +91,8 @@
                 <a class="see-all" href="#">Toate →</a>
             </div>
 
-            <div class="scroll-area" role="region" aria-labelledby="alerts-heading">
-                <h4 class="alert-section-divider">Critic</h4>
-                <ul class="alerts-list" style="list-style:none;padding:0;margin:0 0 12px 0">
-                    <li class="alert-item" role="article">
-                        <span class="alert-bar ab-red" aria-hidden="true"></span>
-                        <div class="alert-content">
-                            <div class="alert-body">
-                                <div class="alert-title critical">Reactor 3: temperatură critică depășită <span class="alert-tag tag-c">CRITIC</span></div>
-                                <div class="alert-time">acum 2 min · acțiune imediată necesară</div>
-                            </div>
-                            <a class="alert-action aa-red" href="#">Intervenție →</a>
-                        </div>
-                    </li>
-                </ul>
-
-                <h4 class="alert-section-divider">Avertizare</h4>
-                <ul class="alerts-list" style="list-style:none;padding:0;margin:0 0 12px 0">
-                    <li class="alert-item" role="article">
-                        <span class="alert-bar ab-amber" aria-hidden="true"></span>
-                        <div class="alert-content">
-                            <div class="alert-body">
-                                <div class="alert-title">Reactor 4: presiune ușor crescută <span class="alert-tag tag-w">AVERTIZARE</span></div>
-                                <div class="alert-time">acum 34 min</div>
-                            </div>
-                            <a class="alert-action aa-amber" href="#">Detalii →</a>
-                        </div>
-                    </li>
-                    <li class="alert-item" role="article">
-                        <span class="alert-bar ab-amber" aria-hidden="true"></span>
-                        <div class="alert-content">
-                            <div class="alert-body">
-                                <div class="alert-title">Reactor 7: oprire planificată inițiată <span class="alert-tag tag-w">PLANIFICAT</span></div>
-                                <div class="alert-time">acum 2h</div>
-                            </div>
-                            <a class="alert-action aa-amber" href="#">Detalii →</a>
-                        </div>
-                    </li>
-                </ul>
-
-                <h4 class="alert-section-divider">Informativ</h4>
-                <ul class="alerts-list" style="list-style:none;padding:0;margin:0">
-                    <li class="alert-item" role="article">
-                        <span class="alert-bar ab-green" aria-hidden="true"></span>
-                        <div class="alert-content">
-                            <div class="alert-body">
-                                <div class="alert-title">Mentenanță Reactor 4 programată <span class="alert-tag tag-i">INFO</span></div>
-                                <div class="alert-time">ieri, 14:22</div>
-                            </div>
-                            <a class="alert-action aa-blue" href="#">Detalii →</a>
-                        </div>
-                    </li>
-                </ul>
+            <div class="scroll-area" role="region" aria-labelledby="alerts-heading" id="alerts-container">
+                <p style="text-align:center; padding: 20px; color: #666;">Se încarcă alertele...</p>
             </div>
         </section>
 
@@ -159,28 +109,8 @@
                 <div class="rss-desc">Feed public cronologic. Nu necesită acțiune.</div>
             </div>
 
-            <div class="scroll-area">
-                <div class="rss-item">
-                    <div class="rss-bar rb-red"></div>
-                    <div class="rss-content">
-                        <div class="rss-text">Reactor 3 – alertă activă, monitorizare continuă</div>
-                        <div class="rss-date">16 apr 2026, 11:42</div>
-                    </div>
-                </div>
-                <div class="rss-item">
-                    <div class="rss-bar rb-green"></div>
-                    <div class="rss-content">
-                        <div class="rss-text">Centrala funcționează la 87% eficiență medie</div>
-                        <div class="rss-date">16 apr 2026, 08:00</div>
-                    </div>
-                </div>
-                <div class="rss-item">
-                    <div class="rss-bar rb-amber"></div>
-                    <div class="rss-content">
-                        <div class="rss-text">Mentenanță planificată Reactor 4 – 17 apr</div>
-                        <div class="rss-date">15 apr 2026, 16:30</div>
-                    </div>
-                </div>
+            <div class="scroll-area" id="rss-container">
+                <p style="text-align:center; padding: 20px; color: #666;">Se încarcă fluxul RSS...</p>
             </div>
 
             <div class="rss-footer">
@@ -192,6 +122,6 @@
     </div>
 </div>
 <script src="assets/js/api.js"></script>
-    <script src="assets/js/dashboard.js"></script>
+<script src="assets/js/dashboard.js"></script>
 </body>
 </html>

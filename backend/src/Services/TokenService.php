@@ -9,14 +9,10 @@ class TokenService {
     private string $issuer;
     private int $accessTokenTtl; // Time To Live în secunde
 
-    // Injectăm configurațiile prin constructor
-   public function __construct() {
-        // Preluăm cheia și emitentul direct din variabilele de mediu
+    public function __construct() {
         $this->secretKey = $_ENV['JWT_SECRET'] ?? '';
         $this->issuer = $_ENV['JWT_ISSUER'] ?? '';
-        
-        // Setăm timpul de expirare direct (15 minute = 900 secunde)
-        $this->accessTokenTtl = 900; 
+        $this->accessTokenTtl = 900; //900 sec = 15 min
     }
 
     public function generateAccessToken(int $userId, string $role): string {

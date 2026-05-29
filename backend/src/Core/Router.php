@@ -5,7 +5,7 @@ namespace App\Core;
 class Router {
     private array $routes = [];
 
-    // 1. Am adăugat un al 4-lea parametru opțional: array $middlewares = []
+   
     public function get(string $path, string $controller, string $action, array $middlewares = []): void {
         $this->addRoute('GET', $path, $controller, $action, $middlewares);
     }
@@ -32,7 +32,7 @@ class Router {
             'path'        => $regexPath,
             'controller'  => $controller,
             'action'      => $action,
-            'middlewares' => $middlewares // 2. Salvăm middleware-urile pentru această rută
+            'middlewares' => $middlewares 
         ];
     }
 
@@ -41,35 +41,24 @@ class Router {
         foreach ($this->routes as $route) {
             if ($route['method'] === $method && preg_match($route['path'], $uri, $matches)) {
                 
-                // Primul element din $matches este mereu tot URL-ul. Îl eliminăm
                 array_shift($matches);
 
-                // --- 3. NOU: EXECUȚIA MIDDLEWARE-URILOR ---
-                // Parcurgem toate middleware-urile setate pe această rută
                 foreach ($route['middlewares'] as $middlewareClass) {
                     $middlewareInstance = new $middlewareClass();
-                    
-                    // Apelăm metoda handle() din middleware
                     $middlewareResult = $middlewareInstance->handle();
-                    
-                    // Dacă middleware-ul returnează false, ne oprim complet. 
-                    // (Cererea nu mai ajunge la Controller)
                     if ($middlewareResult === false) {
                         return; 
                     }
                 }
-                // ------------------------------------------
 
-                // Dacă am trecut de middleware-uri, inițializăm Controller-ul
                 $controllerInstance = new $route['controller']();
                 
-                // Apelăm metoda dorită din Controller
                 call_user_func_array([$controllerInstance, $route['action']], $matches);
                 return; // Oprim execuția
             }
         }
 
-        // Dacă nu s-a găsit ruta (Eroare 404)
+
         http_response_code(404);
         echo json_encode([
             "success" => false,

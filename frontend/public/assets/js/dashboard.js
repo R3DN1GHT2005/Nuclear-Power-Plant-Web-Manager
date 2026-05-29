@@ -80,6 +80,7 @@ function calculateAndRenderMetrics(reactors) {
 function renderReactorTable(reactors) {
     const tbody = document.getElementById("dashboard-reactor-table");
     
+    // Dicționarul de stiluri (rămâne la fel, este excelent)
     const rowConfig = {
         'activ': { rowClass: '', badgeClass: '', badgeText: '', fillClass: 'bf-green', pillClass: 'pill-active', actionClass: 'action-none', actionText: 'Detalii →' },
         'alertă': { rowClass: 'row-critical', badgeClass: 'rb-crit', badgeText: '!', fillClass: 'bf-red', pillClass: 'pill-alert', actionClass: 'action-crit', actionText: 'Intervenție →' },
@@ -93,6 +94,7 @@ function renderReactorTable(reactors) {
         const status = r.status ? r.status.toLowerCase() : 'activ';
         const style = rowConfig[status] || rowConfig['activ'];
         
+        // --- 1. PREGĂTIREA DATELOR PENTRU TEMPERATURĂ ---
         let mainTemp = '—';
         let tempClass = '';
         if (r.sensors && r.sensors.length > 0) {
@@ -103,25 +105,61 @@ function renderReactorTable(reactors) {
             }
         }
 
+        // --- 2. PREGĂTIREA DATELOR PENTRU MENTENANȚĂ ---
         const dateObj = new Date(r.last_maintenance);
         const timeString = isNaN(dateObj) ? '--' : dateObj.toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
 
+        // --- 3. EXTRAGEREA CONDIȚIILOR VIZUALE PENTRU A PĂSTRA HTML-UL CURAT ---
+        const isOff = status === 'oprit';
+        const offTextStyle = isOff ? 'style="color: var(--text-3);"' : '';
+        const efficiencyWidth = r.current_efficiency || 0;
+        const efficiencyText = isOff ? '—' : `${r.current_efficiency}%`;
+        const nameMarginStyle = !style.badgeText ? 'style="margin-left: 23px;"' : '';
+
+        // --- 4. TEMPLATE-UL HTML (Acum e mult mai aerisit) ---
         tableHtml += `
             <tr class="${style.rowClass}">
+                
                 <td>
                     ${style.badgeText ? `<span class="rank-badge ${style.badgeClass}">${style.badgeText}</span>` : ''}
-                    <span class="reactor-name" ${!style.badgeText ? 'style="margin-left:23px"' : ''}>${r.name}</span>
+                    <span class="reactor-name" ${nameMarginStyle}>
+                        ${r.name}
+                    </span>
                 </td>
+                
                 <td>
                     <div class="bar-wrap">
-                        <div class="bar-track"><div class="bar-fill ${style.fillClass}" style="width:${r.current_efficiency || 0}%"></div></div>
-                        <span class="bar-pct" ${status === 'oprit' ? 'style="color:var(--text-3)"' : ''}>${status === 'oprit' ? '—' : r.current_efficiency + '%'}</span>
+                        <div class="bar-track">
+                            <div class="bar-fill ${style.fillClass}" style="width: ${efficiencyWidth}%;"></div>
+                        </div>
+                        <span class="bar-pct" ${offTextStyle}>
+                            ${efficiencyText}
+                        </span>
                     </div>
                 </td>
-                <td><span class="temp-val ${tempClass}" ${status === 'oprit' ? 'style="color:var(--text-3)"' : ''}>${mainTemp}</span></td>
-                <td><span class="pill ${style.pillClass}">${r.status}</span></td>
-                <td class="mono" style="font-size:12px; ${status === 'oprit' ? 'color:var(--text-3)' : ''}">${timeString}</td>
-                <td><a class="action-link ${style.actionClass}" href="reactors.html">${style.actionText}</a></td>
+                
+                <td>
+                    <span class="temp-val ${tempClass}" ${offTextStyle}>
+                        ${mainTemp}
+                    </span>
+                </td>
+                
+                <td>
+                    <span class="pill ${style.pillClass}">
+                        ${r.status}
+                    </span>
+                </td>
+                
+                <td class="mono" style="font-size: 12px;" ${offTextStyle}>
+                    ${timeString}
+                </td>
+                
+                <td>
+                    <a class="action-link ${style.actionClass}" href="reactors.html">
+                        ${style.actionText}
+                    </a>
+                </td>
+
             </tr>
         `;
     });
