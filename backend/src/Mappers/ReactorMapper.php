@@ -13,19 +13,23 @@ class ReactorMapper {
         );
 
         return new ReactorResponseDTO(
-            id:                 $reactor->getId(),
-            name:               $reactor->getName(),
-            location_name:      $reactor->getLocationName(),
-            latitude:           $reactor->getLatitude(),
-            longitude:          $reactor->getLongitude(),
-            status:             $reactor->getStatus(),
-            installed_power:    $reactor->getInstalledPower(),
-            current_efficiency: $reactor->getCurrentEfficiency(),
-            soil_stability:     $reactor->getSoilStability(),
-            seismic_risk:       $reactor->getSeismicRisk(),
-            created_at:         $reactor->getCreatedAt()->format('Y-m-d H:i:s'),
-            last_maintenance:   $reactor->getLastMaintenance()->format('Y-m-d H:i:s'),
-            sensors:            $sensorsDTO
+            id:                        $reactor->getId(),
+            name:                      $reactor->getName(),
+            location_name:             $reactor->getLocationName(),
+            latitude:                  $reactor->getLatitude(),
+            longitude:                 $reactor->getLongitude(),
+            status:                    $reactor->getStatus(),
+            installed_power:           $reactor->getInstalledPower(),
+            current_efficiency:        $reactor->getCurrentEfficiency(),
+            soil_stability:            $reactor->getSoilStability(),
+            seismic_risk:              $reactor->getSeismicRisk(),
+            reactor_type:              $reactor->getReactorType(),
+            cooling_water_source:      $reactor->getCoolingWaterSource(),
+            distance_to_nearest_city_km: $reactor->getDistanceToNearestCityKm(),
+            elevation_meters:          $reactor->getElevationMeters(),
+            created_at:                $reactor->getCreatedAt()->format('Y-m-d H:i:s'),
+            last_maintenance:          $reactor->getLastMaintenance()->format('Y-m-d H:i:s'),
+            sensors:                   $sensorsDTO
         );
     }
 

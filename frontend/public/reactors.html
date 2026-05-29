@@ -186,6 +186,47 @@
                 <input type="number" step="0.1" id="r-power" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box;">
             </div>
             <div>
+                <label style="font-size: 14px; font-weight: 500;">Tip Reactor</label>
+                <select id="r-type" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box; background: white;">
+                    <option value="">Selectează...</option>
+                    <option value="PWR">PWR (Apă sub presiune)</option>
+                    <option value="BWR">BWR (Apă fierbinte)</option>
+                    <option value="CANDU">CANDU (Greu)</option>
+                    <option value="RBMK">RBMK (Canal)</option>
+                    <option value="VVER">VVER</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 14px; font-weight: 500;">Sursă Apă Răcire</label>
+                <select id="r-cooling" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box; background: white;">
+                    <option value="">Selectează...</option>
+                    <option value="Râu">Râu</option>
+                    <option value="Lac">Lac</option>
+                    <option value="Mare">Mare</option>
+                    <option value="Ocean">Ocean</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 14px; font-weight: 500;">Distanță oraș (km)</label>
+                    <input type="number" step="0.1" id="r-distance" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 14px; font-weight: 500;">Altitudine (m)</label>
+                    <input type="number" step="0.1" id="r-elevation" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box;">
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 14px; font-weight: 500;">Stabilitate Sol (0-1)</label>
+                    <input type="number" step="0.01" id="r-soil-stability" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box;">
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 14px; font-weight: 500;">Risc Seismic (0-1)</label>
+                    <input type="number" step="0.01" id="r-seismic-risk" required class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box;">
+                </div>
+            </div>
+            <div>
                 <label style="font-size: 14px; font-weight: 500;">Status Inițial</label>
                 <select id="r-status" class="search-input" style="width: 100%; margin-top: 5px; box-sizing: border-box; background: white;">
                     <option value="Activ">Activ</option>

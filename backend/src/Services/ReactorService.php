@@ -36,10 +36,7 @@ class ReactorService {
     }
 
     public function create(CreateReactorDTO $dto): Reactor {
-        // TODO: inlocuit cu API cand alegi API-urile pt validare
-        $soilStability = 0.75;
-        $seismicRisk   = 0.10;
-        return $this->reactorsRepository->create($dto, $soilStability, $seismicRisk);
+        return $this->reactorsRepository->create($dto);
     }
 
     public function update(int $id, UpdateReactorDTO $dto): ?Reactor {

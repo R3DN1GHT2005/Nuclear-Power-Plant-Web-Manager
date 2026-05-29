@@ -43,16 +43,21 @@ function createReactorHTML(reactor) {
                 <div class="bar-label"><span>Eficiență</span><span class="${style.text}">${reactor.current_efficiency}%</span></div>
                 <div class="bar-track"><div class="bar-fill ${style.bar}" style="width:${reactor.current_efficiency}%"></div></div>
             </div>
+
+            <div class="rcard-meta" style="display: flex; gap: 12px; padding: 6px 16px; font-size: 12px; color: var(--text-3); border-bottom: 1px solid var(--border);">
+                <span>Tip: ${reactor.reactor_type}</span>
+                <span>Răcire: ${reactor.cooling_water_source}</span>
+                <span>Oraș: ${reactor.distance_to_nearest_city_km}km</span>
+                <span>Alt: ${reactor.elevation_meters}m</span>
+            </div>
             
             <div class="rcard-body">
                 ${reactor.sensors && reactor.sensors.length > 0 ? reactor.sensors.map(sensor => {
                     
-                    // AICI ESTE REPARAȚIA: Folosim exact cheile din JSON-ul tău!
                     const type = sensor.type || 'Senzor necunoscut';
                     const value = sensor.value !== null ? sensor.value : '--';
                     const unit = sensor.unit || '';
                     
-                    // Adăugăm logică vizuală: dacă e Temperatură peste 350, o facem roșie (hot)
                     const isWarning = (type.toLowerCase() === 'temperatura' && value > 350) ? 'text-red' : '';
 
                     return `
@@ -115,12 +120,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const newData = {
                 name: document.getElementById("r-name").value,
                 location_name: document.getElementById("r-location").value,
-                latitude: parseFloat(document.getElementById("r-lat").value), // Citim latitudinea
-                longitude: parseFloat(document.getElementById("r-lng").value), // Citim longitudinea
+                latitude: parseFloat(document.getElementById("r-lat").value),
+                longitude: parseFloat(document.getElementById("r-lng").value),
                 status: document.getElementById("r-status").value,
                 installed_power: parseFloat(document.getElementById("r-power").value),
                 current_efficiency: 100.0,
-                last_maintenance: lastMaintenanceDate
+                last_maintenance: lastMaintenanceDate,
+                soil_stability: parseFloat(document.getElementById("r-soil-stability").value),
+                seismic_risk: parseFloat(document.getElementById("r-seismic-risk").value),
+                reactor_type: document.getElementById("r-type").value,
+                cooling_water_source: document.getElementById("r-cooling").value,
+                distance_to_nearest_city_km: parseFloat(document.getElementById("r-distance").value),
+                elevation_meters: parseFloat(document.getElementById("r-elevation").value),
             };
 
             // Schimbăm textul butonului ca să arătăm că se încarcă
