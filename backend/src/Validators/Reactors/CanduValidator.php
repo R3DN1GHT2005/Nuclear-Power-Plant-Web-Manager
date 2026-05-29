@@ -36,8 +36,8 @@ class CanduValidator implements ReactorValidatorInterface {
         // Distance to nearest city
         try {
             $distanceKm = $overpass->getDistanceToNearestCity($dto->latitude, $dto->longitude);
-            if ($distanceKm < 30) {
-                throw new ValidationException("CANDU (Overpass API): S-a detectat o așezare urbană la sub 30km distanță.");
+            if ($distanceKm < 20) {
+                throw new ValidationException("CANDU (Overpass API): S-a detectat o așezare urbană la sub 20km distanță.");
             }
         } catch (\Exception $e) {
             throw new ValidationException("CANDU: Eroare validare distanță oraș: " . $e->getMessage());
