@@ -75,3 +75,76 @@ function createReactorHTML(reactor) {
         </article>
     `;
 }
+
+// ====== LOGICĂ PENTRU ADĂUGARE REACTOR ======
+
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("reactor-modal");
+    const btnNew = document.getElementById("btn-new-reactor");
+    const btnClose = document.getElementById("close-modal");
+    const form = document.getElementById("new-reactor-form");
+
+    // 1. Deschide fereastra
+    if(btnNew) {
+        btnNew.addEventListener("click", () => {
+            modal.style.display = "flex"; // Afișăm pe ecran
+        });
+    }
+
+    // 2. Închide fereastra
+    if(btnClose) {
+        btnClose.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+    }
+
+    // Închide fereastra dacă dai click în afara ei (pe fundalul întunecat)
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) modal.style.display = "none";
+    });
+
+    // 3. Când dăm "Salvează"
+    if(form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault(); // Oprim pagina să dea refresh (comportament clasic HTML)
+
+            // Generăm data curentă în formatul acceptat de baza de date
+            const now = new Date();
+            const lastMaintenanceDate = now.toISOString().slice(0, 19).replace('T', ' ');
+
+            const newData = {
+                name: document.getElementById("r-name").value,
+                location_name: document.getElementById("r-location").value,
+                latitude: parseFloat(document.getElementById("r-lat").value), // Citim latitudinea
+                longitude: parseFloat(document.getElementById("r-lng").value), // Citim longitudinea
+                status: document.getElementById("r-status").value,
+                installed_power: parseFloat(document.getElementById("r-power").value),
+                current_efficiency: 100.0,
+                last_maintenance: lastMaintenanceDate
+            };
+
+            // Schimbăm textul butonului ca să arătăm că se încarcă
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.textContent = "Se salvează...";
+
+            // Trimitem prin API
+            const success = await NuclearAPI.createReactor(newData);
+
+            if (success) {
+                // Dacă s-a salvat cu succes, ascundem fereastra, resetăm formularul și...
+                modal.style.display = "none";
+                form.reset();
+                submitBtn.textContent = "Salvează Reactor";
+                
+                // ... dăm refresh automat doar la carduri!
+                alert("Reactor creat cu succes!");
+                
+                // Opțional: Aici am putea re-apela funcția de afișare ca să apară pe ecran instant fără F5:
+                // window.location.reload(); 
+            } else {
+                alert("Eroare la salvare! Verifică consola (F12).");
+                submitBtn.textContent = "Salvează Reactor";
+            }
+        });
+    }
+});
