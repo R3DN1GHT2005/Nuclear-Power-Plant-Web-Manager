@@ -37,15 +37,15 @@ class ReactorController {
     public function addReactor(): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
-        if (!$data) {
-            Response::json(['error' => 'Date invalide'], 400);
-            return;
-        }
-
-        $dto     = CreateReactorDTO::fromArray($data);
+        try {
+        $dto = CreateReactorDTO::fromArray($data);
         $reactor = $this->reactorService->create($dto);
+        
         Response::json(ReactorMapper::toResponse($reactor), 201);
-    }
+        } catch (\Exception $e) {
+        Response::json(['error' => $e->getMessage()], 400);
+        }
+}
 
     // PUT /api/reactors/{id}
     public function updateReactor(int $id): void {

@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-
+    
   frontend:
     image: nginx:stable-alpine
     container_name: nuclear_frontend

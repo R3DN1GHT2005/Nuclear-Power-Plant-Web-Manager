@@ -7,6 +7,7 @@ use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Models\Reactor;
 use App\Repositories\ReactorRepository;
 use App\Repositories\SensorRepository;
+use App\Validators\Reactors\ValidatorFactory;
 class ReactorService {
     private ReactorRepository $reactorsRepository;
     private SensorRepository $sensorRepository;
@@ -36,6 +37,12 @@ class ReactorService {
     }
 
     public function create(CreateReactorDTO $dto): Reactor {
+        $dto->seismic_risk = $this->usgsApi->getSeismicRisk($dto->latitude, $dto->longitude);
+        $dto->elevation_meters = $this->elevationApi->getElevation($dto->latitude, $dto->longitude);
+        $dto->distance_to_nearest_city_km = $this->overpassApi->getDistanceToCity($dto->latitude, $dto->longitude);
+        $dto->cooling_water_source = $this->overpassApi->getNearestWaterSource($dto->latitude, $dto->longitude);
+        $validator = ValidatorFactory::getValidator($dto->reactor_type);
+        $validator->validate($dto);
         return $this->reactorsRepository->create($dto);
     }
 
