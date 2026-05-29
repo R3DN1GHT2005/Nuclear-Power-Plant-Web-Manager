@@ -1,11 +1,11 @@
 <?php
 
-// Autoloader-ul Composer care încarcă toate clasele automat
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// 2. ÎNCĂRCĂM BIBLIOTECILE DIN COMPOSER
+
 $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
 if (!file_exists($autoloadPath)) {
     die("Eroare CRITICĂ: Fișierul autoload.php nu a fost găsit la calea: " . $autoloadPath . " . Te rog să rulezi 'composer install'.");
@@ -42,18 +42,11 @@ if (empty($uri)) {
 try {
     $router = new Router();
 
-    // ==========================================
-    // 1. RUTE PUBLICE (Fără Middleware)
-    // ==========================================
+  
     $router->post('/api/auth/login', AuthController::class, 'login');
     $router->post('/api/auth/refresh', AuthController::class, 'refresh');
     $router->post('/api/auth/logout', AuthController::class, 'logout');
 
-
-    // ==========================================
-    // 2. RUTE DE ADMIN (Protejate de AdminMiddleware)
-    // Doar utilizatorii cu rolul "admin" au acces
-    // ==========================================
     $router->post('/api/auth/register', AuthController::class, 'register', [AdminMiddleware::class]);
     $router->put('/api/auth/password', AuthController::class, 'updatePassword', [AdminMiddleware::class]);
 

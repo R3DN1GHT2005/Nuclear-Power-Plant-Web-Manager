@@ -1,13 +1,12 @@
-// frontend/assets/js/api.js
 
-const API_URL = "http://localhost:8082/api"; // Atenție la port! Backend-ul tău e pe 8082
+const API_URL = "http://localhost:8082/api"; 
 
 // Funcție utilitară pentru a prelua token-ul din browser
 function getAuthHeaders() {
     const token = localStorage.getItem('access_token');
     return {
         'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '' // Atașăm token-ul aici!
+        'Authorization': token ? `Bearer ${token}` : '' 
     };
 }
 
@@ -30,8 +29,6 @@ const NuclearAPI = {
                 
             const data = await response.json();
             
-            // Backend-ul tău PHP s-ar putea să returneze { success: true, data: [...] }
-            // Verificăm dacă vectorul este în interiorul cheii "data"
             return data.data || data || []; 
             
         } catch (error) {

@@ -1,50 +1,49 @@
 <?php
 namespace App\Repositories;
 
-use App\Core\DataBase;
+use App\Core\Database;
+use App\DTOs\Request\alert\CreateAlertDTO;
+use App\Models\Alert;
 use PDO;
 
 class AlertRepository{
 	public const ALLOWED_SEVERITIES = ['Critica', 'Avertisment', 'Info'];
 
-	private $db;
+	private PDO $db;
 
 	public function __construct(){
-		$this->db = DataBase::getInstance()->getConnection();
+		$this->db = Database::getInstance()->getConnection();
 	}
 
-	public function getAllowedSeverities(){
+	public function getAllowedSeverities(): array {
 		return self::ALLOWED_SEVERITIES;
 	}
 
-	public function isAllowedSeverity($severity){
+	public function isAllowedSeverity(string $severity): bool {
 		return in_array($severity, self::ALLOWED_SEVERITIES, true);
 	}
 
-	public function getAllAlerts(){
-		$sql = "SELECT * FROM alerts ORDER BY created_at DESC";
-		$stmt = $this->db->prepare($sql);
-		$stmt->execute();
-		return $stmt->fetchAll();
+	public function getAllAlerts(): array {
+		$stmt = $this->db->query("SELECT * FROM alerts ORDER BY created_at DESC");
+		return array_map(fn($row) => Alert::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 
-	public function getAlertById($id){
-		$sql = "SELECT * FROM alerts WHERE id = :id";
-		$stmt = $this->db->prepare($sql);
+	public function getAlertById(int $id): ?Alert {
+		$stmt = $this->db->prepare("SELECT * FROM alerts WHERE id = :id");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
-		return $stmt->fetch();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row ? Alert::fromArray($row) : null;
 	}
 
-	public function getAlertsByReactor($reactorId){
-		$sql = "SELECT * FROM alerts WHERE reactor_id = :reactor_id ORDER BY created_at DESC";
-		$stmt = $this->db->prepare($sql);
+	public function getAlertsByReactor(int $reactorId): array {
+		$stmt = $this->db->prepare("SELECT * FROM alerts WHERE reactor_id = :reactor_id ORDER BY created_at DESC");
 		$stmt->bindParam(':reactor_id', $reactorId, PDO::PARAM_INT);
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return array_map(fn($row) => Alert::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 
-	public function getAlertsBySeverity($severity, $reactorId = null){
+	public function getAlertsBySeverity(string $severity, ?int $reactorId = null): array {
 		if (!$this->isAllowedSeverity($severity)) {
 			return [];
 		}
@@ -61,10 +60,10 @@ class AlertRepository{
 			$stmt->bindParam(':reactor_id', $reactorId, PDO::PARAM_INT);
 		}
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return array_map(fn($row) => Alert::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 
-	public function getUnresolvedAlerts($reactorId = null){
+	public function getUnresolvedAlerts(?int $reactorId = null): array {
 		$sql = "SELECT * FROM alerts WHERE is_resolved = FALSE";
 		if ($reactorId !== null) {
 			$sql .= " AND reactor_id = :reactor_id";
@@ -76,10 +75,10 @@ class AlertRepository{
 			$stmt->bindParam(':reactor_id', $reactorId, PDO::PARAM_INT);
 		}
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return array_map(fn($row) => Alert::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 
-	public function getResolvedAlerts($reactorId = null){
+	public function getResolvedAlerts(?int $reactorId = null): array {
 		$sql = "SELECT * FROM alerts WHERE is_resolved = TRUE";
 		if ($reactorId !== null) {
 			$sql .= " AND reactor_id = :reactor_id";
@@ -91,14 +90,14 @@ class AlertRepository{
 			$stmt->bindParam(':reactor_id', $reactorId, PDO::PARAM_INT);
 		}
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return array_map(fn($row) => Alert::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 
-	public function getCriticalAlerts($reactorId = null){
+	public function getCriticalAlerts(?int $reactorId = null): array {
 		return $this->getAlertsBySeverity('Critica', $reactorId);
 	}
 
-	public function getAlertsWithReactor($reactorId = null){
+	public function getAlertsWithReactor(?int $reactorId = null): array {
 		$sql = "SELECT a.*, r.name AS reactor_name, r.status AS reactor_status
 			FROM alerts a
 			JOIN reactors r ON a.reactor_id = r.id";
@@ -113,70 +112,68 @@ class AlertRepository{
 			$stmt->bindParam(':reactor_id', $reactorId, PDO::PARAM_INT);
 		}
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function createAlert($reactorId, $message, $severity, $resolvedBy = null){
-		if (!$this->isAllowedSeverity($severity)) {
-			return false;
+	public function createAlert(CreateAlertDTO $dto): ?Alert {
+		if (!$this->isAllowedSeverity($dto->severity)) {
+			return null;
 		}
 
-		$sql = "INSERT INTO alerts (reactor_id, message, severity, is_resolved, resolved_by)
-			VALUES (:reactor_id, :message, :severity, FALSE, :resolved_by)
-			RETURNING id";
+		$stmt = $this->db->prepare("
+			INSERT INTO alerts (reactor_id, message, severity, is_resolved)
+			VALUES (:reactor_id, :message, :severity, FALSE)
+			RETURNING *
+		");
 
-		$stmt = $this->db->prepare($sql);
-		$stmt->bindParam(':reactor_id', $reactorId, PDO::PARAM_INT);
-		$stmt->bindParam(':message', $message);
-		$stmt->bindParam(':severity', $severity, PDO::PARAM_STR);
-		if ($resolvedBy === null) {
-			$stmt->bindValue(':resolved_by', null, PDO::PARAM_NULL);
-		} else {
-			$stmt->bindParam(':resolved_by', $resolvedBy, PDO::PARAM_INT);
-		}
-		$stmt->execute();
+		$stmt->execute([
+			'reactor_id' => $dto->reactor_id,
+			'message' => $dto->message,
+			'severity' => $dto->severity,
+		]);
 
-		$result = $stmt->fetch();
-		return $result ? $result['id'] : false;
+		return Alert::fromArray($stmt->fetch(PDO::FETCH_ASSOC));
 	}
 
-	public function resolveAlert($id, $resolvedBy = null){
-		$sql = "UPDATE alerts
+	public function resolveAlert(int $id, ?int $resolvedBy = null): ?Alert {
+		$stmt = $this->db->prepare("
+			UPDATE alerts
 			SET is_resolved = TRUE,
 				resolved_at = CURRENT_TIMESTAMP,
 				resolved_by = :resolved_by
-			WHERE id = :id";
-
-		$stmt = $this->db->prepare($sql);
+			WHERE id = :id
+			RETURNING *
+		");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		if ($resolvedBy === null) {
-			$stmt->bindValue(':resolved_by', null, PDO::PARAM_NULL);
-		} else {
-			$stmt->bindParam(':resolved_by', $resolvedBy, PDO::PARAM_INT);
-		}
-		return $stmt->execute();
+		$stmt->bindValue(':resolved_by', $resolvedBy, $resolvedBy === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row ? Alert::fromArray($row) : null;
 	}
 
-	public function markAlertUnresolved($id){
-		$sql = "UPDATE alerts
+	public function markAlertUnresolved(int $id): ?Alert {
+		$stmt = $this->db->prepare("
+			UPDATE alerts
 			SET is_resolved = FALSE,
 				resolved_at = NULL,
 				resolved_by = NULL
-			WHERE id = :id";
-
-		$stmt = $this->db->prepare($sql);
+			WHERE id = :id
+			RETURNING *
+		");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		return $stmt->execute();
+		$stmt->execute();
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		return $row ? Alert::fromArray($row) : null;
 	}
 
-	public function deleteAlert($id){
-		$sql = "DELETE FROM alerts WHERE id = :id";
-		$stmt = $this->db->prepare($sql);
+	public function deleteAlert(int $id): bool {
+		$stmt = $this->db->prepare("DELETE FROM alerts WHERE id = :id");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		return $stmt->execute();
+		$stmt->execute();
+		return $stmt->rowCount() > 0;
 	}
 
-	public function getRecentAlerts($limit = 10, $reactorId = null){
+	public function getRecentAlerts(int $limit = 10, ?int $reactorId = null): array {
 		$sql = "SELECT * FROM alerts";
 		if ($reactorId !== null) {
 			$sql .= " WHERE reactor_id = :reactor_id";
@@ -189,6 +186,6 @@ class AlertRepository{
 		}
 		$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
 		$stmt->execute();
-		return $stmt->fetchAll();
+		return array_map(fn($row) => Alert::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
 	}
 }
