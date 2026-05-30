@@ -334,9 +334,9 @@
     }
 
     async function fetchReactors() {
-        const response = await fetch(`${apiBase}/reactors`, {
-            method: 'GET',
-            headers: getHeaders()
+        // Folosim authFetch în loc de fetch clasic
+        const response = await window.authFetch(`/reactors`, {
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -417,9 +417,9 @@
     }
 
     async function fetchSensors(reactorId) {
-        const response = await fetch(`${apiBase}/reactors/${reactorId}/sensors`, {
-            method: 'GET',
-            headers: getHeaders()
+        // Folosim authFetch
+        const response = await window.authFetch(`/reactors/${reactorId}/sensors`, {
+            method: 'GET'
         });
 
         if (!response.ok) {
