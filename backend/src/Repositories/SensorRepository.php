@@ -43,7 +43,7 @@ class SensorRepository {
     }
 
     public function create(InsertSensorDTO $dto): Sensor {
-        $stmt = $this->db->prepare("\n            INSERT INTO sensors \n                (reactor_id, sensor_type, unit, min_safe_value, max_safe_value)\n            VALUES \n                (:reactor_id, :sensor_type, :unit, :min_safe_value, :max_safe_value)\n            RETURNING *\n        ");
+        $stmt = $this->db->prepare("\n            INSERT INTO sensors \n                (reactor_id, sensor_type, unit, min_safe_value, max_safe_value, current_value)\n            VALUES \n                (:reactor_id, :sensor_type, :unit, :min_safe_value, :max_safe_value, :current_value)\n            RETURNING *\n        ");
 
         $stmt->execute([
             'reactor_id' => $dto->reactor_id,
@@ -51,6 +51,7 @@ class SensorRepository {
             'unit' => $dto->unit,
             'min_safe_value' => $dto->min_safe_value,
             'max_safe_value' => $dto->max_safe_value,
+            'current_value' => $dto->current_value,
         ]);
 
         return Sensor::fromArray($stmt->fetch(PDO::FETCH_ASSOC));

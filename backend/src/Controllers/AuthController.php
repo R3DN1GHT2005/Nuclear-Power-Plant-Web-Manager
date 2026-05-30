@@ -32,20 +32,33 @@ class AuthController {
             // Creăm sesiunea (Access Token scurt + Refresh Token lung)
             $session = $this->sessionService->createSession($user['id'], $user['role'] ?? 'viewer');
 
-            // Setăm Refresh Token-ul într-un cookie sigur (HttpOnly)
-            setcookie('refresh_token', $session['refresh_token'], [
-                'expires'  => $session['cookie_expires'],
-                'path'     => '/api/auth/refresh', // Cookie-ul e trimis doar pe ruta de refresh
-                'secure'   => true, 
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
+            // Setăm Access Token-ul într-un cookie
+            // Expiră în mod normal în 15 minute (900 secunde). Aici poți ajusta dacă Service-ul tău dă un alt timp.
+            // 1. Setăm Access Token-ul (valabil 15 minute)
+            // Setăm Access Token-ul (valabil 15 minute)
+           setcookie('access_token', $session['access_token'], [
+    'expires'  => time() + 900,
+    'path'     => '/',
+    'domain'   => '127.0.0.1',   // ← adaugă asta
+    'secure'   => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+setcookie('refresh_token', $session['refresh_token'], [
+    'expires'  => time() + 604800,
+    'path'     => '/',
+    'domain'   => '127.0.0.1',   // ← adaugă asta
+    'secure'   => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 
             http_response_code(200);
             echo json_encode([
                 "message" => "Logare cu succes!",
-                "access_token" => $session['access_token'],
                 "user" => $user
+                // Am eliminat "access_token" de aici pentru securitate, acum stă ascuns în cookie!
             ]);
         } else {
             http_response_code(401);
@@ -67,16 +80,32 @@ class AuthController {
         $newAccessToken = $this->sessionService->refreshSession($refreshToken);
 
         if (!$newAccessToken) {
-            // Dacă token-ul a expirat sau nu există în DB, ștergem cookie-ul
+            // Dacă token-ul a expirat sau nu există în DB, ștergem ambele cookie-uri
             setcookie('refresh_token', '', time() - 3600, '/api/auth/refresh');
+            setcookie('access_token', '', time() - 3600, '/');
+            
             http_response_code(401);
             echo json_encode(["error" => "Sesiune expirată sau invalidă. Vă rugăm să vă relogați."]);
             return;
         }
 
+        // Extragem șirul de caractere din array-ul primit de la Service
+        $tokenString = is_array($newAccessToken) ? $newAccessToken['access_token'] : $newAccessToken;
+
+        // Setăm NOUL Access Token primit de la Service
+        setcookie('access_token', $tokenString, [
+            'expires'  => time() + 900, 
+            'path'     => '/',
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+
         http_response_code(200);
         echo json_encode([
-            "access_token" => $newAccessToken
+            "success" => true,
+            "message" => "Sesiune reîmprospătată"
+            // Nu mai trimitem noul token prin JSON, e deja actualizat în browser prin Set-Cookie
         ]);
     }
 
@@ -86,9 +115,23 @@ class AuthController {
         if ($refreshToken) {
             // Ștergem sesiunea din baza de date
             $this->sessionService->destroySession($refreshToken);
-            // Ștergem cookie-ul din browserul utilizatorului
-            setcookie('refresh_token', '', time() - 3600, '/api/auth/refresh');
         }
+
+        setcookie('access_token', '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+
+        setcookie('refresh_token', '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
 
         http_response_code(200);
         echo json_encode(["message" => "Delogare cu succes!"]);

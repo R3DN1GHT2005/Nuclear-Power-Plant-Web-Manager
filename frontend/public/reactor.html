@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Detalii Reactor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/reactor.css">
+</head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="#">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            NuclearWatch
+        </a>
+        <a class="nav-link" href="index.html">Panou principal</a>
+        <a class="nav-link active" href="reactors.html">Reactoare</a>
+    </div>
+    <div class="nav-right">
+        <div class="avatar">IA</div>
+        <button class="logout-btn" id="btn-logout">Deconectare</button>
+    </div>
+</nav>
+
+<main class="main split-layout hidden" id="reactor-details-layout">
+
+    <div class="col-left">
+        
+        <div class="page-header header-minimal">
+            <div class="header-top-row">
+                <div>
+                    <a href="reactors.html" class="back-link">← Înapoi la listă</a>
+                    <h1 class="ph-title" id="reactor-title">Se încarcă...</h1>
+                    <p class="ph-sub" id="reactor-subtitle">ID: -- · Locație: --</p>
+                </div>
+                <span class="pill" id="reactor-status-pill">--</span>
+            </div>
+
+            <div class="action-bar" id="action-bar">
+                <button class="btn-action" id="btn-start">Pornire</button>
+                <button class="btn-action" id="btn-stop">Oprire</button>
+                <button class="btn-action" id="btn-maint">Mentenanță</button>
+                <button class="btn-action btn-outline" id="btn-add-sensor">+ Senzor nou</button>
+            </div>
+        </div>
+
+        <div class="panel-card mb-12">
+            <div class="detail-section">
+                <header class="det-h"><div class="det-t">Specificații Tehnice</div></header>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <span class="spec-lbl">Tip Reactor</span>
+                        <span class="spec-val" id="spec-type">--</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-lbl">Răcire</span>
+                        <span class="spec-val" id="spec-cooling">--</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-lbl">Putere</span>
+                        <span class="spec-val" id="spec-power">--</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-lbl">Distanță oraș</span>
+                        <span class="spec-val" id="spec-distance">--</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-lbl">Altitudine</span>
+                        <span class="spec-val" id="spec-elevation">--</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-lbl">Risc Seismic</span>
+                        <span class="spec-val" id="spec-seismic">--</span>
+                    </div>
+                </div>
+
+                <div class="specs-bars">
+                    <div class="spec-bar-row">
+                        <span class="spec-bar-lbl">Eficiență curentă</span>
+                        <div class="spec-bar-track"><div class="spec-bar-fill bf-green" id="efficiency-bar"></div></div>
+                        <span class="spec-bar-val" id="efficiency-val">--%</span>
+                    </div>
+                    <div class="spec-bar-row">
+                        <span class="spec-bar-lbl">Stabilitate sol</span>
+                        <div class="spec-bar-track"><div class="spec-bar-fill bf-amber" id="stability-bar"></div></div>
+                        <span class="spec-bar-val" id="stability-val">--%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card flex-fill">
+            <div class="detail-section layout-flex-col">
+                <header class="det-h">
+                    <div>
+                        <div class="det-t">Jurnal Alerte</div>
+                        <div class="det-s" id="alert-sub">Evenimente înregistrate</div>
+                    </div>
+                    <span class="pill pill-alert hidden" id="alert-count-pill">0</span>
+                </header>
+                <div class="scroll-area layout-flex-1" id="alert-list">
+                    <div class="history-empty">Se încarcă alertele...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-right">
+        <div class="panel-card flex-fill layout-flex-col">
+            
+            <div class="tab-bar">
+                <button class="tab-btn active" data-target="tab-senzori">Senzori activi</button>
+                <button class="tab-btn" data-target="tab-istoric">Istoric citiri</button>
+            </div>
+
+            <div class="tab-panel active" id="tab-senzori">
+                <div class="sensor-grid" id="sensor-grid-container">
+                    <div class="history-empty">Se încarcă senzorii...</div>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="tab-istoric">
+                <div class="history-filter-bar">
+                    <select class="form-select select-sm" id="filter-sensor">
+                        <option value="">Toți senzorii</option>
+                    </select>
+                    <span class="history-meta">Ultimele 50 înregistrări</span>
+                </div>
+                <div class="scroll-area layout-flex-1" id="history-list">
+                    <div class="history-empty">Niciun istoric disponibil.</div>
+                </div>
+            </div>
+
+            <div class="panel-footer">
+                <div class="footer-meta" id="last-maintenance-date">Ultima mentenanță: --</div>
+                <button class="btn-text" id="btn-schedule-maint">Programează →</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="error-container" class="error-view hidden">
+    <div class="error-icon">⚠️</div>
+    <h2>Reactorul nu a putut fi găsit</h2>
+    <p>ID-ul specificat în URL este invalid sau nu există în baza de date.</p>
+    <a href="reactors.html" class="btn btn-prim">← Înapoi la Reactoare</a>
+</div>
+
+<div class="modal-overlay" id="modal-status">
+    <div class="modal">
+        <div class="confirm-icon" id="modal-status-icon">🔄</div>
+        <div class="modal-title" id="modal-status-title">Schimbare status</div>
+        <div class="modal-sub" id="modal-status-sub">Confirmați schimbarea statusului.</div>
+        <div class="confirm-warning hidden" id="modal-status-warning"></div>
+        <div class="modal-actions">
+            <button class="btn btn-close-modal">Anulează</button>
+            <button class="btn btn-prim" id="modal-status-confirm">Confirmă</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-sensor">
+    <div class="modal">
+        <div class="modal-title">Adaugă senzor nou</div>
+        <div class="modal-sub">Alegeți tipul senzorului și setați limitele manual.</div>
+
+        <div class="form-group">
+            <label class="form-label">Tip senzor</label>
+            <select class="form-select" id="sensor-type">
+                <option value="" disabled selected>Se încarcă tipurile...</option>
+            </select>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+                <label class="form-label">Limită Min</label>
+                <input class="form-input" type="number" step="0.1" id="sensor-min" placeholder="ex: 0">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Limită Max</label>
+                <input class="form-input" type="number" step="0.1" id="sensor-max" placeholder="ex: 350">
+            </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button class="btn btn-close-modal">Anulează</button>
+            <button class="btn btn-prim" id="modal-add-sensor-confirm" disabled>Adaugă</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/reactor-details.js"></script>
+</body>
+</html>
