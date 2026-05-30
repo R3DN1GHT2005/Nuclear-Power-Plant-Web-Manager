@@ -160,6 +160,51 @@
         return { color: '#2563eb', badgeClass: 'badge-blue' };
     }
 
+    function statusCircleClass(status) {
+        const normalized = normalizeStatus(status);
+
+        if (normalized === 'oprit') {
+            return 'reactor-circle reactor-circle-gray';
+        }
+
+        if (normalized === 'activ') {
+            return 'reactor-circle reactor-circle-green';
+        }
+
+        if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') {
+            return 'reactor-circle reactor-circle-yellow';
+        }
+
+        if (normalized === 'alerta' || normalized === 'stare critica' || normalized === 'critica' || normalized === 'critic') {
+            return 'reactor-circle reactor-circle-red reactor-circle-pulse';
+        }
+
+        return 'reactor-circle reactor-circle-blue';
+    }
+
+    function getMarkerRadius(reactor) {
+        const power = safeNumber(reactor.installed_power, 0);
+        const normalized = normalizeStatus(reactor.status);
+
+        let radius = 7;
+
+        if (power > 0) {
+            radius += Math.min(5, Math.max(0, power / 220));
+        }
+
+        if (normalized === 'activ') {
+            radius += 0.5;
+        } else if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') {
+            radius += 1;
+        } else if (normalized === 'alerta' || normalized === 'stare critica' || normalized === 'critica' || normalized === 'critic') {
+            radius += 2.2;
+        } else if (normalized === 'oprit') {
+            radius -= 0.5;
+        }
+
+        return Math.max(6, Math.min(14, radius));
+    }
+
     function escapeHtml(value) {
         return String(value)
             .replace(/&/g, '&amp;')
@@ -201,16 +246,6 @@
         if (element && typeof element.addEventListener === 'function') {
             element.addEventListener('submit', handler);
         }
-    }
-
-    function createPinIcon(color) {
-        return L.divIcon({
-            className: 'leaflet-div-icon reactor-marker-icon',
-            html: `<div class="reactor-marker" style="background:${color};"></div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
-            popupAnchor: [0, -10]
-        });
     }
 
     function buildPopupContent(reactor) {
@@ -256,8 +291,14 @@
             }
 
             const visual = statusVisual(reactor.status);
-            const marker = L.marker([lat, lng], {
-                icon: createPinIcon(visual.color),
+            const marker = L.circleMarker([lat, lng], {
+                radius: getMarkerRadius(reactor),
+                color: 'rgba(255, 255, 255, 0.95)',
+                weight: 2.5,
+                fillColor: visual.color,
+                fillOpacity: 0.94,
+                opacity: 1,
+                className: statusCircleClass(reactor.status),
                 title: reactor.name || 'Reactor'
             });
 
