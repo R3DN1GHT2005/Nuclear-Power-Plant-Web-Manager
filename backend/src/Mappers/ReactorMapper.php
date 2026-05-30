@@ -28,7 +28,7 @@ class ReactorMapper {
             distance_to_nearest_city_km: $reactor->getDistanceToNearestCityKm(),
             elevation_meters:          $reactor->getElevationMeters(),
             created_at:                $reactor->getCreatedAt()->format('Y-m-d H:i:s'),
-            last_maintenance:          $reactor->getLastMaintenance()->format('Y-m-d H:i:s'),
+            last_maintenance: $reactor->getLastMaintenance()?->format('Y-m-d H:i:s') ?? 'N/A',
             sensors:                   $sensorsDTO
         );
     }

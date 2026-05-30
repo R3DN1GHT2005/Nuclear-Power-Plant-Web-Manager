@@ -19,7 +19,7 @@ class ReactorResponseDTO implements \JsonSerializable {
         public readonly float  $distance_to_nearest_city_km,
         public readonly float  $elevation_meters,
         public readonly string $created_at,
-        public readonly string $last_maintenance,
+        public readonly ?string $last_maintenance, 
         public readonly array  $sensors = []
     ) {}
 

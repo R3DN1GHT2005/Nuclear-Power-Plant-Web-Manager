@@ -1,34 +1,52 @@
+const API_URL = "http://127.0.0.1:8082/api"; 
 
-const API_URL = "http://localhost:8082/api"; 
 
-// Funcție utilitară pentru a prelua token-ul din browser
-function getAuthHeaders() {
-    const token = localStorage.getItem('access_token');
-    return {
+async function authFetch(endpoint, options = {}) {
+    let headers = {
         'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '' 
+        ...options.headers
     };
+
+    const fetchOptions = {
+        ...options,
+        headers,
+        credentials: 'include' 
+    };
+
+    let response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
+
+    if (response.status === 401) {
+        try {
+            // Încercăm să chemăm ruta de refresh pe fundal
+            const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include' 
+            });
+
+            if (refreshResponse.ok) {
+                response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
+            } else {
+                window.location.href = 'login.html';
+            }
+        } catch (err) {
+            console.error("Eroare la reîmprospătarea sesiunii:", err);
+            window.location.href = 'login.html';
+        }
+    }
+
+    return response;
 }
 
 const NuclearAPI = {
     async getReactors() {
         try {
-            const response = await fetch(`${API_URL}/reactors`, {
-                method: 'GET',
-                headers: getAuthHeaders() // Folosim headerele cu token
-            });
+            const response = await authFetch('/reactors', { method: 'GET' });
             
-            if (response.status === 401) {
-                // Dacă token-ul a expirat, îl trimitem pe utilizator înapoi la logare
-                // window.location.href = 'login.html'; // COMENTAT — vezi comentat.md
-                return [];
-            }
+            if (response.status === 401) return []; // Dacă tot e 401 după refresh, ne oprim.
+            if (!response.ok) throw new Error("Eroare la preluarea reactoarelor");
             
-            if (!response.ok) 
-                throw new Error("Eroare la preluarea reactoarelor");
-                
             const data = await response.json();
-            
             return data.data || data || []; 
             
         } catch (error) {
@@ -39,10 +57,7 @@ const NuclearAPI = {
 
     async getSensorData(reactorId) {
         try {
-            const response = await fetch(`${API_URL}/sensors?reactor_id=${reactorId}`, {
-                method: 'GET',
-                headers: getAuthHeaders()
-            });
+            const response = await authFetch(`/sensors?reactor_id=${reactorId}`, { method: 'GET' });
             return await response.json();
         } catch (error) {
             console.error("API Error:", error);
@@ -52,9 +67,8 @@ const NuclearAPI = {
 
     async createReactor(reactorData) {
         try {
-            const response = await fetch(`${API_URL}/reactors`, {
+            const response = await authFetch('/reactors', {
                 method: 'POST',
-                headers: getAuthHeaders(),
                 body: JSON.stringify(reactorData)
             });
             
@@ -70,3 +84,6 @@ const NuclearAPI = {
         }
     }
 };
+
+window.authFetch = authFetch;
+window.NuclearAPI = NuclearAPI;

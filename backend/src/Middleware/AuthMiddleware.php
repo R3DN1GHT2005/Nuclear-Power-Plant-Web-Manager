@@ -11,24 +11,21 @@ class AuthMiddleware {
     protected static $user = null; 
 
     public function __construct() {
-        // Instanțiem serviciul direct (presupunând că își ia automat cheile din $_ENV)
-        // Dacă TokenService cere parametri, pune aici $_ENV['JWT_SECRET'], $_ENV['JWT_ISSUER']
+        // Instanțiem serviciul direct
         $this->tokenService = new TokenService();
     }
 
     public function handle(): bool {
-        $headers = apache_request_headers();
-        $authHeader = $headers['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+        // AICI ESTE MODIFICAREA: Citim token-ul direct din Cookie-ul HttpOnly
+        $token = $_COOKIE['access_token'] ?? null;
 
-        if (!$authHeader || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-            $this->abort(401, "Acces neautorizat. Token lipsă.");
+        if (!$token) {
+            $this->abort(401, "Acces neautorizat. Token lipsă din cookie.");
             return false;
         }
 
-        $token = $matches[1];
-
         try {
-            // Folosim metoda ta pentru decodare
+            // Decodăm token-ul la fel ca înainte
             $decodedPayload = $this->tokenService->decodeAccessToken($token);
             
             // Salvăm datele utilizatorului pentru a putea fi folosite în Controller sau în AdminMiddleware
