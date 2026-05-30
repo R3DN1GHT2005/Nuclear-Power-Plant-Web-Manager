@@ -204,19 +204,12 @@
     }
 
     function createPinIcon(color) {
-        const svg = `
-            <svg width="28" height="42" viewBox="0 0 28 42" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 1C7.37258 1 2 6.37258 2 13C2 22.5 14 40 14 40C14 40 26 22.5 26 13C26 6.37258 20.6274 1 14 1Z" fill="${color}" stroke="#ffffff" stroke-width="2"/>
-                <circle cx="14" cy="13" r="5" fill="#ffffff"/>
-            </svg>
-        `;
-
         return L.divIcon({
-            className: 'leaflet-div-icon',
-            html: svg,
-            iconSize: [28, 42],
-            iconAnchor: [14, 40],
-            popupAnchor: [0, -34]
+            className: 'leaflet-div-icon reactor-marker-icon',
+            html: `<div class="reactor-marker" style="background:${color};"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+            popupAnchor: [0, -10]
         });
     }
 

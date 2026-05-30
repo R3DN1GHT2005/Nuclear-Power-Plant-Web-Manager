@@ -57,6 +57,9 @@ class Reactor {
     }
 
     public static function fromArray(array $data): self {
+        $createdAt = self::parseDateTime($data['created_at'] ?? null);
+        $lastMaintenance = self::parseDateTime($data['last_maintenance'] ?? null, $createdAt);
+
         return new self(
             id:                      (int)   $data['id'],
             name:                            $data['name'],
@@ -72,9 +75,21 @@ class Reactor {
             cooling_water_source:          $data['cooling_water_source'],
             distance_to_nearest_city_km:   (float) $data['distance_to_nearest_city_km'],
             elevation_meters:              (float) $data['elevation_meters'],
-            created_at:              new \DateTime($data['created_at']),
-            last_maintenance:        new \DateTime($data['last_maintenance']),
+            created_at:              $createdAt,
+            last_maintenance:        $lastMaintenance,
         );
+    }
+
+    private static function parseDateTime(mixed $dateValue, ?\DateTime $fallback = null): \DateTime {
+        if (is_string($dateValue) && trim($dateValue) !== '') {
+            try {
+                return new \DateTime($dateValue);
+            } catch (\Throwable $throwable) {
+                // Fall through to fallback handling below.
+            }
+        }
+
+        return $fallback ?? new \DateTime();
     }
 
     public function getId(): int                  { return $this->id; }
