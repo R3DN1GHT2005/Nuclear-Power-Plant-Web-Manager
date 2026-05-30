@@ -3,8 +3,7 @@
 namespace App\Services;
 
 use App\Clients\ElevationApiClient;
-use App\Clients\OverpassApiClient;
-use App\Clients\UsgsApiClient;
+use App\Clients\SeismicApiClient;
 use App\DTOs\Request\reactor\CreateReactorRequestDTO;
 use App\DTOs\Request\reactor\InsertReactorDTO;
 use App\DTOs\Request\reactor\UpdateReactorDTO;
@@ -12,19 +11,20 @@ use App\Models\Reactor;
 use App\Repositories\ReactorRepository;
 use App\Repositories\SensorRepository;
 use App\Validators\Reactors\ValidatorFactory;
+
 class ReactorService {
     private ReactorRepository $reactorsRepository;
     private SensorRepository $sensorRepository;
-    private UsgsApiClient $usgsApi;
+    private SeismicApiClient $seismicApi;
     private ElevationApiClient $elevationApi;
-    private OverpassApiClient $overpassApi;
+    private CityDistanceService $cityDistanceService;
 
     public function __construct() {
         $this->reactorsRepository = new ReactorRepository();
         $this->sensorRepository = new SensorRepository();
-        $this->usgsApi = new UsgsApiClient();
+        $this->seismicApi = new SeismicApiClient();
         $this->elevationApi = new ElevationApiClient();
-        $this->overpassApi = new OverpassApiClient();
+        $this->cityDistanceService = new CityDistanceService();
     }
 
     public function getAll(): array {
@@ -50,10 +50,10 @@ class ReactorService {
         $validator = ValidatorFactory::getValidator($dto->reactor_type);
         $validator->validate($dto);
 
-        $seismicRisk = $this->safeFloat(fn() => $this->usgsApi->getSeismicRisk($dto->latitude, $dto->longitude), 0.0);
+        $seismicRisk = $this->safeFloat(fn() => $this->seismicApi->getSeismicRisk($dto->latitude, $dto->longitude), 0.0);
         $elevationMeters = $this->safeFloat(fn() => $this->elevationApi->getElevation($dto->latitude, $dto->longitude), 0.0);
-        $distanceToNearestCityKm = $this->safeFloat(fn() => $this->overpassApi->getDistanceToNearestCity($dto->latitude, $dto->longitude), 0.0);
-        $coolingWaterSource = $this->safeString(fn() => $this->overpassApi->getNearestWaterSource($dto->latitude, $dto->longitude), 'Nespecificata');
+        $distanceToNearestCityKm = $this->cityDistanceService->getNearestCityDistance($dto->latitude, $dto->longitude);
+        $coolingWaterSource = 'Nespecificata';
         $soilStability = $this->calculateSoilStability($seismicRisk, $elevationMeters);
 
         $insertDto = new InsertReactorDTO(
@@ -75,10 +75,10 @@ class ReactorService {
     }
 
     public function refreshCalculatedFields(Reactor $reactor): Reactor {
-        $seismicRisk = $this->safeFloat(fn() => $this->usgsApi->getSeismicRisk($reactor->getLatitude(), $reactor->getLongitude()), 0.0);
+        $seismicRisk = $this->safeFloat(fn() => $this->seismicApi->getSeismicRisk($reactor->getLatitude(), $reactor->getLongitude()), 0.0);
         $elevationMeters = $this->safeFloat(fn() => $this->elevationApi->getElevation($reactor->getLatitude(), $reactor->getLongitude()), 0.0);
-        $distanceToNearestCityKm = $this->safeFloat(fn() => $this->overpassApi->getDistanceToNearestCity($reactor->getLatitude(), $reactor->getLongitude()), 0.0);
-        $coolingWaterSource = $this->safeString(fn() => $this->overpassApi->getNearestWaterSource($reactor->getLatitude(), $reactor->getLongitude()), 'Nespecificata');
+        $distanceToNearestCityKm = $this->cityDistanceService->getNearestCityDistance($reactor->getLatitude(), $reactor->getLongitude());
+        $coolingWaterSource = 'Nespecificata';
         $soilStability = $this->calculateSoilStability($seismicRisk, $elevationMeters);
 
         $updated = $this->reactorsRepository->updateCalculatedFields(

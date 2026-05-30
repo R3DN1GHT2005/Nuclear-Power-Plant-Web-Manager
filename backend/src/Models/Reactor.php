@@ -58,6 +58,9 @@ class Reactor {
     }
 
     public static function fromArray(array $data): self {
+        $createdAt = self::parseDateTime($data['created_at'] ?? null);
+        $lastMaintenance = self::parseDateTime($data['last_maintenance'] ?? null, $createdAt);
+
         return new self(
             id:                            (int)   $data['id'],
             name:                                  $data['name'],
@@ -73,23 +76,35 @@ class Reactor {
             cooling_water_source:                  $data['cooling_water_source'],
             distance_to_nearest_city_km:   (float) $data['distance_to_nearest_city_km'],
             elevation_meters:              (float) $data['elevation_meters'],
-            created_at:                    new \DateTime($data['created_at']),
-            last_maintenance:              isset($data['last_maintenance']) ? new \DateTime($data['last_maintenance']) : null,
+            created_at:              $createdAt,
+            last_maintenance:        $lastMaintenance,
         );
     }
 
-    public function getId(): int                     { return $this->id; }
-    public function getName(): string                { return $this->name; }
-    public function getLocationName(): string        { return $this->location_name; }
-    public function getLatitude(): float             { return $this->latitude; }
-    public function getLongitude(): float            { return $this->longitude; }
-    public function getStatus(): string              { return $this->status; }
-    public function getInstalledPower(): float       { return $this->installed_power; }
-    public function getCurrentEfficiency(): float    { return $this->current_efficiency; }
-    public function getSoilStability(): float        { return $this->soil_stability; }
-    public function getSeismicRisk(): float          { return $this->seismic_risk; }
-    public function getReactorType(): string         { return $this->reactor_type; }
-    public function getCoolingWaterSource(): string  { return $this->cooling_water_source; }
+    private static function parseDateTime(mixed $dateValue, ?\DateTime $fallback = null): \DateTime {
+        if (is_string($dateValue) && trim($dateValue) !== '') {
+            try {
+                return new \DateTime($dateValue);
+            } catch (\Throwable $throwable) {
+                // Fall through to fallback handling below.
+            }
+        }
+
+        return $fallback ?? new \DateTime();
+    }
+
+    public function getId(): int                  { return $this->id; }
+    public function getName(): string             { return $this->name; }
+    public function getLocationName(): string     { return $this->location_name; }
+    public function getLatitude(): float          { return $this->latitude; }
+    public function getLongitude(): float         { return $this->longitude; }
+    public function getStatus(): string           { return $this->status; }
+    public function getInstalledPower(): float    { return $this->installed_power; }
+    public function getCurrentEfficiency(): float { return $this->current_efficiency; }
+    public function getSoilStability(): float     { return $this->soil_stability; }
+    public function getSeismicRisk(): float       { return $this->seismic_risk; }
+    public function getReactorType(): string     { return $this->reactor_type; }
+    public function getCoolingWaterSource(): string { return $this->cooling_water_source; }
     public function getDistanceToNearestCityKm(): float { return $this->distance_to_nearest_city_km; }
     public function getElevationMeters(): float      { return $this->elevation_meters; }
     public function getCreatedAt(): \DateTime        { return $this->created_at; }

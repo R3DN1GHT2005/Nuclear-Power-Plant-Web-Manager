@@ -477,9 +477,50 @@
     transform: translateY(0);
 }
 
-.leaflet-div-icon {
-    background: transparent;
-    border: 0;
+.reactor-circle {
+    filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.22));
+    transition: opacity 0.18s ease;
+}
+
+.reactor-circle-gray {
+    fill: #6b7280;
+    stroke: rgba(255, 255, 255, 0.95);
+}
+
+.reactor-circle-green {
+    fill: #16a34a;
+    stroke: rgba(255, 255, 255, 0.96);
+}
+
+.reactor-circle-yellow {
+    fill: #f59e0b;
+    stroke: rgba(255, 255, 255, 0.96);
+}
+
+.reactor-circle-red {
+    fill: #dc2626;
+    stroke: rgba(255, 255, 255, 0.96);
+}
+
+.reactor-circle-blue {
+    fill: #2563eb;
+    stroke: rgba(255, 255, 255, 0.96);
+}
+
+.reactor-circle-pulse {
+    animation: reactorPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes reactorPulse {
+    0% {
+        opacity: 0.98;
+    }
+    50% {
+        opacity: 0.72;
+    }
+    100% {
+        opacity: 0.98;
+    }
 }
 
 .picker-hint {
