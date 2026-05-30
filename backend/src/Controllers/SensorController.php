@@ -15,6 +15,15 @@ class SensorController {
         $this->sensorService = new SensorService();
     }
 
+    public function getSensorTypes(): void {
+        $types = [];
+        foreach (\App\Enums\SensorType::cases() as $case) {
+            $types[$case->value] = $case->getProfile();
+        }
+        
+        \App\Core\Response::json($types);
+    }
+
     public function getAllSensors(): void {
         $sensors = $this->sensorService->getAll();
         Response::json(SensorMapper::toResponseList($sensors));
@@ -36,22 +45,6 @@ class SensorController {
         Response::json(SensorMapper::toResponse($sensor));
     }
 
-    public function addSensor(): void {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if (!$data || !isset($data['reactor_id'])) {
-            Response::json(['error' => 'Date invalide'], 400);
-            return;
-        }
-
-        try {
-            $dto = CreateSensorRequestDTO::fromArray($data);
-            $sensor = $this->sensorService->create((int) $data['reactor_id'], $dto);
-            Response::json(SensorMapper::toResponse($sensor), 201);
-        } catch (\Exception $e) {
-            Response::json(['error' => $e->getMessage()], 400);
-        }
-    }
 
     public function addSensorToReactor(int $reactorId): void {
         $data = json_decode(file_get_contents('php://input'), true);

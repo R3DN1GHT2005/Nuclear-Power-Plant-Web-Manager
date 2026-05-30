@@ -38,6 +38,7 @@ class SensorService {
             unit: $dto->unit,
             min_safe_value: $dto->min_safe_value,
             max_safe_value: $dto->max_safe_value,
+            current_value: $dto->current_value ?? ($dto->min_safe_value + $dto->max_safe_value) / 2,
         );
 
         return $this->sensorRepository->create($insertDto);

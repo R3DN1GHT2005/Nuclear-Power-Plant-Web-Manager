@@ -9,5 +9,6 @@ class InsertSensorDTO {
         public readonly ?string $unit,
         public readonly float $min_safe_value,
         public readonly float $max_safe_value,
+        public readonly float $current_value = 0.0
     ) {}
 }

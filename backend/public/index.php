@@ -1,10 +1,8 @@
 <?php
 
-
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
 
 $autoloadPath = __DIR__ . '/../../vendor/autoload.php';
 if (!file_exists($autoloadPath)) {
@@ -16,16 +14,29 @@ use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
 use App\Controllers\AuthController;
 use App\Core\Router;
-// use App\Middleware\AdminMiddleware;    // COMENTAT — vezi comentat.md
-// use App\Middleware\AuthMiddleware;     // COMENTAT — vezi comentat.md
 
-// --- Configurare CORS și Headere ---
-header("Access-Control-Allow-Origin: *");
+// DECOMENTAT: Avem nevoie de securitate!
+use App\Middleware\AdminMiddleware;     
+use App\Middleware\AuthMiddleware;      
+
+$allowedOrigins = [
+    'http://127.0.0.1:5500',
+    'http://127.0.0.1:3000',
+    'http://localhost:5500',
+    'http://localhost:3000',
+];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+header("Access-Control-Allow-Credentials: true");
+
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
-// Gestionarea cererilor de tip preflight (OPTIONS) făcute de browser
+// Gestionarea cererilor de tip preflight (OPTIONS)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -33,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
 $uri = rtrim($uri, '/');
 if (empty($uri)) {
     $uri = '/'; 
@@ -42,44 +52,46 @@ if (empty($uri)) {
 try {
     $router = new Router();
 
-  
+    // Rute Publice
     $router->post('/api/auth/login', AuthController::class, 'login');
     $router->post('/api/auth/refresh', AuthController::class, 'refresh');
     $router->post('/api/auth/logout', AuthController::class, 'logout');
 
-    $router->post('/api/auth/register', AuthController::class, 'register'); // COMENTAT: [AdminMiddleware::class]
-    $router->put('/api/auth/password', AuthController::class, 'updatePassword'); // COMENTAT: [AdminMiddleware::class]
+    // ==========================================
+    // RUTE PROTEJATE DE ADMIN (Au fost decomentate)
+    // ==========================================
+    $router->post('/api/auth/register', AuthController::class, 'register', [AdminMiddleware::class]); 
+    $router->put('/api/auth/password', AuthController::class, 'updatePassword', [AdminMiddleware::class]); 
 
     // Operațiuni critice pe reactoare
-    $router->post('/api/reactors', ReactorController::class, 'addReactor'); // COMENTAT: [AdminMiddleware::class]
-    $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor'); // COMENTAT: [AdminMiddleware::class]
-    $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor'); // COMENTAT: [AdminMiddleware::class]
+    $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
+    $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor', [AdminMiddleware::class]); 
+    $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor', [AdminMiddleware::class]); 
 
     // Senzori per reactor
-    $router->get('/api/reactors/{id}/sensors', SensorController::class, 'getSensorsByReactor'); // COMENTAT: [AuthMiddleware::class]
-    $router->post('/api/reactors/{id}/sensors', SensorController::class, 'addSensorToReactor'); // COMENTAT: [AdminMiddleware::class]
+    $router->post('/api/reactors/{id}/sensors', SensorController::class, 'addSensorToReactor', [AdminMiddleware::class]); 
 
     // Operațiuni critice pe senzori
-    $router->post('/api/sensors', SensorController::class, 'addSensor'); // COMENTAT: [AdminMiddleware::class]
-    $router->patch('/api/sensors/{id}', SensorController::class, 'patchSensor'); // COMENTAT: [AdminMiddleware::class]
-    $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor'); // COMENTAT: [AdminMiddleware::class]
-
+    $router->post('/api/sensors', SensorController::class, 'addSensor', [AdminMiddleware::class]); 
+    $router->patch('/api/sensors/{id}', SensorController::class, 'patchSensor', [AdminMiddleware::class]); 
+    $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor', [AdminMiddleware::class]); 
 
     // ==========================================
-    // 3. RUTE GENERALE (Protejate de AuthMiddleware)
-    // Orice utilizator logat (viewer, technician, admin) are acces
-    // ==========================================
+    // RUTE GENERALE (Protejate de AuthMiddleware)
+
+    $router->get('/api/sensors/types', SensorController::class, 'getSensorTypes', [AuthMiddleware::class]);
+    $router->get('/api/reactors/{id}/sensors', SensorController::class, 'getSensorsByReactor', [AuthMiddleware::class]); 
     
     // Vizualizare reactoare
-    $router->get('/api/reactors', ReactorController::class, 'getAllReactors'); // COMENTAT: [AuthMiddleware::class]
-    $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById'); // COMENTAT: [AuthMiddleware::class]
+    $router->get('/api/reactors', ReactorController::class, 'getAllReactors', [AuthMiddleware::class]); 
+    $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById', [AuthMiddleware::class]); 
     
     // Vizualizare senzori
-    $router->get('/api/sensors', SensorController::class, 'getAllSensors'); // COMENTAT: [AuthMiddleware::class]
-    $router->get('/api/sensors/{id}', SensorController::class, 'getSensorById'); // COMENTAT: [AuthMiddleware::class]
+    $router->get('/api/sensors', SensorController::class, 'getAllSensors', [AuthMiddleware::class]); 
+    $router->get('/api/sensors/{id}', SensorController::class, 'getSensorById', [AuthMiddleware::class]); 
     
-    // Înregistrare date senzor (Aici pe viitor poți folosi un [TechnicianMiddleware::class])
-    $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue'); // COMENTAT: [AuthMiddleware::class]
+    // Înregistrare date senzor
+    $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue', [AuthMiddleware::class]); 
 
 
     // Executarea rutei cerute

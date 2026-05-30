@@ -1,7 +1,9 @@
+// Funcția actualizată pentru a suporta Cookie-uri
 async function postJson(url, body) {
     const res = await fetch(url, {
         method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // CRITIC: Fără asta, browserul refuză cookie-urile setate de server!
         body: JSON.stringify(body)
     });
     const json = await res.json().catch(() => null);
@@ -12,7 +14,6 @@ async function postJson(url, body) {
     };
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     
@@ -20,20 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-          
             const data = { 
                 email: this.email.value, 
                 password: this.password.value 
             };
             
-            const response = await postJson('http://localhost:8082/api/auth/login', data);
+            // MODIFICAREA ESTE AICI: Folosește 127.0.0.1 în loc de localhost
+            const response = await postJson('http://127.0.0.1:8082/api/auth/login', data);
             
             if (response.ok) {
-                if (response.body && response.body.access_token) {
-                    localStorage.setItem('access_token', response.body.access_token);
-                }
-                
-                
                 window.location.href = 'index.html'; 
             } else {
                 alert(response.body?.error || 'Eroare la autentificare');
