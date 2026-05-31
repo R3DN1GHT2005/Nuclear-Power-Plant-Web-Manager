@@ -43,6 +43,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderAlerts(state.currentReactor);
         populateHistoryFilter(state.currentReactor.sensors || []);
         
+        // CĂRĂM ISTORICUL DE MENTENANȚĂ
+        await loadMaintenanceHistory(state.currentReactor.id);
+        
         // Afișăm containerul principal
         if (layout) {
             layout.classList.remove("hidden");
@@ -68,6 +71,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderReactorDetails(reactor) {
         const setElText = (id, text) => { if(document.getElementById(id)) document.getElementById(id).textContent = text; };
         
+        const statusStr = (reactor.status || "").toLowerCase();
+        const isMaintenance = statusStr.includes("mentenan");
+
         setElText("reactor-title", reactor.name);
         setElText("reactor-subtitle", `ID: NW-${reactor.id} · Locație: ${reactor.location_name}`);
 
@@ -79,13 +85,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         setElText("spec-type", reactor.reactor_type || "—");
         setElText("spec-cooling", reactor.cooling_water_source || "—");
-        setElText("spec-power", reactor.installed_power ? `${reactor.installed_power} MW` : "—");
+        
+        const powerText = isMaintenance ? "0 MW (Oprit)" : (reactor.installed_power ? `${reactor.installed_power} MW` : "—");
+        setElText("spec-power", powerText);
+        
         setElText("spec-distance", reactor.distance_to_nearest_city_km != null ? `${reactor.distance_to_nearest_city_km} km` : "—");
         setElText("spec-elevation", reactor.elevation_meters != null ? `${reactor.elevation_meters} m` : "—");
         setElText("spec-seismic", reactor.seismic_risk != null ? `${reactor.seismic_risk}%` : "—");
 
-        // Bare progres
-        const eff = reactor.current_efficiency ?? 0;
+        const eff = isMaintenance ? 0 : (reactor.current_efficiency ?? 0);
         setElText("efficiency-val", `${eff}%`);
         const effBar = document.getElementById("efficiency-bar");
         if (effBar) {
@@ -101,11 +109,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             stabBar.className = "spec-bar-fill " + getBarClass(stab);
         }
 
-        // Ultima Mentenanță
         const maintEl = document.getElementById("last-maintenance-date");
         if (maintEl) {
             const d = new Date(reactor.last_maintenance);
             maintEl.textContent = "Ultima mentenanță: " + (reactor.last_maintenance && !isNaN(d) ? d.toLocaleString("ro-RO") : "—");
+        }
+
+        // ── LOGICĂ BUTOANE MENTENANȚĂ ──
+        const btnMaint = document.getElementById("btn-maint");
+        const btnFinishMaint = document.getElementById("btn-finish-maint");
+        const btnStart = document.getElementById("btn-start");
+        const btnStop = document.getElementById("btn-stop");
+
+        if (isMaintenance) {
+            if (btnMaint) btnMaint.classList.add("hidden");
+            if (btnFinishMaint) btnFinishMaint.classList.remove("hidden");
+            if (btnStart) btnStart.disabled = true;
+            if (btnStop) btnStop.disabled = true;
+        } else {
+            if (btnMaint) btnMaint.classList.remove("hidden");
+            if (btnFinishMaint) btnFinishMaint.classList.add("hidden");
+            if (btnStart) btnStart.disabled = false;
+            if (btnStop) btnStop.disabled = false;
         }
     }
 
@@ -122,7 +147,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const type = sensor.sensor_type || "Senzor";
             const val = sensor.current_value != null ? sensor.current_value : "—";
             const unit = sensor.unit || "";
-            // O simplă regulă vizuală de avertizare dacă e prea cald
             const isWarn = type.toLowerCase().includes("temperatura") && val > 350;
 
             return `
@@ -141,7 +165,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const status = (reactor.status || "").toLowerCase();
         const alerts = [];
 
-        // Generăm niște alerte false pentru design
         if (status.includes("mentenan")) alerts.push({ sev: 'sev-warn', msg: 'Reactor în Mentenanță — producție oprită', time: 'Astăzi' });
         if (reactor.seismic_risk > 25) alerts.push({ sev: 'sev-warn', msg: 'Risc seismic ridicat detectat', time: 'Ieri' });
         
@@ -180,6 +203,67 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
+    // ── FUNCȚIA NOUĂ: ISTORIC MENTENANȚĂ ──
+    // ==========================================
+    
+    async function loadMaintenanceHistory(id) {
+        try {
+            const res = await window.authFetch(`/reactors/${id}/maintenance/history`);
+            if (res.ok) {
+                const history = await res.json();
+                renderMaintenanceHistoryList(history);
+            }
+        } catch (err) {
+            console.error("Eroare la încărcarea istoricului de mentenanță:", err);
+            const container = document.getElementById("maintenance-history-list");
+            if(container) container.innerHTML = '<div class="history-empty">Eroare la încărcarea datelor.</div>';
+        }
+    }
+
+    function renderMaintenanceHistoryList(historyArray) {
+        const container = document.getElementById("maintenance-history-list");
+        if (!container) return;
+
+        if (!historyArray || historyArray.length === 0) {
+            container.innerHTML = '<div class="history-empty">Niciun istoric de mentenanță.</div>';
+            return;
+        }
+
+        container.innerHTML = historyArray.map(item => {
+            const isCompleted = item.is_completed;
+            const startDate = new Date(item.started_at).toLocaleDateString("ro-RO");
+            const reason = item.reason || "Revizie generală";
+            
+            // Setăm clasa și textele în funcție de status (În curs vs Finalizată)
+            const statusColor = isCompleted ? "color: var(--status-operational);" : "color: var(--status-warning); font-weight: bold;";
+            const statusText = isCompleted ? "Finalizată" : "În curs";
+            
+            let dateText = "";
+            if (isCompleted) {
+                const endDate = item.completed_at ? new Date(item.completed_at).toLocaleDateString("ro-RO") : "N/A";
+                dateText = `Finalizat: ${endDate}`;
+            } else {
+                const estDate = item.estimated_end_date ? new Date(item.estimated_end_date).toLocaleDateString("ro-RO") : "N/A";
+                dateText = `Estimare finalizare: ${estDate}`;
+            }
+
+            return `
+            <div class="alert-row" style="align-items: flex-start;">
+                <div class="alert-sev ${isCompleted ? 'sev-info' : 'sev-warn'}"></div>
+                <div class="alert-body" style="flex: 1;">
+                    <div class="alert-msg" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>${reason}</span>
+                        <span style="${statusColor} font-size: 0.85rem;">${statusText}</span>
+                    </div>
+                    <div class="alert-meta" style="margin-top:4px;">
+                        Pornit: ${startDate} <span style="margin:0 6px; opacity:0.5;">|</span> ${dateText}
+                    </div>
+                </div>
+            </div>`;
+        }).join("");
+    }
+
+    // ==========================================
     // ── FUNCȚII AJUTĂTOARE (UTILITARE) ──
     // ==========================================
 
@@ -212,7 +296,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function bindEvents() {
         
-        // ── 1. Navigare între Tab-uri (Senzori / Istoric) ──
+        // ── 1. Navigare între Tab-uri (Senzori / Istoric / Mentenanță) ──
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -235,7 +319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
 
-        // ── 3. Funcție universală pentru deschiderea modalului de Status ──
+        // ── 3. Modal generic pentru schimbare Status simplu (Pornire/Oprire) ──
         const openStatusModal = (newStatus, title, icon, warning) => {
             state.pendingStatus = newStatus;
             
@@ -256,13 +340,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById('modal-status')?.classList.add('open');
         };
 
-        // Ascultăm click-urile pe butoanele de Status
         document.getElementById('btn-start')?.addEventListener('click', () => openStatusModal('Operațional', 'Pornire Reactor', '✅', null));
         document.getElementById('btn-stop')?.addEventListener('click', () => openStatusModal('Oprit', 'Oprire Reactor', '🛑', 'Oprirea va întrerupe producția.'));
-        document.getElementById('btn-maint')?.addEventListener('click', () => openStatusModal('Mentenanță', 'Mentenanță', '🔧', 'Reactorul va ieși temporar din producție.'));
-        document.getElementById('btn-schedule-maint')?.addEventListener('click', () => openStatusModal('Mentenanță', 'Mentenanță', '🔧', 'Reactorul va ieși temporar din producție.'));
 
-        // Confirmarea modificării de Status către Backend
         document.getElementById('modal-status-confirm')?.addEventListener('click', async () => {
             document.getElementById('modal-status')?.classList.remove('open');
             
@@ -284,16 +364,100 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         // ==========================================
-        // ── 4. LOGICA PENTRU ADĂUGARE SENZOR ──
+        // ── 4. LOGICA PENTRU MENTENANȚĂ (START / STOP) ──
+        // ==========================================
+
+        const btnMaint = document.getElementById('btn-maint');
+        const btnScheduleMaint = document.getElementById('btn-schedule-maint');
+
+        const openMaintModal = () => {
+            document.getElementById('maint-date').value = '';
+            document.getElementById('maint-reason').value = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('maint-date').setAttribute('min', today);
+
+            document.getElementById('modal-start-maint')?.classList.add('open');
+        };
+
+        btnMaint?.addEventListener('click', openMaintModal);
+        btnScheduleMaint?.addEventListener('click', openMaintModal);
+
+        // B. Confirmare pornire mentenanță (POST)
+        document.getElementById('modal-maint-confirm')?.addEventListener('click', async () => {
+            const endDate = document.getElementById('maint-date').value;
+            const reason = document.getElementById('maint-reason').value;
+
+            if (!endDate) {
+                showToast('Data estimată de finalizare este obligatorie.', 'error');
+                return;
+            }
+
+            document.getElementById('modal-start-maint').classList.remove('open');
+
+            try {
+                const res = await window.authFetch(`/reactors/${state.currentReactor.id}/maintenance/start`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        estimated_end_date: endDate,
+                        reason: reason || null
+                    })
+                });
+                
+                if (res.ok) {
+                    showToast('Reactorul a intrat în mentenanță.');
+                    state.currentReactor.status = 'În mentenanță';
+                    renderReactorDetails(state.currentReactor);
+                    
+                    // REÎNCĂRCĂM ISTORICUL CA SĂ APARĂ INSTANT ÎN TAB!
+                    await loadMaintenanceHistory(state.currentReactor.id);
+                } else {
+                    const data = await res.json();
+                    throw new Error(data.error || "Eroare la pornirea mentenanței.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast(err.message, 'error'); 
+            }
+        });
+
+        // C. Confirmare oprire/finalizare mentenanță (POST)
+        document.getElementById('btn-finish-maint')?.addEventListener('click', async () => {
+            if (!confirm("Sunteți sigur că mentenanța a fost finalizată? Reactorul va deveni activ.")) return;
+
+            try {
+                const res = await window.authFetch(`/reactors/${state.currentReactor.id}/maintenance/stop`, {
+                    method: 'POST'
+                });
+                
+                if (res.ok) {
+                    showToast('Mentenanță finalizată. Reactor activat.');
+                    state.currentReactor.status = 'Operațional';
+                    renderReactorDetails(state.currentReactor);
+                    
+                    // REÎNCĂRCĂM ISTORICUL CA SĂ VEDEM CĂ E FINALIZAT!
+                    await loadMaintenanceHistory(state.currentReactor.id);
+                } else {
+                    const data = await res.json();
+                    throw new Error(data.error || "Eroare la finalizarea mentenanței.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast(err.message, 'error'); 
+            }
+        });
+
+
+        // ==========================================
+        // ── 5. LOGICA PENTRU ADĂUGARE SENZOR ──
         // ==========================================
         
         let fetchedSensorProfiles = {};
         const sensorTypeSelect = document.getElementById('sensor-type');
         const btnAddConfirm = document.getElementById('modal-add-sensor-confirm');
 
-        // Descărcăm tipurile de senzori din backend
         const fetchSensorTypes = async () => {
-            if (Object.keys(fetchedSensorProfiles).length > 0) return; // Deja le avem
+            if (Object.keys(fetchedSensorProfiles).length > 0) return; 
             try {
                 const res = await window.authFetch('/sensors/types', { method: 'GET' });
                 if (res.ok) {
@@ -308,9 +472,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             } catch (err) { console.error("Eroare preluare senzori", err); }
         };
 
-        // Deschidere modal adăugare senzor
         document.getElementById('btn-add-sensor')?.addEventListener('click', () => {
-            fetchSensorTypes(); // Tragem datele
+            fetchSensorTypes(); 
             
             if (sensorTypeSelect) sensorTypeSelect.value = "";
             document.getElementById('sensor-min').value = "";
@@ -320,7 +483,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById('modal-add-sensor')?.classList.add('open');
         });
 
-        // Completare automată când alegem un senzor din listă
         sensorTypeSelect?.addEventListener('change', (e) => {
             const profile = fetchedSensorProfiles[e.target.value];
             if (profile) {
@@ -330,7 +492,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-        // Confirmarea adăugării senzorului către Backend
         btnAddConfirm?.addEventListener('click', async () => {
             const type = sensorTypeSelect?.value;
             const minSafe = document.getElementById('sensor-min')?.value;
@@ -343,7 +504,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             document.getElementById('modal-add-sensor')?.classList.remove('open');
             try {
-                // Trimitem exact ce cere DTO-ul de pe backend
                 const payload = {
                     sensor_type: type,
                     min_safe_value: parseFloat(minSafe),
@@ -358,7 +518,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (res.ok) {
                     showToast('Senzor adăugat cu succes.');
                     
-                    // Refresh date pe interfață
                     const updatedReactors = await window.NuclearAPI.getReactors();
                     state.currentReactor = updatedReactors.find(r => r.id.toString() === state.currentReactor.id.toString());
                     if(state.currentReactor) {

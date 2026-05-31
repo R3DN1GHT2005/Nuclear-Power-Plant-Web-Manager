@@ -50,8 +50,8 @@ class SensorService {
     }
 
     public function recordValue(StoreMeasurementDTO $dto): bool {
-    return $this->sensorRepository->updateValue($dto->sensor_id, $dto->value);
-}
+        return $this->sensorRepository->updateValue($dto->sensor_id, $dto->value);
+    }
 
     public function delete(int $id): bool {
         return $this->sensorRepository->delete($id);

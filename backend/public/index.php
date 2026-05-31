@@ -13,7 +13,7 @@ require_once $autoloadPath;
 use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
 use App\Controllers\AuthController;
-use App\Controllers\MaintenanceController;
+use App\Controllers\ReactorMaintenanceController;
 use App\Core\Router;
 
 use App\Middleware\AdminMiddleware;     
@@ -102,18 +102,10 @@ try {
     // RUTE MENTENANȚĂ
     // ==========================================
 
-    // Management sarcini (Manager / Admin)
-    $router->post('/api/maintenance/tasks', MaintenanceController::class, 'createTask', [AdminMiddleware::class]);
-    $router->get('/api/maintenance/tasks', MaintenanceController::class, 'getAllTasks', [AdminMiddleware::class]);
-    $router->put('/api/maintenance/tasks/{id}', MaintenanceController::class, 'updateTask', [AdminMiddleware::class]);
-
-    // Execuție sarcini (Tehnician)
-    //va trebui middleware de tehnician
-    $router->get('/api/maintenance/tasks/my-tasks', MaintenanceController::class, 'getMyTasks', [AuthMiddleware::class]); 
-    $router->post('/api/maintenance/tasks/{id}/logs', MaintenanceController::class, 'addLog', [AuthMiddleware::class]);
-
-
-    // Executarea rutei cerute
+    // Rute pentru Mentenanța Reactorului
+    $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [AdminMiddleware::class]);
+    $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [AdminMiddleware::class]);
+    $router->get('/api/reactors/{id}/maintenance/history', ReactorMaintenanceController::class, 'getHistory');
     $router->dispatch($uri, $method);
 
 } catch (Exception $e) {
