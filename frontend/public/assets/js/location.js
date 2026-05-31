@@ -578,7 +578,8 @@
         }
 
         try {
-            const response = await fetch(`${apiBase}/sensors/${sensorId}`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/sensors/${sensorId}`, {
                 method: 'PATCH',
                 headers: getHeaders(),
                 body: JSON.stringify(payload)
@@ -661,7 +662,8 @@
         refs.submitSensorButton.textContent = 'Se adaugă...';
 
         try {
-            const response = await fetch(`${apiBase}/reactors/${state.activeSensorReactorId}/sensors`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/reactors/${state.activeSensorReactorId}/sensors`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify(payload)
@@ -700,7 +702,8 @@
         }
 
         try {
-            const response = await fetch(`${apiBase}/sensors/${sensorId}`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/sensors/${sensorId}`, {
                 method: 'DELETE',
                 headers: getHeaders()
             });
@@ -783,7 +786,8 @@
         refs.submitButton.textContent = 'Se salveaza...';
 
         try {
-            const response = await fetch(`${apiBase}/reactors`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/reactors`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify(payload)

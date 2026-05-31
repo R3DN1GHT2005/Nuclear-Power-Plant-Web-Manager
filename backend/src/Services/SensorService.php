@@ -7,6 +7,7 @@ use App\DTOs\Request\Sensor\InsertSensorDTO;
 use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
 use App\Models\Sensor;
 use App\Repositories\SensorRepository;
+use App\DTOs\Request\Sensor\StoreMeasurementDTO;
 
 class SensorService {
     private SensorRepository $sensorRepository;
@@ -48,9 +49,9 @@ class SensorService {
         return $this->sensorRepository->update($id, $dto);
     }
 
-    public function recordValue(int $id, float $newValue): bool {
-        return $this->sensorRepository->updateValue($id, $newValue);
-    }
+    public function recordValue(StoreMeasurementDTO $dto): bool {
+    return $this->sensorRepository->updateValue($dto->sensor_id, $dto->value);
+}
 
     public function delete(int $id): bool {
         return $this->sensorRepository->delete($id);

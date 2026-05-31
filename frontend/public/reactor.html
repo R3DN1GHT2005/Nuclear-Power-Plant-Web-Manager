@@ -12,27 +12,56 @@
 </head>
 <body>
 
+<!-- ══════════════════════════════════════════════════════
+     NAVBAR — identic cu cel din reactors.html
+     ══════════════════════════════════════════════════════ -->
 <nav class="navbar" id="top-navbar">
     <div class="nav-left">
         <a class="logo" href="#">
             <div class="logo-icon">
-                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
+                    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42"
+                          stroke="white" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
             </div>
             NuclearWatch
         </a>
         <a class="nav-link" href="index.html">Panou principal</a>
         <a class="nav-link active" href="reactors.html">Reactoare</a>
+        <a class="nav-link" href="stats.html">Statistici</a>
+        <a class="nav-link" href="location.html">Amplasare</a>
+        <a class="nav-link" href="maintenance.html">Mentenanță</a>
+        <a class="nav-link" href="rss.html">Flux RSS</a>
     </div>
     <div class="nav-right">
+        <button class="nav-icon-btn" title="Notificări">
+            <svg viewBox="0 0 20 20" fill="none">
+                <path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2V14h15v-1L16 11V8a6 6 0 0 0-6-6zm0 16a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 10 18z" fill="currentColor"/>
+            </svg>
+            <span class="badge-dot"></span>
+        </button>
         <div class="avatar">IA</div>
-        <button class="logout-btn" id="btn-logout">Deconectare</button>
+        <button class="logout-btn" id="btn-logout">
+            <svg viewBox="0 0 16 16" fill="none">
+                <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6"
+                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Deconectare
+        </button>
     </div>
 </nav>
 
+
+<!-- ══════════════════════════════════════════════════════
+     LAYOUT PRINCIPAL — 2 coloane
+     ══════════════════════════════════════════════════════ -->
 <main class="main split-layout hidden" id="reactor-details-layout">
 
+    <!-- ── COLOANA STÂNGA: header + specificații + alerte ── -->
     <div class="col-left">
-        
+
+        <!-- Header cu titlu, status și butoane de acțiune -->
         <div class="page-header header-minimal">
             <div class="header-top-row">
                 <div>
@@ -43,7 +72,7 @@
                 <span class="pill" id="reactor-status-pill">--</span>
             </div>
 
-            <div class="action-bar" id="action-bar">
+            <div class="action-bar">
                 <button class="btn-action" id="btn-start">Pornire</button>
                 <button class="btn-action" id="btn-stop">Oprire</button>
                 <button class="btn-action" id="btn-maint">Mentenanță</button>
@@ -51,9 +80,13 @@
             </div>
         </div>
 
+        <!-- Card: Specificații tehnice -->
         <div class="panel-card mb-12">
             <div class="detail-section">
-                <header class="det-h"><div class="det-t">Specificații Tehnice</div></header>
+                <header class="det-h">
+                    <div class="det-t">Specificații Tehnice</div>
+                </header>
+
                 <div class="specs-grid">
                     <div class="spec-item">
                         <span class="spec-lbl">Tip Reactor</span>
@@ -84,18 +117,23 @@
                 <div class="specs-bars">
                     <div class="spec-bar-row">
                         <span class="spec-bar-lbl">Eficiență curentă</span>
-                        <div class="spec-bar-track"><div class="spec-bar-fill bf-green" id="efficiency-bar"></div></div>
+                        <div class="spec-bar-track">
+                            <div class="spec-bar-fill bf-green" id="efficiency-bar"></div>
+                        </div>
                         <span class="spec-bar-val" id="efficiency-val">--%</span>
                     </div>
                     <div class="spec-bar-row">
                         <span class="spec-bar-lbl">Stabilitate sol</span>
-                        <div class="spec-bar-track"><div class="spec-bar-fill bf-amber" id="stability-bar"></div></div>
+                        <div class="spec-bar-track">
+                            <div class="spec-bar-fill bf-amber" id="stability-bar"></div>
+                        </div>
                         <span class="spec-bar-val" id="stability-val">--%</span>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Card: Jurnal alerte -->
         <div class="panel-card flex-fill">
             <div class="detail-section layout-flex-col">
                 <header class="det-h">
@@ -110,22 +148,28 @@
                 </div>
             </div>
         </div>
-    </div>
 
+    </div><!-- /col-left -->
+
+
+    <!-- ── COLOANA DREAPTA: tab-uri senzori + istoric ── -->
     <div class="col-right">
         <div class="panel-card flex-fill layout-flex-col">
-            
+
+            <!-- Tab-uri -->
             <div class="tab-bar">
                 <button class="tab-btn active" data-target="tab-senzori">Senzori activi</button>
                 <button class="tab-btn" data-target="tab-istoric">Istoric citiri</button>
             </div>
 
+            <!-- Panoul: Senzori activi -->
             <div class="tab-panel active" id="tab-senzori">
                 <div class="sensor-grid" id="sensor-grid-container">
                     <div class="history-empty">Se încarcă senzorii...</div>
                 </div>
             </div>
 
+            <!-- Panoul: Istoric citiri -->
             <div class="tab-panel" id="tab-istoric">
                 <div class="history-filter-bar">
                     <select class="form-select select-sm" id="filter-sensor">
@@ -138,14 +182,21 @@
                 </div>
             </div>
 
+            <!-- Footer panel -->
             <div class="panel-footer">
                 <div class="footer-meta" id="last-maintenance-date">Ultima mentenanță: --</div>
                 <button class="btn-text" id="btn-schedule-maint">Programează →</button>
             </div>
-        </div>
-    </div>
-</main>
 
+        </div>
+    </div><!-- /col-right -->
+
+</main><!-- /reactor-details-layout -->
+
+
+<!-- ══════════════════════════════════════════════════════
+     ECRAN DE EROARE — afișat când reactorul nu e găsit
+     ══════════════════════════════════════════════════════ -->
 <div id="error-container" class="error-view hidden">
     <div class="error-icon">⚠️</div>
     <h2>Reactorul nu a putut fi găsit</h2>
@@ -153,52 +204,79 @@
     <a href="reactors.html" class="btn btn-prim">← Înapoi la Reactoare</a>
 </div>
 
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL 1 — Confirmare schimbare status
+     ══════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-status">
     <div class="modal">
+
+        <!-- Icoana și titlul sunt setate dinamic din JS -->
         <div class="confirm-icon" id="modal-status-icon">🔄</div>
         <div class="modal-title" id="modal-status-title">Schimbare status</div>
-        <div class="modal-sub" id="modal-status-sub">Confirmați schimbarea statusului.</div>
+        <div class="modal-sub">Confirmați schimbarea statusului reactorului.</div>
+
+        <!-- Avertisment opțional (ex: "Oprirea va întrerupe producția.") -->
         <div class="confirm-warning hidden" id="modal-status-warning"></div>
+
         <div class="modal-actions">
             <button class="btn btn-close-modal">Anulează</button>
             <button class="btn btn-prim" id="modal-status-confirm">Confirmă</button>
         </div>
+
     </div>
 </div>
 
+
+<!-- ══════════════════════════════════════════════════════
+     MODAL 2 — Adăugare senzor nou
+     ══════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-add-sensor">
     <div class="modal">
-        <div class="modal-title">Adaugă senzor nou</div>
-        <div class="modal-sub">Alegeți tipul senzorului și setați limitele manual.</div>
 
+        <div class="modal-title">Adaugă senzor nou</div>
+        <div class="modal-sub">Alegeți tipul senzorului și setați limitele de siguranță.</div>
+
+        <!-- Tip senzor -->
         <div class="form-group">
-            <label class="form-label">Tip senzor</label>
+            <label class="form-label" for="sensor-type">Tip senzor</label>
             <select class="form-select" id="sensor-type">
                 <option value="" disabled selected>Se încarcă tipurile...</option>
             </select>
         </div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+
+        <!-- Limite Min / Max pe 2 coloane -->
+        <div class="form-grid-2">
             <div class="form-group">
-                <label class="form-label">Limită Min</label>
+                <label class="form-label" for="sensor-min">Limită Minimă</label>
                 <input class="form-input" type="number" step="0.1" id="sensor-min" placeholder="ex: 0">
             </div>
             <div class="form-group">
-                <label class="form-label">Limită Max</label>
+                <label class="form-label" for="sensor-max">Limită Maximă</label>
                 <input class="form-input" type="number" step="0.1" id="sensor-max" placeholder="ex: 350">
             </div>
         </div>
 
-        <div class="modal-actions" style="margin-top: 20px;">
+        <div class="modal-actions">
             <button class="btn btn-close-modal">Anulează</button>
             <button class="btn btn-prim" id="modal-add-sensor-confirm" disabled>Adaugă</button>
         </div>
+
     </div>
 </div>
 
+
+<!-- ══════════════════════════════════════════════════════
+     TOAST — notificare temporară
+     ══════════════════════════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 
+
+<!-- ══════════════════════════════════════════════════════
+     SCRIPTURI
+     ══════════════════════════════════════════════════════ -->
 <script src="assets/js/api.js"></script>
 <script src="assets/js/reactor-details.js"></script>
+
 </body>
 </html>

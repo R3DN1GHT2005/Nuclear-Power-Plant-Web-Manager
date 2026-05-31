@@ -148,8 +148,8 @@ function createReactorHTML(reactor) {
             
             <div class="rcard-body">
                 ${reactor.sensors && reactor.sensors.length > 0 ? reactor.sensors.map(sensor => {
-                    const type = sensor.type || 'Senzor necunoscut';
-                    const value = sensor.value !== null ? sensor.value : '--';
+                    const type = sensor.sensor_type || 'Senzor necunoscut';
+                    const value = sensor.current_value !== null ? sensor.current_value : '--';
                     const unit = sensor.unit || '';
                     const isWarning = (type.toLowerCase() === 'temperatura' && value > 350) ? 'text-red' : '';
 

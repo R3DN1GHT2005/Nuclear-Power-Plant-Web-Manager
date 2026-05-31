@@ -1,98 +1,657 @@
-/* ── UTILITIES & MINIMALIST ADJUSTMENTS ── */
-.hidden { display: none !important; }
-/* ── FORȚARE LAYOUT PE TOT ECRANUL ── */
-/* ── SETĂRI PENTRU ECRAN COMPLET ── */
+/* =============================================================
+   reactor.css — Pagina de detalii reactor (NuclearWatch)
+   Structură:
+   1.  Utilitare globale
+   2.  Layout principal (split 2 coloane)
+   3.  Header & Action Bar
+   4.  Card Specificații Tehnice
+   5.  Bare de progres
+   6.  Tab-uri (Senzori / Istoric)
+   7.  Grila de senzori
+   8.  Filtru & Istoric citiri
+   9.  Jurnal Alerte
+   10. Footer panel
+   11. Modal overlay (popup)
+   12. Toast notificări
+   13. Ecran de eroare
+   ============================================================= */
+
+
+/* ─────────────────────────────────────────────
+   1. UTILITARE GLOBALE
+   ───────────────────────────────────────────── */
+
+.hidden {
+    display: none !important;
+}
+
+.layout-flex-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.layout-flex-1 {
+    flex: 1;
+    min-height: 0;
+}
+
+.text-amber {
+    color: var(--amber);
+}
+
+.text-red {
+    color: var(--red);
+}
+
+.mb-12 {
+    margin-bottom: 12px;
+}
+
+
+/* ─────────────────────────────────────────────
+   2. LAYOUT PRINCIPAL — SPLIT 2 COLOANE
+   ───────────────────────────────────────────── */
+
 #reactor-details-layout {
-    grid-template-columns: 380px 1fr !important; /* Stânga are 380px, dreapta ia restul ecranului */
-    gap: 24px !important;
-    width: 100% !important;
-    max-width: 100% !important; 
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 100%;
     padding: 24px;
     box-sizing: border-box;
     align-items: start;
 }
 
-.col-left, .col-right {
-    width: 100% !important;
-    min-width: 0 !important; /* Previne tăierea conținutului */
+.col-left,
+.col-right {
+    width: 100%;
+    min-width: 0; /* previne overflow pe conținut lung */
 }
-.layout-flex-col { display: flex; flex-direction: column; min-height: 0; }
-.layout-flex-1 { flex: 1; min-height: 0; }
 
-.header-minimal { flex-direction: column; gap: 20px; align-items: stretch; }
-.header-top-row { display: flex; align-items: flex-start; justify-content: space-between; width: 100%; }
-.back-link { text-decoration: none; font-size: 13px; color: var(--text-3); margin-bottom: 8px; display: inline-block; transition: color 0.2s; }
-.back-link:hover { color: var(--text); }
 
-/* ── ACTION BAR ── */
-.action-bar { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-action { 
-    padding: 8px 16px; 
-    border-radius: var(--radius-sm); 
-    border: 1px solid var(--border); 
-    background: transparent; 
-    font-size: 13px; 
-    font-weight: 500; 
-    color: var(--text-2); 
-    cursor: pointer; 
-    transition: all 0.2s ease; 
+/* ─────────────────────────────────────────────
+   3. HEADER & ACTION BAR
+   ───────────────────────────────────────────── */
+
+.header-minimal {
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
 }
-.btn-action:hover { background: var(--surface-2); color: var(--text); }
-.btn-outline { border-style: dashed; }
-.btn-text { background: transparent; border: none; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text-2); }
-.btn-text:hover { color: var(--text); }
 
-/* ── SPECS GRID ── */
-.specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 16px; }
-.spec-item { display: flex; flex-direction: column; gap: 4px; }
-.spec-lbl { font-size: 11px; text-transform: uppercase; color: var(--text-3); font-weight: 500; letter-spacing: 0.05em; }
-.spec-val { font-size: 14px; font-weight: 500; color: var(--text); }
+.header-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+}
 
-/* ── BARS ── */
-.specs-bars { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
-.spec-bar-row { display: flex; align-items: center; gap: 12px; }
-.spec-bar-lbl { font-size: 12px; color: var(--text-2); width: 120px; flex-shrink: 0; }
-.spec-bar-track { flex: 1; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-.spec-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
-.spec-bar-val { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text-2); width: 40px; text-align: right; flex-shrink: 0; }
+.back-link {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.2s;
+}
 
-/* ── TABS ── */
-.tab-bar { display: flex; gap: 16px; border-bottom: 1px solid var(--border); padding: 0 20px; flex-shrink: 0; }
-.tab-btn { padding: 12px 0; font-size: 13px; font-weight: 500; color: var(--text-3); border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; margin-bottom: -1px; }
-.tab-btn:hover { color: var(--text-2); }
-.tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
-.tab-panel { display: none; flex-direction: column; flex: 1; min-height: 0; }
-.tab-panel.active { display: flex; }
+.back-link:hover {
+    color: var(--text);
+}
 
-/* ── SENSOR GRID ── */
-.sensor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 20px; overflow-y: auto; }
-.sensor-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; flex-direction: column; gap: 6px; }
-.sensor-card.warn { border-color: var(--amber); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1); }
-.sensor-card.crit { border-color: var(--red); box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1); }
+/* Bara cu butoane de acțiune (Pornire / Oprire / Mentenanță) */
+.action-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 
-/* ── HISTORY & ALERTS ── */
-.history-filter-bar { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.select-sm { padding: 6px 10px; font-size: 12px; max-width: 200px; }
-.history-meta { font-size: 11px; color: var(--text-3); }
-.history-empty { text-align: center; padding: 40px 20px; color: var(--text-3); font-size: 13px; font-style: italic; }
-.history-row { display: flex; align-items: center; gap: 16px; padding: 12px 20px; border-bottom: 1px solid var(--border-light, #f0f0f0); }
-.history-time { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-3); width: 120px; flex-shrink: 0; }
-.history-sensor { font-size: 13px; font-weight: 500; color: var(--text-2); width: 120px; flex-shrink: 0; }
-.history-val { font-size: 14px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); }
+.btn-action {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
 
-.alert-row { display: flex; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border-light, #f0f0f0); }
-.alert-sev { width: 4px; border-radius: 2px; flex-shrink: 0; }
-.sev-crit { background: var(--red); }
-.sev-warn { background: var(--amber); }
+.btn-action:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+/* Butonul "+ Senzor nou" are border punctat pentru a-l diferenția */
+.btn-outline {
+    border-style: dashed;
+}
+
+/* Buton text simplu (ex: "Programează →") */
+.btn-text {
+    background: transparent;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+}
+
+.btn-text:hover {
+    color: var(--text);
+}
+
+
+/* ─────────────────────────────────────────────
+   4. CARD SPECIFICAȚII TEHNICE — GRILĂ 2 coloane
+   ───────────────────────────────────────────── */
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 16px;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.spec-lbl {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.spec-val {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+
+/* ─────────────────────────────────────────────
+   5. BARE DE PROGRES (Eficiență / Stabilitate)
+   ───────────────────────────────────────────── */
+
+.specs-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 16px 16px;
+}
+
+.spec-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.spec-bar-lbl {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--text-2);
+}
+
+.spec-bar-track {
+    flex: 1;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.spec-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+}
+
+/* Culori bare: verde ≥75%, portocaliu 40-74%, roșu <40% */
+.bf-green  { background: var(--green,  #22c55e); }
+.bf-amber  { background: var(--amber,  #f59e0b); }
+.bf-red    { background: var(--red,    #ef4444); }
+
+.spec-bar-val {
+    width: 40px;
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-2);
+}
+
+
+/* ─────────────────────────────────────────────
+   6. TAB-URI (Senzori activi / Istoric citiri)
+   ───────────────────────────────────────────── */
+
+.tab-bar {
+    display: flex;
+    gap: 16px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.tab-btn {
+    padding: 12px 0;
+    margin-bottom: -1px; /* aliniază border-bottom cu linia tab-bar */
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+    color: var(--text-2);
+}
+
+.tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--text);
+}
+
+/* Panoul de conținut — ascuns implicit, vizibil când e activ */
+.tab-panel {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.tab-panel.active {
+    display: flex;
+}
+
+
+/* ─────────────────────────────────────────────
+   7. GRILA DE SENZORI
+   ───────────────────────────────────────────── */
+
+.sensor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.sensor-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+/* Avertisment: temperatură ridicată */
+.sensor-card.warn {
+    border-color: var(--amber);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+/* Critic: depășit pragul maxim */
+.sensor-card.crit {
+    border-color: var(--red);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+
+/* ─────────────────────────────────────────────
+   8. FILTRU ȘI ISTORIC CITIRI
+   ───────────────────────────────────────────── */
+
+.history-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.select-sm {
+    max-width: 200px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.history-meta {
+    font-size: 11px;
+    color: var(--text-3);
+}
+
+.history-empty {
+    padding: 40px 20px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text-3);
+    text-align: center;
+}
+
+.history-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+.history-time {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-3);
+}
+
+.history-sensor {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+}
+
+.history-val {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+}
+
+
+/* ─────────────────────────────────────────────
+   9. JURNAL ALERTE
+   ───────────────────────────────────────────── */
+
+.alert-row {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+/* Bara colorată de severitate (stânga rândului) */
+.alert-sev {
+    width: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.sev-crit { background: var(--red);    }
+.sev-warn { background: var(--amber);  }
 .sev-info { background: var(--border); }
-.alert-body { flex: 1; }
-.alert-msg { font-size: 13px; color: var(--text); }
-.alert-meta { font-size: 11px; color: var(--text-3); margin-top: 4px; }
 
-/* ── FOOTER & MODALS ── */
-.panel-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.footer-meta { font-size: 12px; color: var(--text-3); }
+.alert-body {
+    flex: 1;
+}
 
-.error-view { text-align: center; padding: 80px 20px; }
-.error-icon { font-size: 48px; margin-bottom: 20px; opacity: 0.8; }
+.alert-msg {
+    font-size: 13px;
+    color: var(--text);
+}
 
+.alert-meta {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-3);
+}
+
+
+/* ─────────────────────────────────────────────
+   10. FOOTER PANEL
+   ───────────────────────────────────────────── */
+
+.panel-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.footer-meta {
+    font-size: 12px;
+    color: var(--text-3);
+}
+
+
+/* ─────────────────────────────────────────────
+   11. MODAL OVERLAY (popup confirmare / adăugare senzor)
+   ───────────────────────────────────────────── */
+
+/* Fundalul întunecat care acoperă tot ecranul */
+.modal-overlay {
+    position: fixed;
+    inset: 0;                         /* top/right/bottom/left: 0 */
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;             /* invizibil = nu interceptează click-uri */
+    transition: opacity 0.2s ease;
+}
+
+/* Clasa .open face modalul vizibil */
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Cutia albă/card din centru */
+.modal {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    margin: 20px;
+    padding: 32px;
+    background: var(--surface, #fff);
+    border: 1px solid var(--border);
+    border-radius: var(--radius, 12px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+    transform: translateY(8px);
+    transition: transform 0.25s ease;
+}
+
+.modal-overlay.open .modal {
+    transform: translateY(0);
+}
+
+/* Iconița mare de confirmare (emoji) */
+.confirm-icon {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1;
+}
+
+/* Titlul modalului */
+.modal-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+/* Sub-textul modalului */
+.modal-sub {
+    font-size: 13px;
+    color: var(--text-2);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Avertisment portocaliu (ex: "Oprirea va întrerupe producția.") */
+.confirm-warning {
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-sm, 8px);
+    font-size: 13px;
+    color: var(--amber, #f59e0b);
+    text-align: center;
+}
+
+/* Rândul cu butoane (Anulează / Confirmă) */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+/* ── Formulare în modal ── */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.form-select,
+.form-input {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 8px);
+    font-size: 13px;
+    color: var(--text);
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    appearance: auto;
+}
+
+.form-select:focus,
+.form-input:focus {
+    outline: none;
+    border-color: var(--text-2);
+}
+
+/* Grilă 2 coloane pentru câmpurile Min / Max */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* ── Butoane standard în modal ── */
+
+.btn {
+    padding: 9px 18px;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-2);
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+/* Buton primar (Confirmă / Adaugă) */
+.btn-prim {
+    background: var(--text);
+    color: var(--surface);
+    border-color: var(--text);
+}
+
+.btn-prim:hover {
+    opacity: 0.85;
+}
+
+.btn-prim:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+/* ─────────────────────────────────────────────
+   12. TOAST — notificare temporară (colț dreapta-jos)
+   ───────────────────────────────────────────── */
+
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 2000;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm, 8px);
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.toast.success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.toast.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+
+/* ─────────────────────────────────────────────
+   13. ECRAN DE EROARE (reactor negăsit)
+   ───────────────────────────────────────────── */
+
+.error-view {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.error-icon {
+    margin-bottom: 20px;
+    font-size: 48px;
+    opacity: 0.8;
+}

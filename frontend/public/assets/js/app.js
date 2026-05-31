@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function createReactorHTML(reactor) {
-    // Setăm culorile din CSS-ul tău în funcție de status
     const config = {
         'activ': { pill: 'pill-active', border: '', bar: 'bf-green', text: 'text-green' },
         'alertă': { pill: 'pill-alert', border: 'border-crit', bar: 'bf-red', text: 'text-red' },

@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS reactors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_maintenance TIMESTAMP,
     reactor_type VARCHAR(50),
-    cooling_water_source VARCHAR(100), //rau lac mare ocean etc
+    cooling_water_source VARCHAR(100), --rau lac mare ocean etc
     distance_to_nearest_city_km FLOAT,
     elevation_meters FLOAT
 );
@@ -90,9 +90,7 @@ CREATE TABLE IF NOT EXISTS maintenance_logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ==========================================
--- INDEXURI PENTRU VITEZĂ
--- ==========================================
+
 CREATE INDEX IF NOT EXISTS idx_sensor_readings_sensor_id ON sensor_readings(sensor_id);
 CREATE INDEX IF NOT EXISTS idx_sensor_readings_date ON sensor_readings(recorded_at);
 CREATE INDEX IF NOT EXISTS idx_alerts_reactor_id ON alerts(reactor_id);
