@@ -13,6 +13,7 @@ require_once $autoloadPath;
 use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
 use App\Controllers\AuthController;
+use App\Controllers\MaintenanceController;
 use App\Core\Router;
 
 use App\Middleware\AdminMiddleware;     
@@ -100,6 +101,20 @@ try {
     
     // Înregistrare date senzor
     $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue', [AuthMiddleware::class]); 
+
+    // ==========================================
+    // RUTE MENTENANȚĂ
+    // ==========================================
+
+    // Management sarcini (Manager / Admin)
+    $router->post('/api/maintenance/tasks', MaintenanceController::class, 'createTask', [AdminMiddleware::class]);
+    $router->get('/api/maintenance/tasks', MaintenanceController::class, 'getAllTasks', [AdminMiddleware::class]);
+    $router->put('/api/maintenance/tasks/{id}', MaintenanceController::class, 'updateTask', [AdminMiddleware::class]);
+
+    // Execuție sarcini (Tehnician)
+    //va trebui middleware de tehnician
+    $router->get('/api/maintenance/tasks/my-tasks', MaintenanceController::class, 'getMyTasks', [AuthMiddleware::class]); 
+    $router->post('/api/maintenance/tasks/{id}/logs', MaintenanceController::class, 'addLog', [AuthMiddleware::class]);
 
 
     // Executarea rutei cerute
