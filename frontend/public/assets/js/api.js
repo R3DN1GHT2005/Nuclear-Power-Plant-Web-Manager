@@ -1,4 +1,10 @@
-const API_URL = "http://127.0.0.1:8082/api"; 
+const API_URL = (() => {
+    if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+        return `${window.location.protocol}//${window.location.hostname}:8082/api`;
+    }
+
+    return 'http://127.0.0.1:8082/api';
+})();
 
 async function authFetch(endpoint, options = {}) {
     let headers = {

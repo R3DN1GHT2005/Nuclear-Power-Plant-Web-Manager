@@ -10,7 +10,10 @@
         pickerMap: null,
         pickerMarker: null,
         activeSensorReactorId: null,
-        editingSensorId: null
+        editingSensorId: null,
+        sensorTypeProfiles: {},
+        sensorTypesLoaded: false,
+        sensorTypesLoading: null
     };
 
     const refs = {
@@ -226,6 +229,63 @@
 
         const value = sensor[field] ?? sensor[field.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())];
         return value === null || value === undefined ? '' : String(value);
+    }
+
+    function buildSensorTypeOptions(selectedType = '') {
+        const options = [];
+        const normalizedSelectedType = String(selectedType || '').trim();
+
+        if (!normalizedSelectedType) {
+            options.push('<option value="" selected disabled>Alege tipul...</option>');
+        } else if (!Object.prototype.hasOwnProperty.call(state.sensorTypeProfiles, normalizedSelectedType)) {
+            options.push(`<option value="${escapeHtml(normalizedSelectedType)}" selected>${escapeHtml(normalizedSelectedType)}</option>`);
+        } else {
+            options.push('<option value="" disabled>Alege tipul...</option>');
+        }
+
+        Object.keys(state.sensorTypeProfiles).forEach((type) => {
+            const selected = type === normalizedSelectedType ? ' selected' : '';
+            options.push(`<option value="${escapeHtml(type)}"${selected}>${escapeHtml(type)}</option>`);
+        });
+
+        return options.join('');
+    }
+
+    async function ensureSensorTypesLoaded() {
+        if (state.sensorTypesLoaded && Object.keys(state.sensorTypeProfiles).length > 0) {
+            return state.sensorTypeProfiles;
+        }
+
+        if (state.sensorTypesLoading) {
+            return state.sensorTypesLoading;
+        }
+
+        state.sensorTypesLoading = (async () => {
+            try {
+                const response = await window.authFetch('/sensors/types', { method: 'GET' });
+                if (!response.ok) {
+                    throw new Error(`Nu s-au putut prelua tipurile de senzori (${response.status})`);
+                }
+
+                state.sensorTypeProfiles = await response.json();
+                state.sensorTypesLoaded = true;
+
+                if (refs.sensorTypeInput) {
+                    refs.sensorTypeInput.innerHTML = buildSensorTypeOptions(refs.sensorTypeInput.value || '');
+                }
+
+                return state.sensorTypeProfiles;
+            } catch (error) {
+                console.error(error);
+                state.sensorTypeProfiles = {};
+                state.sensorTypesLoaded = false;
+                return {};
+            } finally {
+                state.sensorTypesLoading = null;
+            }
+        })();
+
+        return state.sensorTypesLoading;
     }
 
     function isEditingSensor(sensorId) {
@@ -469,11 +529,16 @@
         const min = safeNumber(sensor.min_safe_value).toFixed(2);
         const max = safeNumber(sensor.max_safe_value).toFixed(2);
         const current = safeNumber(sensor.current_value).toFixed(2);
+        const currentType = getSensorValue(sensor, 'sensor_type') || sensor.type || '';
 
         if (editing) {
             return `
                 <tr class="sensor-editing-row">
-                    <td><input class="sensor-inline-input sensor-inline-type" type="text" value="${escapeHtml(getSensorValue(sensor, 'sensor_type') || sensor.type || '')}" maxlength="100"></td>
+                    <td>
+                        <select class="sensor-inline-input sensor-inline-type">
+                            ${buildSensorTypeOptions(currentType)}
+                        </select>
+                    </td>
                     <td><input class="sensor-inline-input sensor-inline-unit" type="text" value="${escapeHtml(getSensorValue(sensor, 'unit'))}" maxlength="20" placeholder="-"></td>
                     <td class="sensor-inline-range">
                         <input class="sensor-inline-input sensor-inline-min" type="number" step="any" value="${escapeHtml(getSensorValue(sensor, 'min_safe_value') || min)}">
@@ -663,6 +728,7 @@
         openModal(refs.sensorModal);
 
         try {
+            await ensureSensorTypesLoaded();
             const sensors = await fetchSensors(reactorId);
             renderSensorList(sensors);
         } catch (error) {
@@ -857,6 +923,7 @@
     function bindEvents() {
         safeBindClick(refs.openAddButton, () => {
             hideFormError();
+            ensureSensorTypesLoaded();
             openModal(refs.reactorModal);
         });
 
@@ -894,6 +961,10 @@
 
         safeBindClick(refs.closeSensorModalBtn, () => closeModal(refs.sensorModal));
         safeBindSubmit(refs.sensorForm, submitSensor);
+
+        if (refs.sensorTypeInput) {
+            refs.sensorTypeInput.innerHTML = buildSensorTypeOptions('');
+        }
 
         if (refs.sensorListBody) {
             refs.sensorListBody.addEventListener('click', (event) => {

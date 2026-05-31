@@ -1,6 +1,19 @@
 // Central auth JS: handles login, register and password reset flows
+const AUTH_API_URL = (() => {
+    if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+        return `${window.location.protocol}//${window.location.hostname}:8082/api`;
+    }
+
+    return 'http://127.0.0.1:8082/api';
+})();
+
 async function postJson(url, body){
-    const res = await fetch(url, {method:'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)});
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(body)
+    });
     const json = await res.json().catch(()=>null);
     return {ok: res.ok, status: res.status, body: json};
 }
@@ -11,7 +24,7 @@ if (loginForm){
     loginForm.addEventListener('submit', async function(e){
         e.preventDefault();
         const data = { email: this.email.value, password: this.password.value };
-        const r = await postJson('/api/auth/login', data);
+        const r = await postJson(`${AUTH_API_URL}/auth/login`, data);
         if (r.ok){
             // redirect to dashboard
             window.location.href = 'index.html';
@@ -37,10 +50,10 @@ if (registerForm){
             alert('Parolele nu coincid');
             return;
         }
-        const r = await postJson('/api/auth/register', payload);
+        const r = await postJson(`${AUTH_API_URL}/auth/register`, payload);
         if (r.ok){
             alert('Înregistrare reușită. Poți să te autentifici.');
-            // window.location.href = 'login.html'; // COMENTAT — vezi comentat.md
+            window.location.href = 'login.html'; 
         } else {
             alert(r.body?.error || 'Eroare la înregistrare');
         }
@@ -54,7 +67,7 @@ if (step1){
     step1.addEventListener('submit', async function(e){
         e.preventDefault();
         const email = this.email.value;
-        const r = await postJson('/api/auth/forgot', {email});
+        const r = await postJson(`${AUTH_API_URL}/auth/forgot`, {email});
         if (r.ok){
             // If backend returns code for demo, pre-fill it and show step2
             if (r.body && r.body.code){
@@ -76,10 +89,10 @@ if (step2){
         const new_password = document.getElementById('new_password').value;
         const new_password_confirm = document.getElementById('new_password_confirm').value;
         if (new_password !== new_password_confirm){ alert('Parolele nu coincid'); return; }
-        const r = await postJson('/api/auth/reset', {email, code, new_password});
+        const r = await postJson(`${AUTH_API_URL}/auth/reset`, {email, code, new_password});
         if (r.ok){
             alert('Parola schimbată cu succes. Te poți conecta.');
-            // window.location.href = 'login.html'; // COMENTAT — vezi comentat.md
+            window.location.href = 'login.html';
         } else {
             alert(r.body?.error || 'Eroare la resetare');
         }
