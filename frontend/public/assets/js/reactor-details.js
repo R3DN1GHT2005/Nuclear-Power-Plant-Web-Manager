@@ -119,8 +119,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         container.innerHTML = sensors.map((sensor) => {
-            const type = sensor.type || "Senzor";
-            const val = sensor.value != null ? sensor.value : "—";
+            const type = sensor.sensor_type || "Senzor";
+            const val = sensor.current_value != null ? sensor.current_value : "—";
             const unit = sensor.unit || "";
             // O simplă regulă vizuală de avertizare dacă e prea cald
             const isWarn = type.toLowerCase().includes("temperatura") && val > 350;
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         select.innerHTML = '<option value="">Toți senzorii</option>';
         sensors.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.type}</option>`;
+            select.innerHTML += `<option value="${s.id}">${s.sensor_type}</option>`;
         });
     }
 

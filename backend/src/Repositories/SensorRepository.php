@@ -96,10 +96,34 @@ class SensorRepository {
     }
 
     public function updateValue(int $id, float $newValue): bool {
-        $stmt = $this->db->prepare("\n            UPDATE sensors \n            SET current_value = :val, last_update = CURRENT_TIMESTAMP \n            WHERE id = :id\n        ");
-        $stmt->bindParam(':val', $newValue);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        try {
+           
+            $this->db->beginTransaction();
+            $stmtHistory = $this->db->prepare("
+                INSERT INTO sensor_readings (sensor_id, recorded_value) 
+                VALUES (:id, :val)
+            ");
+            $stmtHistory->bindParam(':id', $id, \PDO::PARAM_INT);
+            $stmtHistory->bindParam(':val', $newValue);
+            $stmtHistory->execute();
+
+            $stmtUpdate = $this->db->prepare("
+                UPDATE sensors 
+                SET current_value = :val, last_update = CURRENT_TIMESTAMP 
+                WHERE id = :id
+            ");
+            $stmtUpdate->bindParam(':id', $id, \PDO::PARAM_INT);
+            $stmtUpdate->bindParam(':val', $newValue);
+            $stmtUpdate->execute();
+
+            return $this->db->commit();
+
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e; 
+        }
     }
 
     public function delete(int $id): bool {

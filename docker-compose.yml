@@ -29,23 +29,17 @@ services:
     # Când containerul pornește, va rula automat "composer install"
     command: install
 
-# =======================================================
-# BAZA DE DATE LOCALĂ ESTE DEZACTIVATĂ
-# O poți lăsa așa comentată. Toate conexiunile se duc acum spre Neon!
-# =======================================================
-#  db:
-#    image: postgres:15-alpine
-#    container_name: nuclear_db
-#    environment:
-#      POSTGRES_USER: ${DB_USER}
-#      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#      POSTGRES_DB: ${DB_NAME}
-#    ports:
-#      - "${DB_PORT:-5432}:5432"
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
-#      - ./init-db/schema.sql:/docker-entrypoint-initdb.d/init.sql
-#    restart: unless-stopped
 
-#volumes:
-#  pgdata:
+  simulator:
+    image: python:3.11-slim
+    container_name: nuclear_simulator
+    profiles:
+      - manual
+    volumes:
+      - ./simulator:/app
+    working_dir: /app
+    command: sh -c "pip install requests && python -u simulator.py"
+    depends_on:
+      - web
+    env_file:
+      - .env

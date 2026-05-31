@@ -368,9 +368,9 @@
     }
 
     async function fetchReactors() {
-        const response = await fetch(`${apiBase}/reactors`, {
-            method: 'GET',
-            headers: getHeaders()
+        // Folosim authFetch în loc de fetch clasic
+        const response = await window.authFetch(`/reactors`, {
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -451,9 +451,9 @@
     }
 
     async function fetchSensors(reactorId) {
-        const response = await fetch(`${apiBase}/reactors/${reactorId}/sensors`, {
-            method: 'GET',
-            headers: getHeaders()
+        // Folosim authFetch
+        const response = await window.authFetch(`/reactors/${reactorId}/sensors`, {
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -612,7 +612,8 @@
         }
 
         try {
-            const response = await fetch(`${apiBase}/sensors/${sensorId}`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/sensors/${sensorId}`, {
                 method: 'PATCH',
                 headers: getHeaders(),
                 body: JSON.stringify(payload)
@@ -695,7 +696,8 @@
         refs.submitSensorButton.textContent = 'Se adaugă...';
 
         try {
-            const response = await fetch(`${apiBase}/reactors/${state.activeSensorReactorId}/sensors`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/reactors/${state.activeSensorReactorId}/sensors`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify(payload)
@@ -734,7 +736,8 @@
         }
 
         try {
-            const response = await fetch(`${apiBase}/sensors/${sensorId}`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/sensors/${sensorId}`, {
                 method: 'DELETE',
                 headers: getHeaders()
             });
@@ -817,7 +820,8 @@
         refs.submitButton.textContent = 'Se salveaza...';
 
         try {
-            const response = await fetch(`${apiBase}/reactors`, {
+            // Modificare aici: Înlocuire fetch cu window.authFetch
+            const response = await window.authFetch(`/reactors`, {
                 method: 'POST',
                 headers: getHeaders(),
                 body: JSON.stringify(payload)

@@ -15,9 +15,9 @@ use App\Controllers\SensorController;
 use App\Controllers\AuthController;
 use App\Core\Router;
 
-// DECOMENTAT: Avem nevoie de securitate!
 use App\Middleware\AdminMiddleware;     
-use App\Middleware\AuthMiddleware;      
+use App\Middleware\AuthMiddleware;    
+use App\Middleware\SensorMiddleware;  
 
 $allowedOrigins = [
     'http://127.0.0.1:5500',
@@ -67,6 +67,10 @@ try {
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
     $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor', [AdminMiddleware::class]); 
     $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor', [AdminMiddleware::class]); 
+
+    //senzori pentru simulator
+    $router->get('/api/sensors/config', SensorController::class, 'getConfig', [SensorMiddleware::class]);
+    $router->post('/api/sensors/readings', SensorController::class, 'recordReading', [\App\Middleware\SensorMiddleware::class]);
 
     // Senzori per reactor
     $router->post('/api/reactors/{id}/sensors', SensorController::class, 'addSensorToReactor', [AdminMiddleware::class]); 

@@ -5,8 +5,13 @@ namespace App\Controllers;
 use App\Core\Response;
 use App\DTOs\Request\Sensor\CreateSensorRequestDTO;
 use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
+use App\DTOs\Request\Sensor\StoreMeasurementDTO;
 use App\Mappers\SensorMapper;
 use App\Services\SensorService;
+use App\Mappers\MeasurementMapper;
+use App\Mappers\SensorConfigMapper;
+use InvalidArgumentException;
+use Exception;
 
 class SensorController {
     private SensorService $sensorService;
@@ -97,21 +102,31 @@ class SensorController {
         Response::json(['message' => 'Senzor șters cu succes']);
     }
 
-    public function recordValue(int $id): void {
+
+    //controllere pt simulator
+    public function getConfig(): void {
+        $sensors = $this->sensorService->getAll(); 
+        Response::json(SensorConfigMapper::toResponseList($sensors));
+    }
+
+    public function recordReading(): void {
         $data = json_decode(file_get_contents('php://input'), true);
-
-        if (!isset($data['value'])) {
-            Response::json(['error' => 'Valoarea lipsește din request'], 400);
+        
+        if (!is_array($data)) {
+            Response::json(['error' => 'Format JSON invalid.'], 400);
             return;
         }
 
-        $updated = $this->sensorService->recordValue($id, (float) $data['value']);
-
-        if (!$updated) {
-            Response::json(['error' => 'Senzor negăsit sau eroare la actualizare'], 404);
-            return;
+        try {
+            $dto = MeasurementMapper::fromRequest($data);
+            $this->sensorService->recordValue($dto);
+            
+            Response::json(['message' => 'Citire nouă înregistrată cu succes']);
+            
+        } catch (InvalidArgumentException $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            Response::json(['error' => 'Eroare internă la salvarea datelor.'], 500);
         }
-
-        Response::json(['message' => 'Citire nouă înregistrată cu succes']);
     }
 }
