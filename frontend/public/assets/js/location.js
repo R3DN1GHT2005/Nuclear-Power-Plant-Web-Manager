@@ -17,7 +17,6 @@
     };
 
     const refs = {
-        statusGrid: document.getElementById('status-grid'),
         reactorList: document.getElementById('reactor-list'),
         lastRefresh: document.getElementById('last-refresh-pill'),
         openAddButton: document.getElementById('open-add-reactor'),
@@ -30,6 +29,12 @@
         openPickerButton: document.getElementById('open-picker'),
         pickerModal: document.getElementById('picker-modal'),
         closePickerModalBtn: document.getElementById('close-picker-modal'),
+        totalPowerValue: document.getElementById('stat-total-power'),
+        totalReactorsValue: document.getElementById('stat-total-reactors'),
+        typeTotalValue: document.getElementById('stat-type-total'),
+        statusTotalValue: document.getElementById('stat-status-total'),
+        typeList: document.getElementById('stats-type-list'),
+        statusList: document.getElementById('stats-status-list'),
         latitudeInput: document.getElementById('latitude'),
         longitudeInput: document.getElementById('longitude'),
         nameInput: document.getElementById('name'),
@@ -222,6 +227,148 @@
         return Number.isFinite(numeric) ? numeric : fallback;
     }
 
+    function normalizeReactorType(type) {
+        return String(type || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toUpperCase()
+            .trim();
+    }
+
+    function formatPower(value) {
+        return `${new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(safeNumber(value))} MW`;
+    }
+
+    function createEmptyStats() {
+        return {
+            totalPower: 0,
+            totalReactors: 0,
+            typeCounts: { CANDU: 0, SMR: 0, PWR: 0, OTHER: 0 },
+            statusCounts: {
+                activ: 0,
+                mentenanta: 0,
+                constructie: 0,
+                oprit: 0,
+                alerta: 0,
+                other: 0
+            }
+        };
+    }
+
+    function getStatusBucket(status) {
+        if (status === 'activ') return 'activ';
+        if (status === 'mentenanta' || status === 'mentenanta planificata') return 'mentenanta';
+        if (status === 'in constructie' || status === 'constructie') return 'constructie';
+        if (status === 'oprit') return 'oprit';
+        if (status === 'alerta' || status === 'stare critica' || status === 'critica' || status === 'critic') return 'alerta';
+        return 'other';
+    }
+
+    function getStatusLabel(statusKey) {
+        return ({
+            activ: 'Activ',
+            mentenanta: 'Mentenanță',
+            constructie: 'În construcție',
+            oprit: 'Oprit',
+            alerta: 'Alertă / critic',
+            other: 'Alt status'
+        })[statusKey] || 'Alt status';
+    }
+
+    function getTypeLabel(typeKey) {
+        return ({
+            CANDU: 'CANDU',
+            SMR: 'SMR',
+            PWR: 'PWR',
+            OTHER: 'Alt tip'
+        })[typeKey] || 'Alt tip';
+    }
+
+    function calculateReactorStats(reactors) {
+        const stats = createEmptyStats();
+
+        reactors.forEach((reactor) => {
+            stats.totalReactors += 1;
+            stats.totalPower += safeNumber(reactor.installed_power, 0);
+
+            const typeKey = normalizeReactorType(reactor.reactor_type);
+            if (Object.prototype.hasOwnProperty.call(stats.typeCounts, typeKey)) {
+                stats.typeCounts[typeKey] += 1;
+            } else {
+                stats.typeCounts.OTHER += 1;
+            }
+
+            const statusKey = getStatusBucket(normalizeStatus(reactor.status));
+            stats.statusCounts[statusKey] += 1;
+        });
+
+        return stats;
+    }
+
+    function renderStatsList(target, entries, total) {
+        if (!target) {
+            return;
+        }
+
+        if (!entries.length) {
+            target.innerHTML = '<div class="sensor-empty">Nu există date pentru această categorie.</div>';
+            return;
+        }
+
+        target.innerHTML = entries.map((entry) => {
+            const percentage = total > 0 ? Math.round((entry.value / total) * 100) : 0;
+            return `
+                <div class="stats-row">
+                    <div class="stats-row-head">
+                        <strong>${escapeHtml(entry.label)}</strong>
+                        <span>${entry.value} · ${percentage}%</span>
+                    </div>
+                    <div class="stats-track" aria-hidden="true">
+                        <div class="stats-fill ${escapeHtml(entry.fillClass)}" style="width:${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderReactorStats(stats) {
+        const safeStats = stats || createEmptyStats();
+        const typeTotal = Object.values(safeStats.typeCounts).reduce((sum, value) => sum + value, 0);
+        const statusTotal = Object.values(safeStats.statusCounts).reduce((sum, value) => sum + value, 0);
+
+        if (refs.totalPowerValue) {
+            refs.totalPowerValue.textContent = formatPower(safeStats.totalPower);
+        }
+
+        if (refs.totalReactorsValue) {
+            refs.totalReactorsValue.textContent = String(safeStats.totalReactors);
+        }
+
+        if (refs.typeTotalValue) {
+            refs.typeTotalValue.textContent = `${typeTotal}/${safeStats.totalReactors}`;
+        }
+
+        if (refs.statusTotalValue) {
+            refs.statusTotalValue.textContent = `${statusTotal}/${safeStats.totalReactors}`;
+        }
+
+        renderStatsList(refs.typeList, [
+            { label: getTypeLabel('CANDU'), value: safeStats.typeCounts.CANDU, fillClass: 'type-candu' },
+            { label: getTypeLabel('SMR'), value: safeStats.typeCounts.SMR, fillClass: 'type-smr' },
+            { label: getTypeLabel('PWR'), value: safeStats.typeCounts.PWR, fillClass: 'type-pwr' },
+            { label: getTypeLabel('OTHER'), value: safeStats.typeCounts.OTHER, fillClass: 'type-other' }
+        ], Math.max(safeStats.totalReactors, 1));
+
+        renderStatsList(refs.statusList, [
+            { label: getStatusLabel('activ'), value: safeStats.statusCounts.activ, fillClass: 'status-activ' },
+            { label: getStatusLabel('mentenanta'), value: safeStats.statusCounts.mentenanta, fillClass: 'status-mentenanta' },
+            { label: getStatusLabel('constructie'), value: safeStats.statusCounts.constructie, fillClass: 'status-constructie' },
+            { label: getStatusLabel('oprit'), value: safeStats.statusCounts.oprit, fillClass: 'status-oprit' },
+            { label: getStatusLabel('alerta'), value: safeStats.statusCounts.alerta, fillClass: 'status-alerta' },
+            { label: getStatusLabel('other'), value: safeStats.statusCounts.other, fillClass: 'status-other' }
+        ], Math.max(safeStats.totalReactors, 1));
+    }
+
     function getSensorValue(sensor, field) {
         if (!sensor) {
             return '';
@@ -367,39 +514,6 @@
         });
     }
 
-    function renderStatusCards(reactors) {
-        const counters = reactors.reduce((acc, reactor) => {
-            const normalized = normalizeStatus(reactor.status);
-            acc.total += 1;
-            if (normalized === 'oprit') acc.oprit += 1;
-            else if (normalized === 'activ') acc.activ += 1;
-            else if (normalized === 'mentenanta') acc.mentenanta += 1;
-            else if (normalized === 'in constructie') acc.constructie += 1;
-            else if (normalized === 'alerta' || normalized === 'stare critica' || normalized === 'critica' || normalized === 'critic') acc.alerta += 1;
-            return acc;
-        }, {
-            total: 0,
-            activ: 0,
-            mentenanta: 0,
-            alerta: 0,
-            oprit: 0,
-            constructie: 0
-        });
-
-        refs.statusGrid.innerHTML = [
-            statusCardHtml('Total', counters.total),
-            statusCardHtml('Activ', counters.activ),
-            statusCardHtml('Mentenanta', counters.mentenanta),
-            statusCardHtml('Alerta / Critic', counters.alerta),
-            statusCardHtml('Oprit', counters.oprit),
-            statusCardHtml('In Constructie', counters.constructie)
-        ].join('');
-    }
-
-    function statusCardHtml(label, value) {
-        return `<div class="status-card"><div class="status-title">${label}</div><div class="status-value">${value}</div></div>`;
-    }
-
     function renderReactorList(reactors) {
         if (!reactors.length) {
             refs.reactorList.innerHTML = '<div class="reactor-list-item"><span>Nu există reactoare disponibile.</span></div>';
@@ -438,7 +552,9 @@
         }
 
         const payload = await response.json();
-        return Array.isArray(payload) ? payload : Array.isArray(payload.data) ? payload.data : [];
+        const reactors = Array.isArray(payload) ? payload : Array.isArray(payload.data) ? payload.data : [];
+        renderReactorStats(calculateReactorStats(reactors));
+        return reactors;
     }
 
     async function refreshReactors() {
@@ -451,6 +567,7 @@
             updateLastRefresh();
         } catch (error) {
             console.error(error);
+            renderReactorStats(createEmptyStats());
         }
     }
 
