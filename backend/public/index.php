@@ -14,6 +14,7 @@ use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
 use App\Controllers\AuthController;
 use App\Controllers\ReactorMaintenanceController;
+use App\Controllers\ReportController;
 use App\Controllers\UserController; // <-- IMPORTUL NOU
 use App\Core\Router;
 
@@ -103,6 +104,14 @@ try {
     // Vizualizare reactoare
     $router->get('/api/reactors', ReactorController::class, 'getAllReactors', [AuthMiddleware::class]); 
     $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById', [AuthMiddleware::class]); 
+
+    // Rapoarte / statistici
+    $router->get('/api/reports/kpi', ReportController::class, 'getKpi', [AuthMiddleware::class]);
+    $router->get('/api/reports/efficiency', ReportController::class, 'getEfficiency', [AuthMiddleware::class]);
+    $router->get('/api/reports/efficiency/trend', ReportController::class, 'getEfficiencyTrend', [AuthMiddleware::class]);
+    $router->get('/api/reports/comparison', ReportController::class, 'getComparison', [AuthMiddleware::class]);
+    $router->get('/api/reports/risk-matrix', ReportController::class, 'getRiskMatrix', [AuthMiddleware::class]);
+    $router->get('/api/reports/wear', ReportController::class, 'getWear', [AuthMiddleware::class]);
     
     // Vizualizare senzori
     $router->get('/api/sensors', SensorController::class, 'getAllSensors', [AuthMiddleware::class]); 

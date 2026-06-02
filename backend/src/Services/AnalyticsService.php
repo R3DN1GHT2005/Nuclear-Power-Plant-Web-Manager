@@ -16,15 +16,18 @@ class AnalyticsService {
         $reactors = $this->db->query("
             SELECT 
                 COUNT(*) AS total,
-                ROUND(AVG(current_efficiency), 1) AS avg_efficiency,
-                ROUND(AVG(seismic_risk), 1) AS avg_risk
+                AVG(current_efficiency) AS avg_efficiency,
+                AVG(seismic_risk) AS avg_risk
             FROM reactors
         ")->fetch(PDO::FETCH_ASSOC);
 
+        $avgEff = isset($reactors['avg_efficiency']) ? round((float)$reactors['avg_efficiency'], 1) : 0.0;
+        $avgRisk = isset($reactors['avg_risk']) ? round((float)$reactors['avg_risk'], 1) : 0.0;
+
         return [
-            'avg_efficiency' => (float) ($reactors['avg_efficiency'] ?? 0),
-            'avg_risk' => (float) ($reactors['avg_risk'] ?? 0),
-            'total_reactors' => (int) $reactors['total'],
+            'avg_efficiency' => $avgEff,
+            'avg_risk' => $avgRisk,
+            'total_reactors' => (int) ($reactors['total'] ?? 0),
         ];
     }
 
@@ -101,8 +104,17 @@ class AnalyticsService {
 
         $result = [];
         foreach ($reactors as $r) {
-            $probIndex = min(4, (int) (($r['seismic_risk'] / 100) * 5));
-            $impactIndex = min(4, (int) ((1 - $r['soil_stability']) * 5));
+            // Normalize inputs: seismic_risk is 0-10 scale, soil_stability is percentage (0-100) or 0-1
+            $seismic = (float) $r['seismic_risk'];
+            $soil = (float) $r['soil_stability'];
+
+            // seismic_risk is expressed in 0-100 scale in DB; normalize to 0-1
+            $probNorm = min(1.0, max(0.0, $seismic / 100.0));
+            $probIndex = min(4, (int) floor($probNorm * 5));
+
+            $soilNorm = $soil > 1.0 ? ($soil / 100.0) : $soil;
+            $impactNorm = min(1.0, max(0.0, 1.0 - $soilNorm));
+            $impactIndex = min(4, (int) floor($impactNorm * 5));
 
             $result[] = [
                 'reactor_id' => (int) $r['id'],
