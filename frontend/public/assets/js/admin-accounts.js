@@ -130,6 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>`;
         }).join('');
     }
+    
     // ── 4. POPULARE DROPDOWN REACTOARE ──
     function populateReactorSelect() {
         const select = document.getElementById("assign-reactor-select");
