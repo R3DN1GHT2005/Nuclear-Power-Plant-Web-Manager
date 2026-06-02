@@ -3,10 +3,12 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\DTOs\Request\alert\CreateAlertDTO;
-use App\DTOs\Request\alert\UpdateAlertDTO;
-use App\Mappers\AlertMapper;
 use App\Services\AlertService;
+use App\Mappers\AlertMapper;
+use App\Middleware\AuthMiddleware;
+use App\Repositories\ReactorPersonnelRepository; 
+use InvalidArgumentException;
+use Exception;
 
 class AlertController {
     private AlertService $alertService;
@@ -15,92 +17,88 @@ class AlertController {
         $this->alertService = new AlertService();
     }
 
-    // GET /api/alerts
-    public function getAllAlerts(): void {
-        $reactorId = isset($_GET['reactor_id']) ? (int) $_GET['reactor_id'] : null;
-        $severity = $_GET['severity'] ?? null;
-        $resolved = isset($_GET['resolved']) ? (bool) $_GET['resolved'] : null;
-        $critical = isset($_GET['critical']) ? (bool) $_GET['critical'] : null;
-        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : null;
+    // GET /api/alerts/active
+    public function getActiveAlerts(): void {
+        try {
+            $user = AuthMiddleware::getUser();
+            
+            // 1. Extragem userId și rolul din token
+            $userId = is_object($user) ? 
+                ($user->userId ?? $user->id ?? $user->user_id ?? $user->sub ?? null) : 
+                ($user['userId'] ?? $user['id'] ?? $user['user_id'] ?? $user['sub'] ?? null);
 
-        if ($critical) {
-            $alerts = $this->alertService->getCritical($reactorId);
-        } elseif ($resolved !== null) {
-            $alerts = $resolved ? $this->alertService->getResolved($reactorId) : $this->alertService->getUnresolved($reactorId);
-        } elseif ($severity !== null) {
-            $alerts = $this->alertService->getBySeverity($severity, $reactorId);
-        } elseif ($reactorId !== null) {
-            $alerts = $this->alertService->getByReactor($reactorId);
-        } elseif ($limit !== null) {
-            $alerts = $this->alertService->getRecent($limit);
-        } else {
-            $alerts = $this->alertService->getAll();
+            $userRole = is_object($user) ? ($user->role ?? 'tehnician') : ($user['role'] ?? 'tehnician');
+            
+            // 2. Extragem reactorul DIRECT din baza de date folosind noul Repository
+            $userReactorId = null;
+            if ($userId && $userRole !== 'admin') {
+                $personnelRepo = new ReactorPersonnelRepository();
+                $userReactorId = $personnelRepo->getAssignedReactorId((int) $userId);
+            }
+
+            // 3. Apelăm Serviciul
+            $activeAlerts = $this->alertService->getActiveAlertsForUser($userRole, $userReactorId);
+
+            // 4. Trimitem la frontend
+            Response::json(AlertMapper::toResponseList($activeAlerts));
+            
+        } catch (Exception $e) {
+            Response::json([
+                'error' => 'Eroare la aducerea alertelor active.',
+                'details' => $e->getMessage()
+            ], 500);
         }
-
-        Response::json(AlertMapper::toResponseList($alerts));
     }
 
-    // GET /api/alerts/{id}
-    public function getAlertById(int $id): void {
-        $alert = $this->alertService->getById($id);
-
-        if (!$alert) {
-            Response::json(['error' => 'Alertă negăsită'], 404);
-            return;
-        }
-
-        Response::json(AlertMapper::toResponse($alert));
-    }
-
-    // POST /api/alerts
-    public function createAlert(): void {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if (!$data || !isset($data['reactor_id'], $data['message'], $data['severity'])) {
-            Response::json(['error' => 'Date invalide. Sunt necesare: reactor_id, message, severity'], 400);
-            return;
-        }
-
-        $dto   = CreateAlertDTO::fromArray($data);
-        $alert = $this->alertService->create($dto);
-
-        if (!$alert) {
-            Response::json(['error' => 'Severitate invalidă. Valorile permise: Critica, Avertisment, Info'], 400);
-            return;
-        }
-
-        Response::json(AlertMapper::toResponse($alert), 201);
-    }
-
-    // PUT /api/alerts/{id}
-    public function updateAlert(int $id): void {
+    // POST /api/alerts/{id}/resolve
+    public function resolveAlert(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
         if (!$data) {
-            Response::json(['error' => 'Date invalide'], 400);
+            Response::json(['error' => 'Date invalide sau lipsă.'], 400);
             return;
         }
 
-        $dto   = UpdateAlertDTO::fromArray($data);
-        $alert = $this->alertService->resolve($id, $dto);
+        try {
+            $user = AuthMiddleware::getUser();
+            
+            // 1. Extragem userId și rolul
+            $userId = is_object($user) ? 
+                ($user->userId ?? $user->id ?? $user->user_id ?? $user->sub ?? null) : 
+                ($user['userId'] ?? $user['id'] ?? $user['user_id'] ?? $user['sub'] ?? null);
 
-        if (!$alert) {
-            Response::json(['error' => 'Alertă negăsită'], 404);
-            return;
+            $userRole = is_object($user) ? ($user->role ?? 'tehnician') : ($user['role'] ?? 'tehnician');
+
+            if (!$userId) {
+                Response::json([
+                    'error' => 'Structură JWT necunoscută. Nu am găsit ID-ul: ' . json_encode($user)
+                ], 401);
+                return;
+            }
+
+            // 2. Extragem reactorul DIRECT din baza de date la fel ca mai sus
+            $userReactorId = null;
+            if ($userRole !== 'admin') {
+                $personnelRepo = new ReactorPersonnelRepository();
+                $userReactorId = $personnelRepo->getAssignedReactorId((int) $userId);
+            }
+
+            // 3. Validăm și preluăm notițele din request
+            $dto = AlertMapper::toResolveRequestDTO($data);
+            
+            // 4. Trimitem către Service pentru verificare și salvare
+            $this->alertService->resolveAlert($id, $userId, $userRole, $userReactorId, $dto->notes);
+
+            Response::json(['message' => 'Alarma a fost asumată și rezolvată cu succes!']);
+            
+        } catch (InvalidArgumentException $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+            
+        } catch (Exception $e) {
+            Response::json([
+                'error' => 'Eroare la rezolvarea alarmei.',
+                'details' => $e->getMessage()
+            ], 500);
         }
-
-        Response::json(AlertMapper::toResponse($alert));
-    }
-
-    // DELETE /api/alerts/{id}
-    public function deleteAlert(int $id): void {
-        $deleted = $this->alertService->delete($id);
-
-        if (!$deleted) {
-            Response::json(['error' => 'Alertă negăsită'], 404);
-            return;
-        }
-
-        Response::json(['message' => 'Alertă ștearsă cu succes']);
     }
 }

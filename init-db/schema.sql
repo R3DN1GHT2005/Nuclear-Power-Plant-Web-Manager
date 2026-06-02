@@ -145,3 +145,17 @@ CREATE TABLE IF NOT EXISTS reactor_maintenance (
     is_completed BOOLEAN DEFAULT FALSE,             -- Dacă a fost repornit
     completed_at TIMESTAMP
 );
+
+DROP TABLE IF EXISTS alerts;
+
+CREATE TABLE alerts (
+    id SERIAL PRIMARY KEY,
+    reactor_id INT REFERENCES reactors(id) ON DELETE CASCADE,
+    severity VARCHAR(20) NOT NULL CHECK (severity IN ('warning', 'critical')),
+    message TEXT NOT NULL,
+    is_resolved BOOLEAN DEFAULT FALSE,
+    resolved_by INT REFERENCES users(id) ON DELETE SET NULL,
+    resolution_notes TEXT, -- Coloana nouă pentru detaliile intervenției
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP
+);

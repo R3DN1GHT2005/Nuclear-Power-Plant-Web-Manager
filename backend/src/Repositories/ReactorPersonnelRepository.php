@@ -48,4 +48,20 @@ class ReactorPersonnelRepository {
 
         return $row ? ReactorPersonnel::fromArray($row) : null;
     }
+
+    
+    /**
+     * Află la ce reactor este asignat un utilizator folosind tabela reactor_personnel
+     */
+    public function getAssignedReactorId(int $userId): ?int {
+        $sql = "SELECT reactor_id FROM reactor_personnel WHERE user_id = :user_id LIMIT 1";
+        
+        // Presupunând că ai o proprietate $this->db care ține conexiunea PDO
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        return $row ? (int) $row['reactor_id'] : null;
+    }
 }

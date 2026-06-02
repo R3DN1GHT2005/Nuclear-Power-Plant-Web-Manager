@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\DTOs\Request\alert\CreateAlertDTO;
-use App\DTOs\Request\alert\UpdateAlertDTO;
-use App\Models\Alert;
 use App\Repositories\AlertRepository;
+use App\Models\Alert;
+use App\Enums\AlertSeverity;
+use Exception;
 
 class AlertService {
     private AlertRepository $alertRepository;
@@ -14,50 +14,83 @@ class AlertService {
         $this->alertRepository = new AlertRepository();
     }
 
-    public function getAll(): array {
-        return $this->alertRepository->getAllAlerts();
+    /**
+     * Aduce toate alertele active filtrate pe baza rolului utilizatorului
+     */
+    public function getActiveAlertsForUser(string $userRole, ?int $userReactorId): array {
+        $allActiveAlerts = $this->alertRepository->getAllActive();
+
+        $filteredAlerts = array_filter($allActiveAlerts, function(Alert $alert) use ($userRole, $userReactorId) {
+            // 1. ADMINUL are vizibilitate GLOBALĂ peste toate reactoarele
+            if ($userRole === 'admin') {
+                return true;
+            }
+            
+            // 2. Ceilalți (Manager / Tehnician) văd DOAR alertele de pe reactorul lor
+            if ($alert->getReactorId() === $userReactorId) {
+                
+                // Tehnicianul vede doar alertele CRITICE
+                if ($userRole === 'tehnician') {
+                    return $alert->getSeverity() === AlertSeverity::CRITICAL;
+                }
+                
+                // Managerul vede și WARNING și CRITICAL, dar doar pe reactorul lui
+                return true; 
+            }
+
+            return false; // Dacă nu e admin și nu e reactorul lui, nu vede nimic.
+        });
+
+        return array_values($filteredAlerts);
     }
 
-    public function getById(int $id): ?Alert {
-        return $this->alertRepository->getAlertById($id);
-    }
-
-    public function getByReactor(int $reactorId): array {
-        return $this->alertRepository->getAlertsByReactor($reactorId);
-    }
-
-    public function getBySeverity(string $severity, ?int $reactorId = null): array {
-        return $this->alertRepository->getAlertsBySeverity($severity, $reactorId);
-    }
-
-    public function getUnresolved(?int $reactorId = null): array {
-        return $this->alertRepository->getUnresolvedAlerts($reactorId);
-    }
-
-    public function getResolved(?int $reactorId = null): array {
-        return $this->alertRepository->getResolvedAlerts($reactorId);
-    }
-
-    public function getCritical(?int $reactorId = null): array {
-        return $this->alertRepository->getCriticalAlerts($reactorId);
-    }
-
-    public function getRecent(int $limit = 10, ?int $reactorId = null): array {
-        return $this->alertRepository->getRecentAlerts($limit, $reactorId);
-    }
-
-    public function create(CreateAlertDTO $dto): ?Alert {
-        return $this->alertRepository->createAlert($dto);
-    }
-
-    public function resolve(int $id, UpdateAlertDTO $dto): ?Alert {
-        if ($dto->resolved) {
-            return $this->alertRepository->resolveAlert($id, $dto->resolved_by);
+    /**
+     * Operatorul își asumă și rezolvă o alertă
+     */
+    public function resolveAlert(int $alertId, int $userId, string $userRole, ?int $userReactorId, string $notes): bool {
+        // 1. Verificăm dacă alerta există
+        $alert = $this->alertRepository->findById($alertId);
+        
+        if (!$alert) {
+            throw new Exception("Alerta nu a fost găsită în sistem.");
         }
-        return $this->alertRepository->markAlertUnresolved($id);
+
+        if ($alert->isResolved()) {
+            throw new Exception("Această alertă a fost deja rezolvată de alt operator.");
+        }
+
+        // 2. BARIERĂ DE SECURITATE: Are voie să rezolve această alertă?
+        if ($userRole !== 'admin') {
+            if ($alert->getReactorId() !== $userReactorId) {
+                // Blocăm orice încercare de a opri o alarmă la un alt reactor!
+                throw new Exception("Acces Interzis! Nu poți opri alarme pentru un reactor la care nu ești asignat.");
+            }
+        }
+
+        // 3. Facem update-ul prin repository
+        $resolved = $this->alertRepository->resolve($alertId, $userId, $notes);
+        
+        if (!$resolved) {
+            throw new Exception("Eroare la salvarea intervenției în baza de date.");
+        }
+
+        return true;
     }
 
-    public function delete(int $id): bool {
-        return $this->alertRepository->deleteAlert($id);
+    /**
+     * Sistemul intern (senzorii) declanșează o alertă nouă
+     */
+    public function triggerAlert(int $reactorId, AlertSeverity $severity, string $message): Alert {
+        $existingAlert = $this->alertRepository->findActiveByReactorAndSeverity($reactorId, $severity);
+        
+        if ($existingAlert) {
+            throw new Exception("O alertă de acest tip este deja activă pentru acest reactor.");
+        }
+
+        $alert = new Alert(
+            0, $reactorId, $severity, $message, false, null, null, new \DateTime()
+        );
+
+        return $this->alertRepository->create($alert);
     }
 }

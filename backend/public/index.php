@@ -14,8 +14,8 @@ use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
 use App\Controllers\AuthController;
 use App\Controllers\ReactorMaintenanceController;
-use App\Controllers\ReportController;
-use App\Controllers\UserController; // <-- IMPORTUL NOU
+use App\Controllers\UserController;
+use App\Controllers\AlertController;
 use App\Core\Router;
 
 use App\Middleware\AdminMiddleware;     
@@ -104,14 +104,6 @@ try {
     // Vizualizare reactoare
     $router->get('/api/reactors', ReactorController::class, 'getAllReactors', [AuthMiddleware::class]); 
     $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById', [AuthMiddleware::class]); 
-
-    // Rapoarte / statistici
-    $router->get('/api/reports/kpi', ReportController::class, 'getKpi', [AuthMiddleware::class]);
-    $router->get('/api/reports/efficiency', ReportController::class, 'getEfficiency', [AuthMiddleware::class]);
-    $router->get('/api/reports/efficiency/trend', ReportController::class, 'getEfficiencyTrend', [AuthMiddleware::class]);
-    $router->get('/api/reports/comparison', ReportController::class, 'getComparison', [AuthMiddleware::class]);
-    $router->get('/api/reports/risk-matrix', ReportController::class, 'getRiskMatrix', [AuthMiddleware::class]);
-    $router->get('/api/reports/wear', ReportController::class, 'getWear', [AuthMiddleware::class]);
     
     // Vizualizare senzori
     $router->get('/api/sensors', SensorController::class, 'getAllSensors', [AuthMiddleware::class]); 
@@ -129,8 +121,15 @@ try {
     $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [AdminMiddleware::class]);
     $router->get('/api/reactors/{id}/maintenance/history', ReactorMaintenanceController::class, 'getHistory');
     
+    // RUTE ALERTE 
+    // ==========================================
+    $router->get('/api/alerts/active', AlertController::class, 'getActiveAlerts', [AuthMiddleware::class]);
+    $router->post('/api/alerts/{id}/resolve', AlertController::class, 'resolveAlert', [AuthMiddleware::class]);
     // START ROUTING
     $router->dispatch($uri, $method);
+
+    // ==========================================
+    
 
 } catch (Exception $e) {
     http_response_code(500);
