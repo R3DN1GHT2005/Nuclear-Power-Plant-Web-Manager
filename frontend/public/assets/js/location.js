@@ -542,19 +542,81 @@
     }
 
     async function fetchReactors() {
-        // Folosim authFetch în loc de fetch clasic
-        const response = await window.authFetch(`/reactors`, {
-            method: 'GET'
+        const resp = await fetch(`${apiBase}/reactors`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
         });
 
-        if (!response.ok) {
-            throw new Error(`Nu s-au putut prelua reactoarele (${response.status})`);
+        if (resp.status === 401) {
+            window.location.href = 'login.html';
+            return [];
         }
 
-        const payload = await response.json();
+        if (!resp.ok) {
+            throw new Error(`Nu s-au putut prelua reactoarele (${resp.status})`);
+        }
+
+        const payload = await resp.json();
         const reactors = Array.isArray(payload) ? payload : Array.isArray(payload.data) ? payload.data : [];
         renderReactorStats(calculateReactorStats(reactors));
         return reactors;
+    }
+
+    function renderStatusCards(reactors) {
+        const container = document.getElementById('status-cards');
+        if (!container) {
+            return;
+        }
+
+        const list = Array.isArray(reactors) ? reactors : [];
+        const totalPower = list.reduce((sum, reactor) => sum + safeNumber(reactor.installed_power, 0), 0);
+        const totalReactors = list.length;
+
+        const typeBuckets = list.reduce((accumulator, reactor) => {
+            const typeKey = normalizeReactorType(reactor.reactor_type);
+            if (typeKey === 'CANDU') accumulator.candu += 1;
+            else if (typeKey === 'SMR') accumulator.smr += 1;
+            else if (typeKey === 'PWR' || typeKey === 'EPR' || typeKey === 'BWR') accumulator.pwr += 1;
+            else accumulator.other += 1;
+            return accumulator;
+        }, { candu: 0, smr: 0, pwr: 0, other: 0 });
+
+        const statusBuckets = list.reduce((accumulator, reactor) => {
+            const statusKey = getStatusBucket(normalizeStatus(reactor.status));
+            if (accumulator[statusKey] !== undefined) {
+                accumulator[statusKey] += 1;
+            }
+            return accumulator;
+        }, { activ: 0, mentenanta: 0, constructie: 0, oprit: 0, alerta: 0, other: 0 });
+
+        const avgSeismic = list.length
+            ? list.reduce((sum, reactor) => sum + safeNumber(reactor.seismic_risk, 0), 0) / list.length
+            : 0;
+        const seismic10 = avgSeismic > 10 ? avgSeismic / 10 : avgSeismic;
+
+        container.innerHTML = `
+            <div class="status-summary-item status-summary-item--power">
+                <div class="status-summary-label">Putere totală</div>
+                <div class="status-summary-value">${formatPower(totalPower)}</div>
+                <div class="status-summary-note">${totalReactors} reactoare în calcul</div>
+            </div>
+            <div class="status-summary-item status-summary-item--types">
+                <div class="status-summary-label">Tipuri</div>
+                <div class="status-summary-value">${typeBuckets.candu}/${typeBuckets.smr}/${typeBuckets.pwr}/${typeBuckets.other}</div>
+                <div class="status-summary-note">CANDU / SMR / PWR / Alte tipuri</div>
+            </div>
+            <div class="status-summary-item status-summary-item--status">
+                <div class="status-summary-label">Status</div>
+                <div class="status-summary-value">${statusBuckets.activ} active</div>
+                <div class="status-summary-note">${statusBuckets.mentenanta} mentenanță · ${statusBuckets.constructie} construcție · ${statusBuckets.oprit} oprite</div>
+            </div>
+            <div class="status-summary-item status-summary-item--risk">
+                <div class="status-summary-label">Risc seismic mediu</div>
+                <div class="status-summary-value">${formatPercent(seismic10, 1)} / 10</div>
+                <div class="status-summary-note">Scală normalizată din datele backend</div>
+            </div>
+        `;
     }
 
     async function refreshReactors() {
@@ -831,6 +893,10 @@
                 cancelButton.disabled = false;
             }
         }
+    }
+
+    function formatPercent(value) {
+    return `${value || 0}%`;
     }
 
     async function loadSensorsForReactor(reactorId) {

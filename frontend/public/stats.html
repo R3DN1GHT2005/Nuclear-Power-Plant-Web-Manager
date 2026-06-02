@@ -37,41 +37,41 @@
                 <h1 class="ph-title">Statistici & Analiză</h1>
                 <p class="ph-sub">Performanță, eficiență, risc și uzură · Centrala Nucleară NW-01</p>
             </div>
-            <div class="time-range">
-                <div class="tr">24h</div>
-                <div class="tr">7z</div>
-                <div class="tr active">30z</div>
-                <div class="tr">90z</div>
-                <div class="tr">1an</div>
+            <div class="time-range" id="stats-time-range">
+                <div class="tr" data-days="1">24h</div>
+                <div class="tr" data-days="7">7z</div>
+                <div class="tr active" data-days="30">30z</div>
+                <div class="tr" data-days="90">90z</div>
+                <div class="tr" data-days="365">1an</div>
             </div>
         </div>
 
-        <section class="kpi-grid">
+        <section class="kpi-grid" id="stats-kpi-grid">
             <div class="kpi-card">
                 <div class="kpi-label">Eficiență medie</div>
-                <div class="kpi-val text-green">87.3%</div>
-                <div class="kpi-desc trend-up">↑ +2.1% față de luna trecută</div>
+                <div class="kpi-val text-green" id="kpi-efficiency-value">—</div>
+                <div class="kpi-desc trend-up" id="kpi-efficiency-desc">Se încarcă datele live...</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-label">Energie produsă</div>
-                <div class="kpi-val text-purple">4.82 TWh</div>
-                <div class="kpi-desc trend-up">↑ +0.3 TWh vs plan</div>
+                <div class="kpi-val text-purple" id="kpi-energy-value">—</div>
+                <div class="kpi-desc trend-up" id="kpi-energy-desc">Calculată din capacitatea live</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-label">Indice de risc</div>
-                <div class="kpi-val text-amber">2.4 / 10</div>
-                <div class="kpi-desc trend-down">↑ +0.6 față de ieri (R3)</div>
+                <div class="kpi-val text-amber" id="kpi-risk-value">—</div>
+                <div class="kpi-desc trend-down" id="kpi-risk-desc">Media tuturor reactoarelor</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-label">Disponibilitate</div>
-                <div class="kpi-val text-green">97.2%</div>
-                <div class="kpi-desc trend-neutral">→ stabil</div>
+                <div class="kpi-val text-green" id="kpi-availability-value">—</div>
+                <div class="kpi-desc trend-neutral" id="kpi-availability-desc">Raport activ / total</div>
             </div>
         </section>
 
         <div class="scroll-area">
             
-            <article class="chart-card">
+            <article class="chart-card" id="efficiency-bars-card">
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Eficiență per reactor</h3>
@@ -82,54 +82,28 @@
                         <div class="cc-leg-item"><div class="leg-line dashed"></div>Țintă 90%</div>
                     </div>
                 </header>
-                <div class="chart-wrap">
+                <div class="chart-wrap" id="efficiency-bars-wrap">
                     <div class="bar-chart-container">
                         <div class="target-line"></div>
-                        <div class="bar-chart">
-                            <div class="bc-col"><div class="bc-val text-red">76%</div><div class="bc-bar bg-red" style="height:76px;"></div><div class="bc-lbl">R3</div></div>
-                            <div class="bc-col"><div class="bc-val text-amber">62%</div><div class="bc-bar bg-amber" style="height:62px;"></div><div class="bc-lbl">R4</div></div>
-                            <div class="bc-col"><div class="bc-val text-green">91%</div><div class="bc-bar bg-green" style="height:91px;"></div><div class="bc-lbl">R1</div></div>
-                            <div class="bc-col"><div class="bc-val text-green">88%</div><div class="bc-bar bg-green" style="height:88px;"></div><div class="bc-lbl">R2</div></div>
-                            <div class="bc-col"><div class="bc-val text-green">94%</div><div class="bc-bar bg-green" style="height:94px;"></div><div class="bc-lbl">R5</div></div>
-                            <div class="bc-col"><div class="bc-val text-green">85%</div><div class="bc-bar bg-green opacity-80" style="height:85px;"></div><div class="bc-lbl">R6</div></div>
-                            <div class="bc-col"><div class="bc-val text-muted">—</div><div class="bc-bar bg-gray" style="height:4px;"></div><div class="bc-lbl">R7</div></div>
-                            <div class="bc-col"><div class="bc-val text-green">79%</div><div class="bc-bar bg-green opacity-70" style="height:79px;"></div><div class="bc-lbl">R8</div></div>
-                        </div>
+                        <div class="bar-chart" id="efficiency-bars"></div>
                     </div>
                 </div>
             </article>
 
-            <article class="chart-card">
+            <article class="chart-card" id="trend-card">
                 <header class="cc-header">
                     <div>
-                        <h3 class="cc-title">Trend eficiență medie — 30 zile</h3>
-                        <p class="cc-sub">Centrala în ansamblu</p>
+                        <h3 class="cc-title" id="trend-title">Trend eficiență medie — 30 zile</h3>
+                        <p class="cc-sub" id="trend-subtitle">Centrala în ansamblu</p>
                     </div>
                 </header>
-                <div class="chart-wrap pb-8">
-                    <svg class="line-chart-svg" viewBox="0 0 460 90" preserveAspectRatio="none">
-                        <line x1="0" y1="18" x2="460" y2="18" class="grid-line"/>
-                        <line x1="0" y1="45" x2="460" y2="45" class="grid-line"/>
-                        <line x1="0" y1="72" x2="460" y2="72" class="grid-line"/>
-                        
-                        <text x="0" y="16" class="y-label">95%</text>
-                        <text x="0" y="43" class="y-label">87%</text>
-                        <text x="0" y="70" class="y-label">80%</text>
-                        
-                        <polyline points="30,50 65,42 100,45 135,38 170,40 205,35 240,42 275,38 310,44 345,35 380,38 420,32 455,30" class="trend-line"/>
-                        <polygon points="30,50 65,42 100,45 135,38 170,40 205,35 240,42 275,38 310,44 345,35 380,38 420,32 455,30 455,90 30,90" fill="url(#eff-grad)" opacity="0.3"/>
-                        <defs><linearGradient id="eff-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0E9F6E"/><stop offset="100%" stop-color="#0E9F6E" stop-opacity="0"/></linearGradient></defs>
-                        
-                        <line x1="420" y1="10" x2="420" y2="80" class="alert-line"/>
-                        <text x="424" y="16" font-size="7" fill="var(--red)">alertă R3</text>
-                    </svg>
-                    <div class="x-axis-labels">
-                        <span>1 mar</span><span>8 mar</span><span>15 mar</span><span>22 mar</span><span>azi</span>
-                    </div>
+                <div class="chart-wrap pb-8" id="trend-wrap">
+                    <svg class="line-chart-svg" id="trend-svg" viewBox="0 0 460 90" preserveAspectRatio="none"></svg>
+                    <div class="x-axis-labels" id="trend-axis-labels"></div>
                 </div>
             </article>
 
-            <article class="chart-card mb-0">
+            <article class="chart-card mb-0" id="comparison-card">
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Comparativ reactoare</h3>
@@ -147,16 +121,7 @@
                             <th>Trend</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td class="fw-500 text-red">Reactor 3</td><td><span class="text-red">71%</span></td><td>94.2%</td><td><span class="text-red">7.8</span></td><td>44%</td><td class="trend-down">↓ −6%</td></tr>
-                        <tr><td class="fw-500 text-amber">Reactor 4</td><td><span class="text-amber">78%</span></td><td>88.5%</td><td><span class="text-amber">3.2</span></td><td>34%</td><td class="trend-down">↓ −4%</td></tr>
-                        <tr><td class="fw-500">Reactor 1</td><td class="text-green">92%</td><td>98.8%</td><td class="text-green">1.1</td><td>18%</td><td class="trend-up">↑ +1%</td></tr>
-                        <tr><td class="fw-500">Reactor 2</td><td class="text-green">90%</td><td>99.1%</td><td class="text-green">1.0</td><td>21%</td><td class="trend-neutral">→</td></tr>
-                        <tr><td class="fw-500">Reactor 5</td><td class="text-green">93%</td><td>99.4%</td><td class="text-green">0.8</td><td>12%</td><td class="trend-up">↑ +2%</td></tr>
-                        <tr><td class="fw-500">Reactor 6</td><td class="text-green">87%</td><td>97.6%</td><td class="text-green">1.3</td><td>26%</td><td class="trend-neutral">→</td></tr>
-                        <tr><td class="text-muted">Reactor 7</td><td class="text-muted">—</td><td class="text-amber">72.0%</td><td class="text-muted">—</td><td>31%</td><td class="trend-neutral">—</td></tr>
-                        <tr><td class="fw-500">Reactor 8</td><td class="text-green">82%</td><td>96.3%</td><td class="text-green">1.8</td><td>29%</td><td class="trend-up">↑ +1%</td></tr>
-                    </tbody>
+                    <tbody id="comparison-table-body"></tbody>
                 </table>
             </article>
 
@@ -166,106 +131,41 @@
     <div class="col-right">
         <div class="scroll-area">
             
-            <article class="chart-card">
+            <article class="chart-card" id="risk-card">
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Matrice de risc</h3>
                         <p class="cc-sub">Probabilitate × Impact · reactoare active</p>
                     </div>
                 </header>
-                <div class="matrix-wrap">
-                    <div class="matrix-header-row">
-                        <div class="matrix-y-axis-lbl">Impact ↑</div>
-                        <div class="matrix-headers">
-                            <div class="rm-hdr">Neg.</div><div class="rm-hdr">Minor</div><div class="rm-hdr">Moderat</div><div class="rm-hdr">Major</div><div class="rm-hdr">Critic</div>
-                        </div>
-                    </div>
-                    <div class="matrix-body">
-                        <div class="matrix-row"><div class="matrix-row-lbl">Cert</div><div class="rm-cell rm-md">—</div><div class="rm-cell rm-hi">—</div><div class="rm-cell rm-hi">R3</div><div class="rm-cell rm-hi">—</div><div class="rm-cell rm-hi">—</div></div>
-                        <div class="matrix-row"><div class="matrix-row-lbl">Probabil</div><div class="rm-cell rm-lo">—</div><div class="rm-cell rm-md">R4</div><div class="rm-cell rm-md">—</div><div class="rm-cell rm-hi">—</div><div class="rm-cell rm-hi">—</div></div>
-                        <div class="matrix-row"><div class="matrix-row-lbl">Posibil</div><div class="rm-cell rm-lo">—</div><div class="rm-cell rm-lo">R8</div><div class="rm-cell rm-md">R6</div><div class="rm-cell rm-md">—</div><div class="rm-cell rm-hi">—</div></div>
-                        <div class="matrix-row"><div class="matrix-row-lbl">Puțin prob.</div><div class="rm-cell rm-lo">R2</div><div class="rm-cell rm-lo">R1</div><div class="rm-cell rm-lo">—</div><div class="rm-cell rm-md">—</div><div class="rm-cell rm-md">—</div></div>
-                        <div class="matrix-row"><div class="matrix-row-lbl">Rar</div><div class="rm-cell rm-lo">R5</div><div class="rm-cell rm-lo">—</div><div class="rm-cell rm-lo">—</div><div class="rm-cell rm-md">—</div><div class="rm-cell rm-md">—</div></div>
-                    </div>
-                    <div class="matrix-x-axis-lbl">← Probabilitate →</div>
-                </div>
+                <div class="matrix-wrap" id="risk-matrix-wrap"></div>
             </article>
 
-            <article class="chart-card">
+            <article class="chart-card" id="environment-card">
                 <header class="cc-header">
                     <div>
-                        <h3 class="cc-title">Condiții meteo — impact operațional</h3>
-                        <p class="cc-sub">Amplasament NW-01 · Cernavodă</p>
+                        <h3 class="cc-title">Condiții operaționale</h3>
+                        <p class="cc-sub">Date live din backend · amplasamentele reactoarelor</p>
                     </div>
                 </header>
-                <div class="meteo-grid">
-                    <div class="met-box"><div class="met-icon">🌡️</div><div class="met-v">18°C</div><div class="met-l">Temperatură</div><div class="met-impact mi-ok">Impact: minim</div></div>
-                    <div class="met-box"><div class="met-icon">💨</div><div class="met-v">32 km/h</div><div class="met-l">Vânt</div><div class="met-impact mi-ok">Impact: minim</div></div>
-                    <div class="met-box"><div class="met-icon">💧</div><div class="met-v">Dunăre 62%</div><div class="met-l">Debit apă</div><div class="met-impact mi-ok">Optim</div></div>
-                    <div class="met-box"><div class="met-icon">🌫️</div><div class="met-v">68%</div><div class="met-l">Umiditate</div><div class="met-impact mi-warn">Atenție</div></div>
-                </div>
+                <div class="meteo-grid" id="environment-grid"></div>
             </article>
 
-            <article class="chart-card mb-0">
+            <article class="chart-card mb-0" id="wear-card">
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Grad de uzură per reactor</h3>
                         <p class="cc-sub">Estimare bazată pe ore funcționare și mentenanță</p>
                     </div>
                 </header>
-                <div class="wear-list">
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 3</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-red" style="width:44%;"></div></div>
-                        <span class="wear-val text-red">44%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 4</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-amber" style="width:34%;"></div></div>
-                        <span class="wear-val text-amber">34%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 7</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-amber" style="width:31%;"></div></div>
-                        <span class="wear-val text-amber">31%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 8</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-green" style="width:29%;"></div></div>
-                        <span class="wear-val text-green">29%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 6</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-green" style="width:26%;"></div></div>
-                        <span class="wear-val text-green">26%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 2</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-green" style="width:21%;"></div></div>
-                        <span class="wear-val text-green">21%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 1</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-green" style="width:18%;"></div></div>
-                        <span class="wear-val text-green">18%</span>
-                    </div>
-                    <div class="wear-item">
-                        <span class="wear-lbl">Reactor 5</span>
-                        <div class="wear-bar-bg"><div class="wear-bar-f bg-green" style="width:12%;"></div></div>
-                        <span class="wear-val text-green">12%</span>
-                    </div>
-                    
-                    <footer class="wear-legend">
-                        <span class="wl-item"><span class="wl-dot bg-green"></span>0–30% Bună</span>
-                        <span class="wl-item"><span class="wl-dot bg-amber"></span>30–40% Medie</span>
-                        <span class="wl-item"><span class="wl-dot bg-red"></span>&gt;40% Critică</span>
-                    </footer>
-                </div>
+                <div class="wear-list" id="wear-list"></div>
             </article>
 
         </div>
     </div>
 
 </main>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/stats.js?v=2"></script>
 </body>
 </html>

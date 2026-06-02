@@ -92,6 +92,46 @@ const NuclearAPI = {
     },
 
     // ==========================================
+    // ── RAPOARTE / STATISTICI ──
+    // ==========================================
+
+    async getKpi() {
+        const response = await authFetch('/reports/kpi', { method: 'GET' });
+        if (!response.ok) throw new Error('Eroare la preluarea KPI-urilor');
+        return await response.json();
+    },
+
+    async getEfficiencyPerReactor() {
+        const response = await authFetch('/reports/efficiency', { method: 'GET' });
+        if (!response.ok) throw new Error('Eroare la preluarea eficienței per reactor');
+        return await response.json();
+    },
+
+    async getEfficiencyTrend(days = 30) {
+        const response = await authFetch(`/reports/efficiency/trend?days=${encodeURIComponent(days)}`, { method: 'GET' });
+        if (!response.ok) throw new Error('Eroare la preluarea trendului de eficiență');
+        return await response.json();
+    },
+
+    async getComparison() {
+        const response = await authFetch('/reports/comparison', { method: 'GET' });
+        if (!response.ok) throw new Error('Eroare la preluarea comparației');
+        return await response.json();
+    },
+
+    async getRiskMatrix() {
+        const response = await authFetch('/reports/risk-matrix', { method: 'GET' });
+        if (!response.ok) throw new Error('Eroare la preluarea matricei de risc');
+        return await response.json();
+    },
+
+    async getWear() {
+        const response = await authFetch('/reports/wear', { method: 'GET' });
+        if (!response.ok) throw new Error('Eroare la preluarea uzurii');
+        return await response.json();
+    },
+
+    // ==========================================
     // ── SENZORI ──
     // ==========================================
 
