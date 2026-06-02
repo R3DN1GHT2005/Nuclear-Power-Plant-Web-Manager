@@ -95,3 +95,53 @@ CREATE INDEX IF NOT EXISTS idx_sensor_readings_sensor_id ON sensor_readings(sens
 CREATE INDEX IF NOT EXISTS idx_sensor_readings_date ON sensor_readings(recorded_at);
 CREATE INDEX IF NOT EXISTS idx_alerts_reactor_id ON alerts(reactor_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
+
+
+-- 1. Ștergem vechea tabelă de mentenanță (Atenție: se vor șterge datele vechi de mentenanță, dacă există!)
+DROP TABLE IF EXISTS maintenance_logs;
+
+-- 2. Creăm NOUA tabelă pentru sarcini / planificare (perspectiva Managerului)
+CREATE TABLE IF NOT EXISTS maintenance_tasks (
+    id SERIAL PRIMARY KEY,
+    reactor_id INTEGER REFERENCES reactors(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    priority VARCHAR(20) DEFAULT 'Medium', -- ex: Low, Medium, High, Critical
+    status VARCHAR(50) DEFAULT 'Scheduled', -- ex: Scheduled, In Progress, Review, Completed
+    assigned_technician_id INTEGER REFERENCES users(id) ON DELETE SET NULL, 
+    scheduled_by_manager_id INTEGER REFERENCES users(id) ON DELETE SET NULL, 
+    scheduled_date DATE,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Creăm NOUA tabelă pentru loguri / istoric (perspectiva Tehnicianului)
+CREATE TABLE IF NOT EXISTS maintenance_logs (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER REFERENCES maintenance_tasks(id) ON DELETE CASCADE,
+    technician_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    action_taken TEXT NOT NULL,            
+    completion_percent INTEGER DEFAULT 0,  
+    logged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. Adăugăm indecșii pentru noile tabele
+CREATE INDEX IF NOT EXISTS idx_maintenance_tasks_reactor_id ON maintenance_tasks(reactor_id);
+CREATE INDEX IF NOT EXISTS idx_maintenance_tasks_status ON maintenance_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_maintenance_logs_task_id ON maintenance_logs(task_id);
+
+-- Ștergem tabelele vechi (dacă le-ai creat)
+DROP TABLE IF EXISTS task_assignments CASCADE;
+DROP TABLE IF EXISTS maintenance_logs CASCADE;
+DROP TABLE IF EXISTS maintenance_tasks CASCADE;
+
+-- Creăm un tabel simplu pentru istoricul opririlor
+CREATE TABLE IF NOT EXISTS reactor_maintenance (
+    id SERIAL PRIMARY KEY,
+    reactor_id INTEGER REFERENCES reactors(id) ON DELETE CASCADE,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Începe ACUM
+    estimated_end_date DATE NOT NULL,               -- Data X
+    reason TEXT,                                    -- Motivul / Descrierea
+    is_completed BOOLEAN DEFAULT FALSE,             -- Dacă a fost repornit
+    completed_at TIMESTAMP
+);

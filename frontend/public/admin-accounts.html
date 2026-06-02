@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Administrare Conturi</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/admin-accounts.css">
+</head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="index.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
+        </a>
+        <a class="nav-link" href="index.html">Panou principal</a>
+        <a class="nav-link" href="reactors.html">Reactoare</a>
+        <a class="nav-link" href="maintenance.html">Mentenanță</a>
+        <a class="nav-link active admin-only" href="admin-accounts.html">Administrare Conturi</a>
+        <a class="nav-link" href="rss.html">Flux RSS</a>
+    </div>
+    <div class="nav-right">
+        <div class="avatar" id="user-avatar-badge">AD</div>
+        <button class="logout-btn" id="btn-logout">Deconectare</button>
+    </div>
+</nav>
+
+<main class="main admin-grid-layout">
+    
+    <div class="main-column">
+        <div class="page-header header-minimal" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 class="ph-title">Administrare Conturi</h1>
+                <p class="ph-sub">Gestionați personalul, rolurile și asignările globale.</p>
+            </div>
+            <button class="btn btn-prim" id="btn-create-user">+ Cont Nou</button>
+        </div>
+
+        <div class="panel-card" style="margin-bottom: 3rem;">
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nume</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Reactor Asignat</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <tr><td colspan="6" class="history-empty">Se încarcă utilizatorii...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-column">
+        <div class="page-header header-minimal" style="margin-bottom: 1.5rem;">
+            <div>
+                <h2 class="ph-title" style="font-size: 1.4rem;">Echipe Reactoare</h2>
+                <p class="ph-sub">Situația personalului asignat.</p>
+            </div>
+        </div>
+
+        <div class="panel-card" style="background: transparent; border: none; padding: 0; box-shadow: none;">
+            <div id="reactor-assignments-container" class="reactor-list-scroll">
+                <p class="history-empty">Se încarcă echipele...</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<div class="modal-overlay" id="modal-create-user">
+    <div class="modal">
+        <div class="modal-title">Creare Cont Nou</div>
+        <div class="modal-sub">Introduceți datele noului membru al personalului.</div>
+
+        <div style="display: flex; gap: 12px; margin-top: 22px;">
+            <div class="form-group" style="flex: 1; margin-top: 0;">
+                <label class="form-label">Nume (Familie)</label>
+                <input class="form-input" type="text" id="new-user-lastname" placeholder="ex: Popescu">
+            </div>
+            <div class="form-group" style="flex: 1; margin-top: 0;">
+                <label class="form-label">Prenume</label>
+                <input class="form-input" type="text" id="new-user-firstname" placeholder="ex: Ion">
+            </div>
+        </div>
+
+        <div class="form-group mt-12">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" id="new-user-email" placeholder="ion@nuclearwatch.ro">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Parolă inițială</label>
+            <input class="form-input" type="password" id="new-user-password" placeholder="Minim 6 caractere">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Rol (Nivel de Acces)</label>
+            <select class="form-select" id="new-user-role">
+                <option value="tehnician">Tehnician — Operator Standard</option>
+                <option value="manager">Manager — Supraveghetor</option>
+                <option value="admin">Administrator — Acces Global</option>
+            </select>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-close-modal">Anulează</button>
+            <button class="btn btn-prim" id="confirm-create-user">Creează Cont</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-change-password">
+    <div class="modal">
+        <div class="modal-title">Resetare Parolă</div>
+        <div class="modal-sub" id="pwd-modal-sub">Setați o nouă parolă pentru utilizator.</div>
+
+        <div class="form-group mt-12">
+            <label class="form-label">Noua Parolă</label>
+            <input class="form-input" type="password" id="new-password" placeholder="Minim 6 caractere">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-close-modal">Anulează</button>
+            <button class="btn btn-prim" id="confirm-change-password">Salvează</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-assign-reactor">
+    <div class="modal">
+        <div class="modal-title">Asignare la Reactor</div>
+        <div class="modal-sub">Selectați reactorul pe care acest operator îl va monitoriza.</div>
+
+        <div class="form-group mt-12">
+            <label class="form-label">Alege Reactorul</label>
+            <select class="form-select" id="assign-reactor-select">
+                <option value="">Se încarcă reactoarele...</option>
+            </select>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-close-modal">Anulează</button>
+            <button class="btn btn-prim" id="confirm-assign-reactor">Salvează Asignarea</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/admin-accounts.js"></script>
+</body>
+</html>

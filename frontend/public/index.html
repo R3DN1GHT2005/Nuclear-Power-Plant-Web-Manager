@@ -11,37 +11,20 @@
 </head>
 <body>
 
-<nav class="navbar">
+<nav class="navbar" id="top-navbar">
     <div class="nav-left">
-        <a class="logo" href="#">
-            <div class="logo-icon">
-                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
-                    <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.41 1.41M11.36 11.36l1.42 1.42M3.22 12.78l1.41-1.41M11.36 4.64l1.42-1.42" stroke="white" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
-            </div>
-            NuclearWatch
+        <a class="logo" href="index.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
         </a>
-        <a class="nav-link active" href="index.html">Panou principal</a>
+        <a class="nav-link" href="index.html">Panou principal</a>
         <a class="nav-link" href="reactors.html">Reactoare</a>
-        <a class="nav-link" href="stats.html">Statistici</a>
-        <a class="nav-link" href="location.html">Amplasare</a>
         <a class="nav-link" href="maintenance.html">Mentenanță</a>
+        <a class="nav-link admin-only" href="admin-accounts.html">Administrare Conturi</a>
         <a class="nav-link" href="rss.html">Flux RSS</a>
     </div>
     <div class="nav-right">
-        <button class="nav-icon-btn" title="Notificări">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 0 0-6 6v3l-1.5 2V14h15v-1L16 11V8a6 6 0 0 0-6-6zm0 16a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 10 18z" fill="currentColor"/></svg>
-            <span class="badge-dot" id="nav-badge-dot" style="display: none;"></span>
-        </button>
-        <button class="nav-icon-btn" title="Setări">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="1.5"/><path d="M17.66 10c0-.34-.03-.67-.08-1l2.13-1.63-2-3.46-2.49 1a7.1 7.1 0 0 0-1.73-1l-.38-2.65h-4l-.38 2.65a7.1 7.1 0 0 0-1.73 1l-2.49-1-2 3.46L4.42 9a7.2 7.2 0 0 0 0 2L2.3 12.63l2 3.46 2.49-1a7.1 7.1 0 0 0 1.73 1l.38 2.65h4l.38-2.65a7.1 7.1 0 0 0 1.73-1l2.49 1 2-3.46L17.74 11c.05-.32.08-.65.08-.99-.01-.01 0-.01-.16 0z" stroke="currentColor" stroke-width="1.5"/></svg>
-        </button>
-        <div class="avatar" id="user-avatar">...</div>
-        <button class="logout-btn" id="logoutBtn">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Deconectare
-        </button>
+        <div class="avatar" id="user-avatar-badge">U</div>
+        <button class="logout-btn" id="btn-logout">Deconectare</button>
     </div>
 </nav>
 

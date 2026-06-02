@@ -14,6 +14,7 @@ use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
 use App\Controllers\AuthController;
 use App\Controllers\ReactorMaintenanceController;
+use App\Controllers\UserController; // <-- IMPORTUL NOU
 use App\Core\Router;
 
 use App\Middleware\AdminMiddleware;     
@@ -63,10 +64,18 @@ try {
     $router->post('/api/auth/logout', AuthController::class, 'logout');
 
     // ==========================================
-    // RUTE PROTEJATE DE ADMIN (Au fost decomentate)
+    // RUTE PROTEJATE DE ADMIN
     // ==========================================
-    $router->post('/api/auth/register', AuthController::class, 'register', [AdminMiddleware::class]); 
     $router->put('/api/auth/password', AuthController::class, 'updatePassword', [AdminMiddleware::class]); 
+
+    // ── RUTE ADMINISTRARE CONTURI (USERS) ──
+    $router->post('/api/users', UserController::class, 'createUser', [AdminMiddleware::class]);
+    $router->get('/api/users', UserController::class, 'getAllUsers', [AdminMiddleware::class]);
+    $router->get('/api/users/{id}', UserController::class, 'getUserById', [AdminMiddleware::class]);
+    $router->put('/api/users/{id}/password', UserController::class, 'updatePassword', [AdminMiddleware::class]);
+    $router->put('/api/users/{id}/reactor', UserController::class, 'assignToReactor', [AdminMiddleware::class]);
+    $router->delete('/api/users/{id}', UserController::class, 'deleteUser', [AdminMiddleware::class]);
+    // ───────────────────────────────────────
 
     // Operațiuni critice pe reactoare
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
@@ -110,6 +119,8 @@ try {
     $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [AdminMiddleware::class]);
     $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [AdminMiddleware::class]);
     $router->get('/api/reactors/{id}/maintenance/history', ReactorMaintenanceController::class, 'getHistory');
+    
+    // START ROUTING
     $router->dispatch($uri, $method);
 
 } catch (Exception $e) {

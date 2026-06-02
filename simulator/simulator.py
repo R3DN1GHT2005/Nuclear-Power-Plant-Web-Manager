@@ -10,7 +10,7 @@ def run_simulator():
     measurements_url = f"{base_url}/readings"  # Ruta POST pt telemetrie
 
     # Preluăm cheia din .env (trimisă automat de docker-compose)
-    api_key = os.getenv("SENSOR_API_KEY", "cheie_secreta_super_lunga_12345")
+    api_key = os.getenv("SENSOR_API_KEY", "cheie_secreta_super_lunga_12345") # Valoare default pentru testare locală
     
     headers = {
         "Content-Type": "application/json",

@@ -1,0 +1,305 @@
+/* =============================================
+   admin-accounts.css — NuclearWatch Admin UI
+   Split Grid Layout (Reactors 38% / Users 62%)
+============================================= */
+
+/* ══════════════════════════════════════════
+   LAYOUT FIX — GRID IMPARTIT
+══════════════════════════════════════════ */
+
+
+main.main.admin-grid-layout {
+  display: grid !important;
+  grid-template-columns: 65fr 33fr; /* Inversat: 62% Stânga (Tabel) / 38% Dreapta (Reactoare) */
+  gap: 2.5rem;
+  max-width: 1450px !important;
+  margin: 0 auto !important;
+  padding: 2.5rem 2rem !important;
+  align-items: start;
+}
+
+/* Coloana Stângă (Echipe) */
+.sidebar-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Coloana Dreaptă (Tabel) */
+.main-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Previne extinderea tabelului peste grid */
+}
+
+/* Scroll personalizat pentru lista de reactoare */
+.reactor-list-scroll {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding-right: 12px; /* Spațiu pentru scrollbar */
+}
+
+.reactor-list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.reactor-list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.reactor-list-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 4px;
+}
+.reactor-list-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
+}
+
+/* Page header flexibil */
+.page-header.header-minimal {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1.75rem !important;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.panel-card {
+  width: 100% !important;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  overflow: hidden;
+}
+
+/* ── ADMIN TABLE ── */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+}
+
+.admin-table thead {
+  background: #F8FAFC;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 11px 16px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+  color: #8A96A8;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  vertical-align: middle;
+  font-size: 13px;
+  color: #0F1923;
+  transition: background 0.12s;
+}
+
+.admin-table tbody tr:hover td {
+  background: #F8FAFC;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 48px 16px !important;
+  color: #8A96A8;
+  font-size: 13px;
+}
+
+/* ── BADGE ROL ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge-admin { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+.badge-admin::before { content: '★'; font-size: 9px; }
+.badge-user { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
+.badge-manager { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+
+/* ── ACTION CELL ── */
+.action-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  color: #4A5568;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-sm:hover:not(:disabled) {
+  background: #F1F5F9;
+  border-color: rgba(0,0,0,0.2);
+  color: #0F1923;
+}
+
+.btn-sm.btn-danger { color: #DC2626; border-color: #FCA5A5; background: #FEF2F2; }
+.btn-sm.btn-danger:hover:not(:disabled) { background: #FEE2E2; border-color: #DC2626; }
+
+/* ── PAGE HEADER TEXT ── */
+.page-header.header-minimal .ph-title { font-size: 22px; font-weight: 700; color: #0F1923; letter-spacing: -0.02em; }
+.page-header.header-minimal .ph-sub { font-size: 13px; color: #8A96A8; margin-top: 3px; }
+
+/* ── BUTTON PRIM ── */
+.btn.btn-prim {
+  background: #0F1923;
+  color: #fff;
+  border: 1px solid #0F1923;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.btn.btn-prim:hover {
+  background: #1e2d3d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15,25,35,0.2);
+}
+
+/* ══════════════════════════════════════════
+   MODAL OVERLAY & FORMS
+══════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  background: rgba(15, 25, 35, 0.5); backdrop-filter: blur(4px);
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
+
+.modal {
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.08); border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 24px 64px rgba(0,0,0,0.18);
+  width: 100%; max-width: 460px; padding: 30px; position: relative;
+  transform: scale(0.93) translateY(12px);
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #2563EB 0%, #7C3AED 100%); }
+
+.modal-title { font-size: 17px; font-weight: 700; color: #0F1923; margin-bottom: 5px; margin-top: 10px; }
+.modal-sub { font-size: 13px; color: #8A96A8; line-height: 1.5; }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; margin-top: 14px; }
+.form-group.mt-12 { margin-top: 22px; }
+.form-label { font-size: 12px; font-weight: 600; color: #4A5568; letter-spacing: 0.02em; }
+.form-input, .form-select {
+  width: 100%; padding: 10px 13px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14);
+  background: #F8FAFC; color: #0F1923; font-size: 13px; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.form-input:focus, .form-select:focus { border-color: #2563EB; background: #fff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A96A8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer;
+}
+
+/* Card de reactor stilizat ca cel de useri */
+/* Stiluri pentru lista de reactoare */
+.reactor-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.reactor-header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 12px;
+}
+
+.reactor-name { font-weight: 700; font-size: 14px; color: #0F1923; }
+.reactor-loc { color: #8A96A8; font-size: 12px; font-weight: normal; }
+
+.user-item {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  background: #F8FAFC; 
+  padding: 8px 12px; 
+  border-radius: 8px; 
+  border: 1px solid rgba(0,0,0,0.05);
+  margin-top: 8px;
+}
+
+.user-info-name { font-weight: 500; font-size: 13px; }
+.user-info-email { color: #8A96A8; font-size: 11px; }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.07); }
+.modal-actions .btn { padding: 9px 22px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+.modal-actions .btn-close-modal { background: transparent; border: 1px solid rgba(0,0,0,0.12); color: #4A5568; }
+.modal-actions .btn-close-modal:hover { background: #F1F5F9; color: #0F1923; }
+.modal-actions .btn-prim { background: #0F1923; border: 1px solid #0F1923; color: #fff; }
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  z-index: 2000; background: #0F1923; color: #fff; padding: 12px 24px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { background: #DC2626; }
+.toast.success { background: #0E9F6E; }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  /* Pe tablete/mobile, elementele se așează unul sub altul (1 coloană) */
+  main.main.admin-grid-layout { grid-template-columns: 1fr !important; }
+  .reactor-list-scroll { max-height: none; overflow-y: visible; }
+}
+
+@media (max-width: 768px) {
+  main.main.admin-grid-layout { padding: 1.5rem 1rem !important; }
+  .modal { padding: 22px 18px; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-height: 92vh; overflow-y: auto; transform: translateY(100%); }
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .admin-table th:nth-child(5), .admin-table td:nth-child(5) { display: none; }
+}

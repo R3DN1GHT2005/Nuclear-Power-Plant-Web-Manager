@@ -1,15 +1,31 @@
 <?php
 
-class User{
+namespace App\Models;
+
+use App\Enums\UserRole;
+use DateTime;
+
+class User {
     private int $id;
     private string $email;
     private string $password_hash;
     private string $first_name;
     private string $last_name;
-    private string $role;
-    private \DateTime $created_at;
+    private UserRole $role; // Tipizat strict cu Enum
+    private DateTime $created_at;
+    
+    // NOU: Asignarea curentă a utilizatorului la un reactor
+    private ?ReactorPersonnel $assignment = null;
 
-    public function __construct(int $id, string $email, string $password_hash, string $first_name, string $last_name, string $role, \DateTime $created_at){
+    public function __construct(
+        int $id, 
+        string $email, 
+        string $password_hash, 
+        string $first_name, 
+        string $last_name, 
+        UserRole $role, 
+        DateTime $created_at
+    ) {
         $this->id = $id;
         $this->email = $email;
         $this->password_hash = $password_hash;
@@ -19,65 +35,75 @@ class User{
         $this->created_at = $created_at;
     }
 
-    public function getId(): int{
+    public function getId(): int {
         return $this->id;
     }
 
-    public function getEmail(): string{
+    public function getEmail(): string {
         return $this->email;
     }
 
-    public function getPasswordHash(): string{
+    public function getPasswordHash(): string {
         return $this->password_hash;
     }
 
-    public function getFirstName(): string{
+    public function getFirstName(): string {
         return $this->first_name;
     }
 
-    public function getLastName(): string{
+    public function getLastName(): string {
         return $this->last_name;
     }
 
-    public function getFullName(): string{
+    public function getFullName(): string {
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-    public function getRole(): string{
+    public function getRole(): UserRole {
         return $this->role;
     }
 
-    public function getCreatedAt(): \DateTime{
+    public function getCreatedAt(): DateTime {
         return $this->created_at;
     }
 
-    public function setEmail(string $email): void{
+    // --- Managementul Asignării ---
+    public function getAssignment(): ?ReactorPersonnel {
+        return $this->assignment;
+    }
+
+    public function setAssignment(?ReactorPersonnel $assignment): void {
+        $this->assignment = $assignment;
+    }
+
+    // --- Setteri Standard ---
+    public function setEmail(string $email): void {
         $this->email = $email;
     }
 
-    public function setPasswordHash(string $password_hash): void{
+    public function setPasswordHash(string $password_hash): void {
         $this->password_hash = $password_hash;
     }
 
-    public function setFirstName(string $first_name): void{
+    public function setFirstName(string $first_name): void {
         $this->first_name = $first_name;
     }
 
-    public function setLastName(string $last_name): void{
+    public function setLastName(string $last_name): void {
         $this->last_name = $last_name;
     }
 
-    public function setFullName(string $full_name): void{
+    public function setFullName(string $full_name): void {
         $parts = preg_split('/\s+/', trim($full_name), 2);
         $this->first_name = $parts[0] ?? '';
         $this->last_name = $parts[1] ?? '';
     }
 
-    public function setRole(string $role): void{
+    public function setRole(UserRole $role): void {
         $this->role = $role;
     }
 
-    public function setCreatedAt(\DateTime $created_at): void{
+    public function setCreatedAt(DateTime $created_at): void {
         $this->created_at = $created_at;
     }
 }

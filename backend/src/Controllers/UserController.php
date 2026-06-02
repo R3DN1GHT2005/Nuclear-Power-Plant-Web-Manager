@@ -1,63 +1,128 @@
 <?php
+
 namespace App\Controllers;
 
-use App\Repositories\UserRepository;
+use App\Core\Response;
+use App\Services\UserService;
+use App\Mappers\UserMapper;
+use InvalidArgumentException;
+use Exception;
 
-class UserController{
-	private $userRepository;
+class UserController {
+    private UserService $userService;
 
-	public function __construct(){
-		$this->userRepository = new UserRepository();
-	}
+    public function __construct() {
+        $this->userService = new UserService();
+    }
 
-	public function index(){
-		header('Content-Type: application/json');
-		echo json_encode($this->userRepository->getAllUsers());
-	}
+    // GET /api/users
+   public function getAllUsers(): void {
+        try {
+            $users = $this->userService->getAll();
+            Response::json(UserMapper::toResponseList($users));
+        } catch (Exception $e) {
+            // AICI AM ADĂUGAT 'details'
+            Response::json([
+                'error' => 'Eroare la aducerea utilizatorilor.', 
+                'details' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
+        }
+    }
 
-	public function show($id){
-		header('Content-Type: application/json');
-		$user = $this->userRepository->findById($id);
-		if (!$user) {
-			http_response_code(404);
-			echo json_encode(["error" => "User not found"]);
-			return;
-		}
-		echo json_encode($user);
-	}
+    // GET /api/users/{id}
+    public function getUserById(int $id): void {
+        try {
+            $user = $this->userService->getById($id);
 
-	public function search(){
-		header('Content-Type: application/json');
-		$data = json_decode(file_get_contents('php://input'), true) ?? [];
-		$name = trim($data['name'] ?? '');
+            if (!$user) {
+                Response::json(['error' => 'Utilizator negăsit'], 404);
+                return;
+            }
 
-		if ($name === '') {
-			http_response_code(400);
-			echo json_encode(["error" => "name is required"]);
-			return;
-		}
+            Response::json(UserMapper::toResponse($user));
+        } catch (Exception $e) {
+            Response::json(['error' => 'Eroare la aducerea utilizatorului.'], 500);
+        }
+    }
 
-		echo json_encode($this->userRepository->searchByName($name));
-	}
+    // PUT /api/users/{id}/password
+    public function updatePassword(int $id): void {
+        $data = json_decode(file_get_contents('php://input'), true);
 
-	public function updateName($id){
-		header('Content-Type: application/json');
-		$data = json_decode(file_get_contents('php://input'), true) ?? [];
-		$firstName = trim($data['first_name'] ?? '');
-		$lastName = trim($data['last_name'] ?? '');
+        if (!$data) {
+            Response::json(['error' => 'Date invalide'], 400);
+            return;
+        }
 
-		if ($firstName === '' || $lastName === '') {
-			http_response_code(400);
-			echo json_encode(["error" => "first_name and last_name are required"]);
-			return;
-		}
+        try {
+            // Folosim Mapper-ul pentru a obține DTO-ul curat și validat
+            $dto = UserMapper::toUpdatePasswordDTO($data);
+            
+            // Trimitem DTO-ul validat către stratul de Service
+            $this->userService->updatePassword($id, $dto);
 
-		$updated = $this->userRepository->updateUserNames($id, $firstName, $lastName);
-		echo json_encode(["success" => $updated]);
-	}
+            Response::json(['message' => 'Parolă actualizată cu succes']);
+        } catch (InvalidArgumentException $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            Response::json(['error' => $e->getMessage()], 404);
+        }
+    }
 
-	public function delete($id){
-		header('Content-Type: application/json');
-		echo json_encode(["success" => $this->userRepository->deleteUser($id)]);
-	}
+    // PUT /api/users/{id}/reactor
+    public function assignToReactor(int $id): void {
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        try {
+            // Mapper-ul se asigură că primim un AssignReactorRequestDTO corect (cu un int valid sau null)
+            $dto = UserMapper::toAssignReactorDTO($data);
+            
+            // Trimitem ID-ul reactorului către Service (poate fi null pentru de-asignare)
+            $this->userService->assignReactor($id, $dto->reactor_id);
+            
+            Response::json(['message' => 'Asignare actualizată cu succes']);
+        } catch (InvalidArgumentException $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        } catch (Exception $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    // DELETE /api/users/{id}
+    public function deleteUser(int $id): void {
+        try {
+            $deleted = $this->userService->delete($id);
+
+            if (!$deleted) {
+                Response::json(['error' => 'Utilizator negăsit'], 404);
+                return;
+            }
+
+            Response::json(['message' => 'Utilizator șters cu succes']);
+        } catch (Exception $e) {
+            Response::json(['error' => 'Eroare la ștergerea utilizatorului.'], 500);
+        }
+    }
+
+	// POST /api/users
+    public function createUser(): void {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        try {
+            // 1. Folosim UserService (metoda creată anterior pentru a înlocui vechiul register)
+            $this->userService->createUser(
+                $data['email'],
+                $data['password'],
+                $data['first_name'],
+                $data['last_name'],
+                $data['role'] ?? 'tehnician'
+            );
+
+            Response::json(['message' => 'Utilizator creat cu succes!'], 201);
+        } catch (Exception $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        }
+    }
 }
