@@ -16,7 +16,9 @@ use App\Controllers\AuthController;
 use App\Controllers\ReactorMaintenanceController;
 use App\Controllers\UserController;
 use App\Controllers\AlertController;
+use App\Controllers\ReportController;
 use App\Core\Router;
+
 
 use App\Middleware\AdminMiddleware;     
 use App\Middleware\AuthMiddleware;    
@@ -69,7 +71,13 @@ try {
     // ==========================================
     $router->put('/api/auth/password', AuthController::class, 'updatePassword', [AdminMiddleware::class]); 
 
-    // ── RUTE ADMINISTRARE CONTURI (USERS) ──
+     $router->get('/api/reports/kpi', ReportController::class, 'getKpi', [AuthMiddleware::class]);
+    $router->get('/api/reports/efficiency', ReportController::class, 'getEfficiency', [AuthMiddleware::class]);
+    $router->get('/api/reports/efficiency/trend', ReportController::class, 'getEfficiencyTrend', [AuthMiddleware::class]);
+    $router->get('/api/reports/comparison', ReportController::class, 'getComparison', [AuthMiddleware::class]);
+    $router->get('/api/reports/risk-matrix', ReportController::class, 'getRiskMatrix', [AuthMiddleware::class]);
+    $router->get('/api/reports/wear', ReportController::class, 'getWear', [AuthMiddleware::class]);
+      // ── RUTE ADMINISTRARE CONTURI (USERS) ──
     $router->post('/api/users', UserController::class, 'createUser', [AdminMiddleware::class]);
     $router->get('/api/users', UserController::class, 'getAllUsers', [AdminMiddleware::class]);
     $router->get('/api/users/{id}', UserController::class, 'getUserById', [AdminMiddleware::class]);
