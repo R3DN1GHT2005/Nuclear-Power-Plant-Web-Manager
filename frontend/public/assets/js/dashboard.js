@@ -1,29 +1,35 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    //Preluăm toate reactoarele de pe backend
-    const reactors = await NuclearAPI.getReactors();
+    // Rulăm doar pe pagina cu dashboard
+    const metricsContainer = document.getElementById("dashboard-metrics");
+    const tableContainer = document.getElementById("dashboard-reactor-table");
 
-    if (!reactors || reactors.length === 0) {
-        document.getElementById("dashboard-metrics").innerHTML = "<p>Nu există date.</p>";
-        document.getElementById("dashboard-reactor-table").innerHTML = "<tr><td colspan='6'>Nu s-au găsit reactoare.</td></tr>";
-        return;
+    if (metricsContainer && tableContainer) {
+        try {
+            const reactors = await NuclearAPI.getReactors();
+
+            if (!reactors || reactors.length === 0) {
+                metricsContainer.innerHTML = "<p>Nu există date.</p>";
+                tableContainer.innerHTML = "<tr><td colspan='6'>Nu s-au găsit reactoare.</td></tr>";
+            } else {
+                calculateAndRenderMetrics(reactors);
+                renderReactorTable(reactors);
+            }
+        } catch(e) {
+            console.error("Eroare dashboard:", e);
+        }
     }
-
-    calculateAndRenderMetrics(reactors);
-    renderReactorTable(reactors);
 });
-
 
 function calculateAndRenderMetrics(reactors) {
     const totalReactors = reactors.length;
     const activeReactors = reactors.filter(r => r.status.toLowerCase() === 'activ').length;
-    
+
     let totalEfficiency = 0;
     let validEfficiencyCount = 0;
     let criticalAlerts = 0;
     let warnings = 0;
 
     reactors.forEach(r => {
-
         if (r.current_efficiency && r.status.toLowerCase() !== 'oprit') {
             totalEfficiency += parseFloat(r.current_efficiency);
             validEfficiencyCount++;
@@ -36,13 +42,15 @@ function calculateAndRenderMetrics(reactors) {
         if (r.sensors) {
             r.sensors.forEach(s => {
                 if ((s.type === 'Temperatura' || s.sensor_type === 'Temperatura') && s.value > 350) {
-                    criticalAlerts++; 
+                    criticalAlerts++;
                 }
             });
         }
     });
 
-    const avgEfficiency = validEfficiencyCount > 0 ? (totalEfficiency / validEfficiencyCount).toFixed(1) : 0;
+    const avgEfficiency = validEfficiencyCount > 0
+        ? (totalEfficiency / validEfficiencyCount).toFixed(1)
+        : 0;
 
     const metricsContainer = document.getElementById("dashboard-metrics");
     metricsContainer.innerHTML = `
@@ -76,16 +84,14 @@ function calculateAndRenderMetrics(reactors) {
     `;
 }
 
-
 function renderReactorTable(reactors) {
     const tbody = document.getElementById("dashboard-reactor-table");
-    
-    // Dicționarul de stiluri (rămâne la fel, este excelent)
+
     const rowConfig = {
-        'activ': { rowClass: '', badgeClass: '', badgeText: '', fillClass: 'bf-green', pillClass: 'pill-active', actionClass: 'action-none', actionText: 'Detalii →' },
-        'alertă': { rowClass: 'row-critical', badgeClass: 'rb-crit', badgeText: '!', fillClass: 'bf-red', pillClass: 'pill-alert', actionClass: 'action-crit', actionText: 'Intervenție →' },
-        'mentenanță': { rowClass: 'row-maint', badgeClass: 'rb-warn', badgeText: 'M', fillClass: 'bf-amber', pillClass: 'pill-maint', actionClass: 'action-warn', actionText: 'Detalii →' },
-        'oprit': { rowClass: 'row-off', badgeClass: 'rb-off', badgeText: '—', fillClass: 'bf-gray', pillClass: 'pill-off', actionClass: 'action-none', actionText: 'Detalii →' }
+        'activ':      { rowClass: '',            badgeClass: '',        badgeText: '',  fillClass: 'bf-green', pillClass: 'pill-active', actionClass: 'action-none', actionText: 'Detalii →' },
+        'alertă':     { rowClass: 'row-critical', badgeClass: 'rb-crit', badgeText: '!', fillClass: 'bf-red',   pillClass: 'pill-alert',  actionClass: 'action-crit', actionText: 'Intervenție →' },
+        'mentenanță': { rowClass: 'row-maint',    badgeClass: 'rb-warn', badgeText: 'M', fillClass: 'bf-amber', pillClass: 'pill-maint',  actionClass: 'action-warn', actionText: 'Detalii →' },
+        'oprit':      { rowClass: 'row-off',      badgeClass: 'rb-off',  badgeText: '—', fillClass: 'bf-gray',  pillClass: 'pill-off',    actionClass: 'action-none', actionText: 'Detalii →' }
     };
 
     let tableHtml = '';
@@ -93,8 +99,7 @@ function renderReactorTable(reactors) {
     reactors.forEach(r => {
         const status = r.status ? r.status.toLowerCase() : 'activ';
         const style = rowConfig[status] || rowConfig['activ'];
-        
-        // --- 1. PREGĂTIREA DATELOR PENTRU TEMPERATURĂ ---
+
         let mainTemp = '—';
         let tempClass = '';
         if (r.sensors && r.sensors.length > 0) {
@@ -105,61 +110,39 @@ function renderReactorTable(reactors) {
             }
         }
 
-        // --- 2. PREGĂTIREA DATELOR PENTRU MENTENANȚĂ ---
         const dateObj = new Date(r.last_maintenance);
-        const timeString = isNaN(dateObj) ? '--' : dateObj.toLocaleTimeString('ro-RO', {hour: '2-digit', minute:'2-digit'});
+        const timeString = isNaN(dateObj) ? '--' : dateObj.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
 
-        // --- 3. EXTRAGEREA CONDIȚIILOR VIZUALE PENTRU A PĂSTRA HTML-UL CURAT ---
         const isOff = status === 'oprit';
         const offTextStyle = isOff ? 'style="color: var(--text-3);"' : '';
         const efficiencyWidth = r.current_efficiency || 0;
         const efficiencyText = isOff ? '—' : `${r.current_efficiency}%`;
         const nameMarginStyle = !style.badgeText ? 'style="margin-left: 23px;"' : '';
 
-        // --- 4. TEMPLATE-UL HTML (Acum e mult mai aerisit) ---
         tableHtml += `
             <tr class="${style.rowClass}">
-                
                 <td>
                     ${style.badgeText ? `<span class="rank-badge ${style.badgeClass}">${style.badgeText}</span>` : ''}
-                    <span class="reactor-name" ${nameMarginStyle}>
-                        ${r.name}
-                    </span>
+                    <span class="reactor-name" ${nameMarginStyle}>${r.name}</span>
                 </td>
-                
                 <td>
                     <div class="bar-wrap">
                         <div class="bar-track">
                             <div class="bar-fill ${style.fillClass}" style="width: ${efficiencyWidth}%;"></div>
                         </div>
-                        <span class="bar-pct" ${offTextStyle}>
-                            ${efficiencyText}
-                        </span>
+                        <span class="bar-pct" ${offTextStyle}>${efficiencyText}</span>
                     </div>
                 </td>
-                
                 <td>
-                    <span class="temp-val ${tempClass}" ${offTextStyle}>
-                        ${mainTemp}
-                    </span>
+                    <span class="temp-val ${tempClass}" ${offTextStyle}>${mainTemp}</span>
                 </td>
-                
                 <td>
-                    <span class="pill ${style.pillClass}">
-                        ${r.status}
-                    </span>
+                    <span class="pill ${style.pillClass}">${r.status}</span>
                 </td>
-                
-                <td class="mono" style="font-size: 12px;" ${offTextStyle}>
-                    ${timeString}
-                </td>
-                
+                <td class="mono" style="font-size: 12px;" ${offTextStyle}>${timeString}</td>
                 <td>
-                    <a class="action-link ${style.actionClass}" href="reactors.html">
-                        ${style.actionText}
-                    </a>
+                    <a class="action-link ${style.actionClass}" href="reactors.html">${style.actionText}</a>
                 </td>
-
             </tr>
         `;
     });

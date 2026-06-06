@@ -5,23 +5,23 @@ namespace App\Services;
 use App\Repositories\AlertRepository;
 use App\Models\Alert;
 use App\Enums\AlertSeverity;
+use App\Services\DiscordNotificationService;
 use Exception;
 
 class AlertService {
     private AlertRepository $alertRepository;
+    private DiscordNotificationService $discordService;
 
     public function __construct() {
         $this->alertRepository = new AlertRepository();
+        $this->discordService = new DiscordNotificationService(); // Am inițializat serviciul
     }
 
-    /**
-     * Aduce toate alertele active filtrate pe baza rolului utilizatorului
-     */
     public function getActiveAlertsForUser(string $userRole, ?int $userReactorId): array {
         $allActiveAlerts = $this->alertRepository->getAllActive();
 
         $filteredAlerts = array_filter($allActiveAlerts, function(Alert $alert) use ($userRole, $userReactorId) {
-            // 1. ADMINUL are vizibilitate GLOBALĂ peste toate reactoarele
+        
             if ($userRole === 'admin') {
                 return true;
             }
@@ -91,6 +91,33 @@ class AlertService {
             0, $reactorId, $severity, $message, false, null, null, new \DateTime()
         );
 
-        return $this->alertRepository->create($alert);
+        // 1. Salvăm alerta în baza de date
+        $savedAlert = $this->alertRepository->create($alert);
+
+        try {
+            $severityLabel = $severity->name ?? 'ALERTĂ'; 
+            
+            $discordMessage = "Severitate: **{$severityLabel}**\n" . $message;
+            $this->discordService->sendReactorAlert($reactorId, $discordMessage);
+            
+        } catch (Exception $e) {
+        
+            throw new Exception("Atenție, Discord a eșuat: " . $e->getMessage());
+        }   
+
+        // Returnăm alerta cu succes
+        return $savedAlert;
+    }
+
+
+    public function getFullAlertHistory(): array {
+        
+        $allAlerts = $this->alertRepository->getAll();
+        return $allAlerts;
+    }
+
+    public function getAlertHistoryByReactorId(int $reactorId): array {
+        return $this->alertRepository->getAllByReactorId($reactorId);
+        
     }
 }

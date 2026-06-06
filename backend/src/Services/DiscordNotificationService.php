@@ -20,8 +20,9 @@ class DiscordNotificationService {
             throw new Exception("Nu s-a putut trimite pe Discord: Reactorul cu ID-ul {$reactorId} nu există.");
         }
 
-        
         $webhookUrl = $reactor->getWebhookUrl();
+
+     
         if (empty($webhookUrl)) {
             error_log("Avertisment: Reactorul '{$reactor->getName()}' nu are un Webhook Discord setat.");
             return;
@@ -32,7 +33,7 @@ class DiscordNotificationService {
 
         $payload = json_encode([
             "content" => $discordMessage,
-            "username" => "Senzor " . $reactor->getName() // Numele botului în chat
+            "username" => "Sistem Monitorizare " . $reactor->getName() // Numele botului care va apărea în chat
         ]);
 
         $options = [
@@ -40,19 +41,20 @@ class DiscordNotificationService {
                 'header'  => "Content-type: application/json\r\n",
                 'method'  => 'POST',
                 'content' => $payload,
-                // TIMEOUT CRITIC: 3 secunde. 
-                // Dacă Discord pică, aplicația ta așteaptă maxim 3 secunde și merge mai departe!
                 'timeout' => 3 
+            ],
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false
             ]
         ];
 
         $context = stream_context_create($options);
-
-       
         $result = @file_get_contents($webhookUrl, false, $context);
 
         if ($result === false) {
-            throw new Exception("Eroare de conexiune la serverele Discord pentru {$reactor->getName()}.");
+        
+            throw new Exception("Eroare de conexiune la serverele Discord pentru reactorul {$reactor->getName()}.");
         }
     }
 }

@@ -21,25 +21,18 @@ class AlertController {
     public function getActiveAlerts(): void {
         try {
             $user = AuthMiddleware::getUser();
-            
-            // 1. Extragem userId și rolul din token
             $userId = is_object($user) ? 
                 ($user->userId ?? $user->id ?? $user->user_id ?? $user->sub ?? null) : 
                 ($user['userId'] ?? $user['id'] ?? $user['user_id'] ?? $user['sub'] ?? null);
 
             $userRole = is_object($user) ? ($user->role ?? 'tehnician') : ($user['role'] ?? 'tehnician');
             
-            // 2. Extragem reactorul DIRECT din baza de date folosind noul Repository
             $userReactorId = null;
             if ($userId && $userRole !== 'admin') {
                 $personnelRepo = new ReactorPersonnelRepository();
                 $userReactorId = $personnelRepo->getAssignedReactorId((int) $userId);
             }
-
-            // 3. Apelăm Serviciul
             $activeAlerts = $this->alertService->getActiveAlertsForUser($userRole, $userReactorId);
-
-            // 4. Trimitem la frontend
             Response::json(AlertMapper::toResponseList($activeAlerts));
             
         } catch (Exception $e) {
@@ -61,8 +54,6 @@ class AlertController {
 
         try {
             $user = AuthMiddleware::getUser();
-            
-            // 1. Extragem userId și rolul
             $userId = is_object($user) ? 
                 ($user->userId ?? $user->id ?? $user->user_id ?? $user->sub ?? null) : 
                 ($user['userId'] ?? $user['id'] ?? $user['user_id'] ?? $user['sub'] ?? null);
@@ -76,17 +67,13 @@ class AlertController {
                 return;
             }
 
-            // 2. Extragem reactorul DIRECT din baza de date la fel ca mai sus
             $userReactorId = null;
             if ($userRole !== 'admin') {
                 $personnelRepo = new ReactorPersonnelRepository();
                 $userReactorId = $personnelRepo->getAssignedReactorId((int) $userId);
             }
 
-            // 3. Validăm și preluăm notițele din request
             $dto = AlertMapper::toResolveRequestDTO($data);
-            
-            // 4. Trimitem către Service pentru verificare și salvare
             $this->alertService->resolveAlert($id, $userId, $userRole, $userReactorId, $dto->notes);
 
             Response::json(['message' => 'Alarma a fost asumată și rezolvată cu succes!']);
@@ -97,6 +84,35 @@ class AlertController {
         } catch (Exception $e) {
             Response::json([
                 'error' => 'Eroare la rezolvarea alarmei.',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // GET /api/alerts/history
+    public function getAlertHistory(): void {
+        try {
+            $historyAlerts = $this->alertService->getFullAlertHistory();
+            Response::json(AlertMapper::toHistoryResponseList($historyAlerts));
+            
+        } catch (Exception $e) {
+            Response::json([
+                'error' => 'Eroare la aducerea istoricului general de alerte.',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    
+    // GET /api/alerts/history/reactor/{reactorId}
+    public function getAlertHistoryByReactor(int $reactorId): void {
+        try {
+            $reactorHistory = $this->alertService->getAlertHistoryByReactorId($reactorId);
+            Response::json(AlertMapper::toHistoryResponseList($reactorHistory));
+            
+        } catch (Exception $e) {
+            Response::json([
+                'error' => 'Eroare la aducerea istoricului pentru reactorul specificat.',
                 'details' => $e->getMessage()
             ], 500);
         }

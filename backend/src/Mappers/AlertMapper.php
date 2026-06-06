@@ -5,6 +5,7 @@ use App\Models\Alert;
 use App\Enums\AlertSeverity;
 use App\DTOs\Response\Alert\AlertResponseDTO;
 use App\DTOs\Request\Alert\ResolveAlertRequestDTO;
+use App\DTOs\Response\Alert\AlertHistoryResponseDTO;
 use DateTime;
 use Exception;
 
@@ -43,5 +44,28 @@ class AlertMapper {
 
     public static function toResolveRequestDTO(array $data): ResolveAlertRequestDTO {
         return new ResolveAlertRequestDTO($data);
+    }
+
+
+    //history
+
+    public static function toHistoryResponseDTO(Alert $alert): AlertHistoryResponseDTO {
+        return new AlertHistoryResponseDTO(
+            id: $alert->getId(),
+            reactor_id: $alert->getReactorId(),
+            reactor_name: $alert->getReactorName() ?? 'Reactor',
+            severity: $alert->getSeverity()->value,
+            message: $alert->getMessage(),
+            created_at: $alert->getCreatedAt()->format('Y-m-d H:i:s'),
+            is_resolved: $alert->isResolved(),
+            resolved_by: $alert->getResolvedBy(),
+            resolution_notes: $alert->getResolutionNotes(),
+            resolved_at: $alert->getResolvedAt() ? $alert->getResolvedAt()->format('Y-m-d H:i:s') : null
+        );
+    }
+
+  
+    public static function toHistoryResponseList(array $alerts): array {
+        return array_map(fn(Alert $alert) => self::toHistoryResponseDTO($alert), $alerts);
     }
 }
