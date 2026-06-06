@@ -140,7 +140,6 @@ try {
     
     // Istoric specific per reactor (Toți utilizatorii logați)
     $router->get('/api/alerts/history/reactor/{id}', AlertController::class, 'getAlertHistoryByReactor', [AuthMiddleware::class]);
-    $router->dispatch($uri, $method);
 
     // ==========================================
     // RSS (publice si autentificate)

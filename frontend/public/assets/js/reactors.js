@@ -168,7 +168,7 @@ function createReactorHTML(reactor) {
                     <div class="upd-dot ${style.bar.replace('bf-', 'dot-')}"></div>
                     Actualizat: ${formattedDate}
                 </div>
-                <a class="action-link detail-btn" data-id="${reactor.id}" href="javascript:void(0);">Detalii →</a>
+                <a class="action-link detail-btn" data-id="${reactor.id}" href="reactor.html?id=${encodeURIComponent(reactor.id)}">Detalii →</a>
             </footer>
         </article>
     `;

@@ -118,6 +118,9 @@ function renderReactorTable(reactors) {
         const efficiencyWidth = r.current_efficiency || 0;
         const efficiencyText = isOff ? '—' : `${r.current_efficiency}%`;
         const nameMarginStyle = !style.badgeText ? 'style="margin-left: 23px;"' : '';
+        const reactorDetailsHref = r.id != null
+            ? `reactor.html?id=${encodeURIComponent(r.id)}`
+            : 'reactors.html';
 
         tableHtml += `
             <tr class="${style.rowClass}">
@@ -141,7 +144,7 @@ function renderReactorTable(reactors) {
                 </td>
                 <td class="mono" style="font-size: 12px;" ${offTextStyle}>${timeString}</td>
                 <td>
-                    <a class="action-link ${style.actionClass}" href="reactors.html">${style.actionText}</a>
+                    <a class="action-link ${style.actionClass}" href="${reactorDetailsHref}">${style.actionText}</a>
                 </td>
             </tr>
         `;
