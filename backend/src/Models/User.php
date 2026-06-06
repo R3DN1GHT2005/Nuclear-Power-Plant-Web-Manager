@@ -11,11 +11,10 @@ class User {
     private string $password_hash;
     private string $first_name;
     private string $last_name;
-    private UserRole $role; // Tipizat strict cu Enum
+    private UserRole $role;
     private DateTime $created_at;
-    
-    // NOU: Asignarea curentă a utilizatorului la un reactor
     private ?ReactorPersonnel $assignment = null;
+    private ?string $rss_token = null;
 
     public function __construct(
         int $id, 
@@ -24,7 +23,8 @@ class User {
         string $first_name, 
         string $last_name, 
         UserRole $role, 
-        DateTime $created_at
+        DateTime $created_at,
+        ?string $rss_token = null 
     ) {
         $this->id = $id;
         $this->email = $email;
@@ -33,6 +33,7 @@ class User {
         $this->last_name = $last_name;
         $this->role = $role;
         $this->created_at = $created_at;
+        $this->rss_token = $rss_token; 
     }
 
     public function getId(): int {
@@ -67,7 +68,6 @@ class User {
         return $this->created_at;
     }
 
-    // --- Managementul Asignării ---
     public function getAssignment(): ?ReactorPersonnel {
         return $this->assignment;
     }
@@ -76,7 +76,14 @@ class User {
         $this->assignment = $assignment;
     }
 
-    // --- Setteri Standard ---
+    public function getRssToken(): ?string {
+        return $this->rss_token;
+    }
+
+    public function setRssToken(?string $rss_token): void {
+        $this->rss_token = $rss_token;
+    }
+
     public function setEmail(string $email): void {
         $this->email = $email;
     }

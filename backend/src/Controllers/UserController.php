@@ -125,4 +125,24 @@ class UserController {
             Response::json(['error' => $e->getMessage()], 400);
         }
     }
+
+    public function regenerateRssToken(): void {
+        try {
+            $userId = $_REQUEST['user_id'] ?? null;
+
+            if (!$userId) {
+                Response::json(["error" => "Neautorizat. ID-ul utilizatorului lipsește."], 401);
+                return;
+            }
+            $newToken = bin2hex(random_bytes(32));
+            $this->userService->updateRssToken((int)$userId, $newToken);
+            Response::json([
+                "message" => "Token RSS regenerat cu succes.",
+                "new_rss_token" => $newToken
+            ], 200);
+
+        } catch (Exception $e) {
+            Response::json(["error" => "Eroare internă: " . $e->getMessage()], 500);
+        }
+    }
 }

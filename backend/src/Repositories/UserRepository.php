@@ -169,4 +169,18 @@ class UserRepository {
 
         return $user;
     }
+
+    public function findByRssToken(string $token){
+        $sql="Select * from users where rss_token = :token";
+        $stmt=$this->db->prepare($sql);
+        $stmt->execute(['token' => $token]);
+        return $stmt->fetch();
+    }
+
+    public function updateRssToken(int $userId,string $newToken){
+        $sql="Update users set rss_token = :token where id= :userId";
+        $stmt=$this->db->prepare($sql);
+        return $stmt->execute(['token' => $newToken, 'userId' => $userId]);
+        
+    }
 }
