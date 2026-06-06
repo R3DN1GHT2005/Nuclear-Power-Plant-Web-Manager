@@ -40,12 +40,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Randăm interfața cu datele primite
         renderReactorDetails(state.currentReactor);
         renderSensors(state.currentReactor.sensors || []);
-        renderAlerts(state.currentReactor);
         populateHistoryFilter(state.currentReactor.sensors || []);
         
-        // CĂRĂM ISTORICUL DE MENTENANȚĂ
+        // ===============================================
+        // ADAUGĂRI NOI: ÎNCĂRCARE DATE DIN BAZA DE DATE
+        // ===============================================
+        
+        // 1. Încărcăm Istoricul de Alerte REAL din baza de date
+        await loadReactorSpecificLog(state.currentReactor.id);
+
+        // 2. Încărcăm Istoricul de Mentenanță
         await loadMaintenanceHistory(state.currentReactor.id);
         
+        // ===============================================
+
         // Afișăm containerul principal
         if (layout) {
             layout.classList.remove("hidden");
@@ -157,41 +165,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }).join("");
     }
 
-    function renderAlerts(reactor) {
-        const container = document.getElementById("alert-list");
-        const pill = document.getElementById("alert-count-pill");
-        if (!container) return;
-
-        const status = (reactor.status || "").toLowerCase();
-        const alerts = [];
-
-        if (status.includes("mentenan")) alerts.push({ sev: 'sev-warn', msg: 'Reactor în Mentenanță — producție oprită', time: 'Astăzi' });
-        if (reactor.seismic_risk > 25) alerts.push({ sev: 'sev-warn', msg: 'Risc seismic ridicat detectat', time: 'Ieri' });
-        
-        if (alerts.length === 0) {
-            container.innerHTML = '<div class="history-empty">Sistem stabil. Nicio alertă.</div>';
-            if (pill) pill.classList.add("hidden");
-            return;
-        }
-
-        if (pill) {
-            pill.textContent = alerts.length;
-            pill.classList.remove("hidden");
-        }
-        
-        const alertSub = document.getElementById('alert-sub');
-        if (alertSub) alertSub.textContent = `${alerts.length} evenimente recente`;
-
-        container.innerHTML = alerts.map(a => `
-            <div class="alert-row">
-                <div class="alert-sev ${a.sev}"></div>
-                <div class="alert-body">
-                    <div class="alert-msg">${a.msg}</div>
-                    <div class="alert-meta">${a.time}</div>
-                </div>
-            </div>`).join("");
-    }
-
     function populateHistoryFilter(sensors) {
         const select = document.getElementById("filter-sensor");
         if (!select) return;
@@ -203,7 +176,97 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // ── FUNCȚIA NOUĂ: ISTORIC MENTENANȚĂ ──
+    // ── NOU: LOGICĂ ALERTE REALE DIN DB ──
+    // ==========================================
+    
+    function formatSmallTime(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr.replace(' ', 'T'));
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${hours}:${minutes} - ${day}.${month}`;
+    }
+
+    async function loadReactorSpecificLog(id) {
+        const logBox = document.getElementById('alert-list');
+        const countPill = document.getElementById('alert-count-pill');
+        const alertSub = document.getElementById('alert-sub');
+        if (!logBox) return;
+
+        try {
+            const res = await window.authFetch(`/alerts/history/reactor/${id}`);
+            if (res.ok) {
+                const historyAlerts = await res.json();
+
+                if (historyAlerts.length === 0) {
+                    logBox.innerHTML = `
+                        <div style="text-align: center; color: var(--color-text-secondary); font-style: italic; padding: 40px 20px;">
+                            Sistem stabil. Nicio alertă.
+                        </div>`;
+                    if (countPill) countPill.classList.add('hidden');
+                    if (alertSub) alertSub.textContent = `Evenimente înregistrate`;
+                    return;
+                }
+
+                if (countPill) {
+                    countPill.textContent = historyAlerts.length;
+                    countPill.classList.remove('hidden');
+                }
+                if (alertSub) {
+                    alertSub.textContent = `${historyAlerts.length} evenimente recente`;
+                }
+
+                const recentAlerts = historyAlerts.slice(0, 15);
+                logBox.style.padding = "0";
+
+                logBox.innerHTML = recentAlerts.map(alert => {
+                    const isCrit = alert.severity === 'critical';
+                    const color = isCrit ? '#E24B4A' : '#BA7517'; 
+                    const bg = isCrit ? '#FCEBEB' : '#FAEEDA';
+                    const border = isCrit ? '#F09595' : '#FAC775';
+                    const label = isCrit ? 'CRITICĂ' : 'AVERTIZARE';
+                    
+                    let html = `
+                    <div style="padding: 16px; border-bottom: 1px solid var(--color-border-tertiary, #eaeaea);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 10px; font-weight: 700; color: ${color}; background: ${bg}; padding: 3px 8px; border-radius: 6px; border: 0.5px solid ${border};">
+                                ${label}
+                            </span>
+                            <span style="font-size: 11.5px; font-weight: 500; color: var(--color-text-secondary); background: var(--color-background-secondary, #f8f9fa); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--color-border-tertiary, #eaeaea);">
+                                ${formatSmallTime(alert.created_at)}
+                            </span>
+                        </div>
+                        
+                        <div style="font-size: 13px; color: var(--color-text-primary); line-height: 1.5; margin-bottom: ${alert.is_resolved ? '8px' : '0'};">
+                            ${alert.message}
+                        </div>`;
+
+                    if (alert.is_resolved) {
+                        html += `
+                        <div style="font-size: 12px; color: var(--color-text-success, #2e7d32); background: #f1f8e9; padding: 8px 10px; border-left: 3px solid #4caf50; border-radius: 4px;">
+                            <strong style="font-weight: 600;">Soluționat:</strong> <span style="font-style: italic; opacity: 0.9;">${alert.resolution_notes || '-'}</span>
+                        </div>`;
+                    } else {
+                        html += `
+                        <div style="font-size: 11.5px; color: #E24B4A; font-weight: 600; margin-top: 6px;">
+                            ⚠️ Alertă Activă (Nerezolvată)
+                        </div>`;
+                    }
+
+                    html += `</div>`;
+                    return html;
+                }).join('');
+            }
+        } catch (e) {
+            console.error("Eroare la încărcarea jurnalului de alerte:", e);
+            logBox.innerHTML = `<div class="history-empty">Eroare la aducerea datelor.</div>`;
+        }
+    }
+
+    // ==========================================
+    // ── ISTORIC MENTENANȚĂ ──
     // ==========================================
     
     async function loadMaintenanceHistory(id) {
@@ -234,7 +297,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const startDate = new Date(item.started_at).toLocaleDateString("ro-RO");
             const reason = item.reason || "Revizie generală";
             
-            // Setăm clasa și textele în funcție de status (În curs vs Finalizată)
             const statusColor = isCompleted ? "color: var(--status-operational);" : "color: var(--status-warning); font-weight: bold;";
             const statusText = isCompleted ? "Finalizată" : "În curs";
             
@@ -296,7 +358,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function bindEvents() {
         
-        // ── 1. Navigare între Tab-uri (Senzori / Istoric / Mentenanță) ──
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -310,7 +371,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
 
-        // ── 2. Închidere Modale (la click pe X sau pe fundal) ──
         document.querySelectorAll('.btn-close-modal, .modal-overlay').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('btn-close-modal')) {
@@ -319,7 +379,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         });
 
-        // ── 3. Modal generic pentru schimbare Status simplu (Pornire/Oprire) ──
         const openStatusModal = (newStatus, title, icon, warning) => {
             state.pendingStatus = newStatus;
             
@@ -363,10 +422,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-        // ==========================================
-        // ── 4. LOGICA PENTRU MENTENANȚĂ (START / STOP) ──
-        // ==========================================
-
         const btnMaint = document.getElementById('btn-maint');
         const btnScheduleMaint = document.getElementById('btn-schedule-maint');
 
@@ -383,7 +438,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         btnMaint?.addEventListener('click', openMaintModal);
         btnScheduleMaint?.addEventListener('click', openMaintModal);
 
-        // B. Confirmare pornire mentenanță (POST)
         document.getElementById('modal-maint-confirm')?.addEventListener('click', async () => {
             const endDate = document.getElementById('maint-date').value;
             const reason = document.getElementById('maint-reason').value;
@@ -409,7 +463,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     state.currentReactor.status = 'În mentenanță';
                     renderReactorDetails(state.currentReactor);
                     
-                    // REÎNCĂRCĂM ISTORICUL CA SĂ APARĂ INSTANT ÎN TAB!
                     await loadMaintenanceHistory(state.currentReactor.id);
                 } else {
                     const data = await res.json();
@@ -421,7 +474,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-        // C. Confirmare oprire/finalizare mentenanță (POST)
         document.getElementById('btn-finish-maint')?.addEventListener('click', async () => {
             if (!confirm("Sunteți sigur că mentenanța a fost finalizată? Reactorul va deveni activ.")) return;
 
@@ -435,7 +487,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     state.currentReactor.status = 'Operațional';
                     renderReactorDetails(state.currentReactor);
                     
-                    // REÎNCĂRCĂM ISTORICUL CA SĂ VEDEM CĂ E FINALIZAT!
                     await loadMaintenanceHistory(state.currentReactor.id);
                 } else {
                     const data = await res.json();
@@ -447,11 +498,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-
-        // ==========================================
-        // ── 5. LOGICA PENTRU ADĂUGARE SENZOR ──
-        // ==========================================
-        
         let fetchedSensorProfiles = {};
         const sensorTypeSelect = document.getElementById('sensor-type');
         const btnAddConfirm = document.getElementById('modal-add-sensor-confirm');

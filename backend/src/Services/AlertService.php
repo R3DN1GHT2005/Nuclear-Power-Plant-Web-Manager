@@ -108,4 +108,16 @@ class AlertService {
         // Returnăm alerta cu succes
         return $savedAlert;
     }
+
+
+    public function getFullAlertHistory(): array {
+        
+        $allAlerts = $this->alertRepository->getAll();
+        return $allAlerts;
+    }
+
+    public function getAlertHistoryByReactorId(int $reactorId): array {
+        return $this->alertRepository->getAllByReactorId($reactorId);
+        
+    }
 }

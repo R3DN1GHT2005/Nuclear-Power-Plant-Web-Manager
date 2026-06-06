@@ -134,6 +134,11 @@ try {
     $router->get('/api/alerts/active', AlertController::class, 'getActiveAlerts', [AuthMiddleware::class]);
     $router->post('/api/alerts/{id}/resolve', AlertController::class, 'resolveAlert', [AuthMiddleware::class]);
     // START ROUTING
+
+    $router->get('/api/alerts/history', AlertController::class, 'getAlertHistory', [AdminMiddleware::class]);
+    
+    // Istoric specific per reactor (Toți utilizatorii logați)
+    $router->get('/api/alerts/history/reactor/{id}', AlertController::class, 'getAlertHistoryByReactor', [AuthMiddleware::class]);
     $router->dispatch($uri, $method);
 
     // ==========================================

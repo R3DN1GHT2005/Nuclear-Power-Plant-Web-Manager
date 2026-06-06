@@ -15,10 +15,6 @@ class AlertRepository {
         $this->db = Database::getInstance()->getConnection();
     }
 
-    /**
-     * Extrage toate alertele nerezolvate (active) din sistem.
-     * * @return Alert[]
-     */
     public function getAllActive(): array {
         $sql = "SELECT a.*, r.name as reactor_name 
                 FROM alerts a
@@ -31,13 +27,11 @@ class AlertRepository {
         
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // Transformăm array-urile brute în obiecte de tip Alert
+       
         return array_map(fn($row) => AlertMapper::toModel($row), $rows);
     }
 
-    /**
-     * Găsește o alertă specifică după ID.
-     */
+    
     public function findById(int $id): ?Alert {
         $sql = "SELECT a.*, r.name as reactor_name 
                 FROM alerts a
@@ -56,10 +50,7 @@ class AlertRepository {
         return AlertMapper::toModel($row);
     }
 
-    /**
-     * Verifică dacă există deja o alertă nerezolvată de o anumită severitate pe un reactor.
-     * Folosită pentru a preveni spam-ul de alerte duplicat.
-     */
+   
     public function findActiveByReactorAndSeverity(int $reactorId, AlertSeverity $severity): ?Alert {
         $sql = "SELECT a.*, r.name as reactor_name 
                 FROM alerts a
@@ -84,9 +75,7 @@ class AlertRepository {
         return AlertMapper::toModel($row);
     }
 
-    /**
-     * Marchează o alertă ca fiind rezolvată, salvând utilizatorul și notele de intervenție.
-     */
+   
     public function resolve(int $alertId, int $userId, string $notes): bool {
         $sql = "UPDATE alerts 
                 SET is_resolved = TRUE, 
@@ -106,9 +95,6 @@ class AlertRepository {
         return $stmt->rowCount() > 0;
     }
 
-    /**
-     * Inserează o alertă nouă în baza de date.
-     */
     public function create(Alert $alert): Alert {
         $sql = "INSERT INTO alerts (reactor_id, severity, message, is_resolved, created_at) 
                 VALUES (:reactor_id, :severity, :message, FALSE, CURRENT_TIMESTAMP)";
@@ -124,4 +110,39 @@ class AlertRepository {
         $newId = (int) $this->db->lastInsertId();
         return $this->findById($newId);
     }
+
+
+
+
+    public function getAll(): array {
+        $sql = "SELECT a.*, r.name as reactor_name 
+                FROM alerts a
+                JOIN reactors r ON a.reactor_id = r.id
+                ORDER BY a.created_at DESC";
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map(fn($row) => AlertMapper::toModel($row), $rows);
+    }
+
+  
+    public function getAllByReactorId(int $reactorId): array {
+        $sql = "SELECT a.*, r.name as reactor_name 
+                FROM alerts a
+                JOIN reactors r ON a.reactor_id = r.id
+                WHERE a.reactor_id = :reactor_id 
+                ORDER BY a.created_at DESC";
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':reactor_id' => $reactorId]);
+        
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map(fn($row) => AlertMapper::toModel($row), $rows);
+    }
+
+
 }
