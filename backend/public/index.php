@@ -17,6 +17,7 @@ use App\Controllers\ReactorMaintenanceController;
 use App\Controllers\UserController;
 use App\Controllers\AlertController;
 use App\Controllers\ReportController;
+use App\Controllers\RssController;
 use App\Core\Router;
 
 
@@ -142,8 +143,14 @@ try {
     $router->dispatch($uri, $method);
 
     // ==========================================
-    
+    // RSS (publice si autentificate)
+    // ==========================================
+    $router->get('/api/rss/alerts', RssController::class, 'getFeed');
+    $router->get('/api/rss/token', RssController::class, 'getToken', [AuthMiddleware::class]);
+    $router->post('/api/user/rss-token/regenerate', UserController::class, 'regenerateRssToken', [AuthMiddleware::class]);
 
+    // START ROUTING
+    $router->dispatch($uri, $method);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
