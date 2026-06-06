@@ -51,7 +51,19 @@ async function loadRssFeed() {
         }
 
         rssContainer.innerHTML = '';
-        items.forEach(item => {
+        const itemsArray = Array.from(items);
+        const today = new Date();
+        const todayStr = today.toDateString();
+
+        const todayItems = itemsArray.filter(item => {
+            const pubDate = item.querySelector("pubDate")?.textContent || "";
+            const itemDate = new Date(pubDate);
+            return !isNaN(itemDate) && itemDate.toDateString() === todayStr;
+        });
+
+        const displayItems = todayItems.length > 0 ? todayItems : itemsArray.slice(0, 5);
+
+        displayItems.forEach(item => {
             const title = item.querySelector("title")?.textContent || "Fără titlu";
             const description = item.querySelector("description")?.textContent || "";
             const pubDate = item.querySelector("pubDate")?.textContent || "";
@@ -61,9 +73,10 @@ async function loadRssFeed() {
             });
 
             let dotColor = "#CBD5E1"; 
-            if (title.includes("[CRITICAL]")) dotColor = "var(--red)";
-            else if (title.includes("[WARNING]")) dotColor = "var(--amber)";
-            else if (title.includes("[INFO]") || title.includes("[STATISTICI]")) dotColor = "var(--green)";
+            if (title.includes("[CRITICAL]") || title.includes("[REZOLVAT]")) {
+                dotColor = title.includes("[CRITICAL]") ? "var(--red)" : "#22c55e";
+            } else if (title.includes("[WARNING]")) dotColor = "var(--amber)";
+            else if (title.includes("[INFO]") || title.includes("[STATISTICI]") || title.includes("[MENTENANȚĂ]")) dotColor = "var(--green)";
             const cleanTitle = title.replace(/\[.*?\]\s*/, '');
 
             const feedItemHTML = `
