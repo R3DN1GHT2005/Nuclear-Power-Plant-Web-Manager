@@ -36,6 +36,25 @@ class AlertRepository {
     }
 
     /**
+     * Extrage toate alertele rezolvate, ordonate cronologic (cele mai recente primele).
+     * @return Alert[]
+     */
+    public function getAllResolved(): array {
+        $sql = "SELECT a.*, r.name as reactor_name 
+                FROM alerts a
+                JOIN reactors r ON a.reactor_id = r.id
+                WHERE a.is_resolved = TRUE
+                ORDER BY a.resolved_at DESC";
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map(fn($row) => AlertMapper::toModel($row), $rows);
+    }
+
+    /**
      * Găsește o alertă specifică după ID.
      */
     public function findById(int $id): ?Alert {

@@ -134,18 +134,16 @@ try {
     // ==========================================
     $router->get('/api/alerts/active', AlertController::class, 'getActiveAlerts', [AuthMiddleware::class]);
     $router->post('/api/alerts/{id}/resolve', AlertController::class, 'resolveAlert', [AuthMiddleware::class]);
-    // START ROUTING
-    $router->dispatch($uri, $method);
 
     // ==========================================
-    //RSS
+    // RSS (publice si autentificate)
     // ==========================================
     $router->get('/api/rss/alerts', RssController::class, 'getFeed');
     $router->get('/api/rss/token', RssController::class, 'getToken', [AuthMiddleware::class]);
-    //RSS da cu auth pentru regenerare
     $router->post('/api/user/rss-token/regenerate', UserController::class, 'regenerateRssToken', [AuthMiddleware::class]);
 
-
+    // START ROUTING
+    $router->dispatch($uri, $method);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

@@ -40,13 +40,23 @@ class RssService {
     public function generateFeed(array $user): string {
         $feedItems = []; 
 
-        $alerts = $this->alertRepo->getAllActive();
-        foreach ($alerts as $alert) {
+        $activeAlerts = $this->alertRepo->getAllActive();
+        foreach ($activeAlerts as $alert) {
             $feedItems[] = [
                 'title'       => '[' . strtoupper($alert->getSeverity()->value) . '] Alertă la ' . $alert->getReactorName(),
                 'description' => $alert->getMessage(),
                 'timestamp'   => $alert->getCreatedAt()->getTimestamp(),
                 'guid'        => 'alert-' . $alert->getId()
+            ];
+        }
+
+        $resolvedAlerts = $this->alertRepo->getAllResolved();
+        foreach ($resolvedAlerts as $alert) {
+            $feedItems[] = [
+                'title'       => '[REZOLVAT] ' . $alert->getReactorName() . ' - ' . ucfirst($alert->getSeverity()->value),
+                'description' => $alert->getMessage() . ($alert->getResolutionNotes() ? ' | Intervenție: ' . $alert->getResolutionNotes() : ''),
+                'timestamp'   => $alert->getResolvedAt() ? $alert->getResolvedAt()->getTimestamp() : $alert->getCreatedAt()->getTimestamp(),
+                'guid'        => 'resolved-' . $alert->getId()
             ];
         }
 
