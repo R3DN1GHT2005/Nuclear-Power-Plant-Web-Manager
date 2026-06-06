@@ -135,7 +135,7 @@ const NuclearAPI = {
     // ── SENZORI ──
     // ==========================================
 
-    // 1. Preia dicționarul de senzori din backend (Celsius, Bar, limite etc.)
+    // 1. Preia dicționarul de senzori din rețea (Celsius, Bar, limite etc.)
     async getSensorTypes() {
         try {
             const response = await authFetch('/sensors/types', { method: 'GET' });

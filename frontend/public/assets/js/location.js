@@ -615,7 +615,7 @@
             <div class="status-summary-item status-summary-item--risk">
                 <div class="status-summary-label">Risc seismic mediu</div>
                 <div class="status-summary-value">${formatPercent(seismic10, 1)} / 10</div>
-                <div class="status-summary-note">Scală normalizată din datele backend</div>
+                <div class="status-summary-note">Scală normalizată din datele senzorilor</div>
             </div>
         `;
     }

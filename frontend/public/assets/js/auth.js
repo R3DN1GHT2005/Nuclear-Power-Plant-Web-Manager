@@ -69,7 +69,7 @@ if (step1){
         const email = this.email.value;
         const r = await postJson(`${AUTH_API_URL}/auth/forgot`, {email});
         if (r.ok){
-            // If backend returns code for demo, pre-fill it and show step2
+            // If server returns code for demo, pre-fill it and show step2
             if (r.body && r.body.code){
                 document.getElementById('code').value = r.body.code;
             }

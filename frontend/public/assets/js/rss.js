@@ -33,8 +33,8 @@ async function loadRssFeed() {
             return;
         }
 
-        const backendUrl = 'http://localhost:8082';
-        const rssUrl = `${backendUrl}/api/rss/alerts?token=${rssToken}`;
+        const serverUrl = 'http://localhost:8082';
+        const rssUrl = `${serverUrl}/api/rss/alerts?token=${rssToken}`;
         const response = await fetch(rssUrl);
         
         if (!response.ok) {
@@ -179,8 +179,8 @@ function setupRssButton() {
                 return;
             }
 
-            const backendUrl = 'http://localhost:8082';
-            const rssUrl = `${backendUrl}/api/rss/alerts?token=${rssToken}`;
+            const serverUrl = 'http://localhost:8082';
+            const rssUrl = `${serverUrl}/api/rss/alerts?token=${rssToken}`;
             
             await navigator.clipboard.writeText(rssUrl);
             

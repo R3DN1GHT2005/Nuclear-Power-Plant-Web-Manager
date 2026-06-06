@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const firstName = document.getElementById("new-user-firstname").value.trim();
         const lastName = document.getElementById("new-user-lastname").value.trim();
 
-        // NOU: Trimitem `first_name` și `last_name` exact cum le cere backend-ul!
+        // Trimitem `first_name` și `last_name` exact cum le cere sistemul
         const payload = {
             first_name: firstName,
             last_name: lastName,
