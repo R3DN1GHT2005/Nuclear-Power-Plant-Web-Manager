@@ -5,16 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function getCurrentUserRssToken() {
     try {
-        const response = await authFetch('/api/users/me'); 
+        const response = await authFetch('/rss/token'); 
         
         if (response.ok) {
             const data = await response.json();
             return data.rss_token;
         } else {
-            console.warn("Nu am putut obține profilul. Status:", response.status);
+            console.warn("Nu am putut obține token-ul RSS. Status:", response.status);
         }
     } catch (e) {
-        console.warn("Eroare la apelarea rutei pentru profil:", e);
+        console.warn("Eroare la apelarea endpoint-ului RSS token:", e);
     }
     
     return null;

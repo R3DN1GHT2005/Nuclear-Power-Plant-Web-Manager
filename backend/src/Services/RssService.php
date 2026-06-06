@@ -5,16 +5,36 @@ namespace App\Services;
 use App\Repositories\AlertRepository;
 use App\Repositories\ReactorMaintenanceRepository;
 use App\Repositories\ReactorRepository;
+use App\Repositories\UserRepository;
 
 class RssService {
     private AlertRepository $alertRepo;
     private ReactorMaintenanceRepository $maintenanceRepo;
     private ReactorRepository $reactorRepo;
+    private UserRepository $userRepo;
 
     public function __construct() {
         $this->alertRepo = new AlertRepository();
         $this->maintenanceRepo = new ReactorMaintenanceRepository();
         $this->reactorRepo = new ReactorRepository();
+        $this->userRepo = new UserRepository();
+    }
+
+    public function getToken(int $userId): string {
+        $user = $this->userRepo->findById($userId);
+
+        if (!$user) {
+            throw new Exception("Utilizator negăsit.");
+        }
+
+        $token = $user->getRssToken();
+
+        if (!$token) {
+            $token = bin2hex(random_bytes(32));
+            $this->userRepo->updateRssToken($userId, $token);
+        }
+
+        return $token;
     }
 
     public function generateFeed(array $user): string {

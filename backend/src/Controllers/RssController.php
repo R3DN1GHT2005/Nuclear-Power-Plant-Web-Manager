@@ -2,7 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Services\RssServices;
+use App\Core\Response;
+use App\Middleware\AuthMiddleware;
+use App\Services\RssService;
 use App\Repositories\UserRepository;
 
 class RssController{
@@ -12,6 +14,22 @@ class RssController{
     public function __construct(){
         $this->rssService=new RssService();
         $this->userRepo=new UserRepository();
+    }
+
+    public function getToken(): void {
+        $currentUser = AuthMiddleware::getUser();
+
+        if (!$currentUser || !isset($currentUser->userId)) {
+            Response::json(["error" => "Neautorizat."], 401);
+            return;
+        }
+
+        try {
+            $token = $this->rssService->getToken($currentUser->userId);
+            Response::json(["rss_token" => $token]);
+        } catch (Exception $e) {
+            Response::json(["error" => $e->getMessage()], 404);
+        }
     }
 
     public function getFeed() {

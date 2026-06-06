@@ -158,7 +158,8 @@ class UserRepository {
             $row['first_name'],
             $row['last_name'],
             UserRole::fromString($row['role']),
-            new \DateTime($row['created_at'])
+            new \DateTime($row['created_at']),
+            $row['rss_token'] ?? null
         );
 
         // Dacă avem date despre asignare (reactor_id nu e null), atașăm modelul ReactorPersonnel

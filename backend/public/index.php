@@ -141,6 +141,7 @@ try {
     //RSS
     // ==========================================
     $router->get('/api/rss/alerts', RssController::class, 'getFeed');
+    $router->get('/api/rss/token', RssController::class, 'getToken', [AuthMiddleware::class]);
     //RSS da cu auth pentru regenerare
     $router->post('/api/user/rss-token/regenerate', UserController::class, 'regenerateRssToken', [AuthMiddleware::class]);
 
