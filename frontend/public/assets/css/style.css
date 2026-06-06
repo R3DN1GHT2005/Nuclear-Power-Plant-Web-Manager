@@ -66,7 +66,6 @@ body {
   padding: 20px 40px;
   width: 100vw;
   margin: 0 auto;
-  min-height: calc(100vh - var(--nav-h));
   height: auto;
 }
 
@@ -202,10 +201,21 @@ body {
 .rss-sub-btn { font-size: 11px; font-weight: 600; color: var(--blue); text-decoration: none; border: 1px solid var(--blue-bg); padding: 3px 9px; border-radius: var(--radius-sm); background: var(--blue-bg); }
 .rss-desc { font-size: 11px; color: var(--text-3); line-height: 1.4; }
 .rss-footer { padding: 8px 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--text-3); background: var(--bg); display: flex; align-items: center; gap: 5px; }
+#rss-container { max-height: 400px; }
+
+.stats-grid { padding: 6px 15px 10px; display: flex; flex-direction: column; gap: 5px; }
+.stats-reactor { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; padding: 4px 8px; border-radius: 6px; background: var(--surface-2); }
+.stats-reactor-name { font-size: 0.8em; font-weight: 500; color: var(--text); }
+.stats-reactor-eff { font-size: 0.8em; font-weight: 600; color: var(--text-2); }
+.stats-bar { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+.stats-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width 0.3s; }
+.stats-crit .stats-bar-fill { background: var(--red); }
+.stats-maint .stats-bar-fill { background: var(--amber); }
+.stats-off .stats-bar-fill { background: #94a3b8; }
 
 /* =========================================
-   6. PAGINA REACTOARE (Detalii & Cards)
-========================================= */
+    6. PAGINA REACTOARE (Detalii & Cards)
+    ========================================= */
 .filter-bar { display: flex; gap: 6px; margin-bottom: 14px; align-items: center; flex-shrink: 0; }
 .filter-tab { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); transition: 0.15s; }
 .filter-tab.active-tab { background: var(--text); color: #fff; border-color: var(--text); }

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadRssFeed();
     setupRssButton();
+    startDayRefresh();
 });
 
 async function getCurrentUserRssToken() {
@@ -52,18 +53,20 @@ async function loadRssFeed() {
 
         rssContainer.innerHTML = '';
         const itemsArray = Array.from(items);
-        const today = new Date();
-        const todayStr = today.toDateString();
 
-        const todayItems = itemsArray.filter(item => {
-            const pubDate = item.querySelector("pubDate")?.textContent || "";
-            const itemDate = new Date(pubDate);
-            return !isNaN(itemDate) && itemDate.toDateString() === todayStr;
+        const statsItem = itemsArray.find(item => {
+            const title = item.querySelector("title")?.textContent || "";
+            return title.includes("[STATISTICI]");
         });
 
-        const displayItems = todayItems.length > 0 ? todayItems : itemsArray.slice(0, 5);
+        const otherItems = itemsArray.filter(item => {
+            const title = item.querySelector("title")?.textContent || "";
+            return !title.includes("[STATISTICI]");
+        });
 
-        displayItems.forEach(item => {
+        const recentItems = otherItems.slice(0, 4);
+
+        recentItems.forEach(item => {
             const title = item.querySelector("title")?.textContent || "Fără titlu";
             const description = item.querySelector("description")?.textContent || "";
             const pubDate = item.querySelector("pubDate")?.textContent || "";
@@ -73,24 +76,24 @@ async function loadRssFeed() {
             });
 
             let dotColor = "#CBD5E1"; 
-            if (title.includes("[CRITICAL]") || title.includes("[REZOLVAT]")) {
-                dotColor = title.includes("[CRITICAL]") ? "var(--red)" : "#22c55e";
-            } else if (title.includes("[WARNING]")) dotColor = "var(--amber)";
-            else if (title.includes("[INFO]") || title.includes("[STATISTICI]") || title.includes("[MENTENANȚĂ]")) dotColor = "var(--green)";
+            if (title.includes("[CRITICAL]")) dotColor = "var(--red)";
+            else if (title.includes("[REZOLVAT]")) dotColor = "#22c55e";
+            else if (title.includes("[WARNING]")) dotColor = "var(--amber)";
+            else if (title.includes("[MENTENANȚĂ]")) dotColor = "var(--green)";
             const cleanTitle = title.replace(/\[.*?\]\s*/, '');
 
             const feedItemHTML = `
-                <div style="padding: 12px 15px; border-bottom: 1px solid #f1f5f9;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <div style="font-weight: 500; font-size: 0.9em; display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 8px; height: 8px; border-radius: 50%; background-color: ${dotColor};"></div>
+                <div style="padding: 10px 15px; border-bottom: 1px solid #f1f5f9;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <div style="font-weight: 500; font-size: 0.85em; display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 7px; height: 7px; border-radius: 50%; background-color: ${dotColor}; flex-shrink: 0;"></div>
                             ${cleanTitle}
                         </div>
-                        <div style="font-size: 0.75em; color: #94a3b8; white-space: nowrap;">
+                        <div style="font-size: 0.7em; color: #94a3b8; white-space: nowrap; flex-shrink: 0;">
                             ${dateFormatted}
                         </div>
                     </div>
-                    <div style="font-size: 0.85em; color: #64748b; padding-left: 16px; line-height: 1.4;">
+                    <div style="font-size: 0.8em; color: #64748b; padding-left: 15px; line-height: 1.3;">
                         ${description}
                     </div>
                 </div>
@@ -99,10 +102,67 @@ async function loadRssFeed() {
             rssContainer.insertAdjacentHTML('beforeend', feedItemHTML);
         });
 
+        if (statsItem) {
+            const statsTitle = statsItem.querySelector("title")?.textContent || "";
+            const statsDesc = statsItem.querySelector("description")?.textContent || "";
+            const cleanStatsTitle = statsTitle.replace(/\[.*?\]\s*/, '');
+
+            const reactorLines = statsDesc.split('\n').filter(line => line.trim().startsWith('-'));
+            let reactorsHtml = '';
+            reactorLines.forEach(line => {
+                const match = line.match(/-\s*(.+?):\s*([\d.]+)%\s*\(Status:\s*(.+?)\)/);
+                if (match) {
+                    const name = match[1];
+                    const eff = match[2];
+                    const status = match[3].toLowerCase();
+                    let statusClass = 'stats-ok';
+                    if (status === 'alertă' || status === 'critic') statusClass = 'stats-crit';
+                    else if (status === 'mentenanță') statusClass = 'stats-maint';
+                    else if (status === 'oprit') statusClass = 'stats-off';
+                    reactorsHtml += `
+                        <div class="stats-reactor ${statusClass}">
+                            <div class="stats-reactor-name">${name}</div>
+                            <div class="stats-reactor-eff">${eff}%</div>
+                            <div class="stats-bar"><div class="stats-bar-fill" style="width:${eff}%"></div></div>
+                        </div>
+                    `;
+                }
+            });
+
+            const statsHtml = `
+                <div style="border-bottom: 1px solid #f1f5f9;">
+                    <div style="padding: 10px 15px 6px; font-weight: 600; font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 8px;">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        ${cleanStatsTitle}
+                    </div>
+                    <div class="stats-grid">
+                        ${reactorsHtml}
+                    </div>
+                </div>
+            `;
+
+            rssContainer.insertAdjacentHTML('beforeend', statsHtml);
+        }
+
+        if (itemsArray.length === 0 || (!statsItem && otherItems.length === 0)) {
+            rssContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Nu există evenimente recente în jurnal.</p>';
+        }
+
     } catch (error) {
         console.error("Eroare RSS:", error);
         rssContainer.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--red);">Eroare la procesarea jurnalului RSS.</p>`;
     }
+}
+
+function startDayRefresh() {
+    let lastDate = new Date().toDateString();
+    setInterval(() => {
+        const now = new Date().toDateString();
+        if (now !== lastDate) {
+            lastDate = now;
+            loadRssFeed();
+        }
+    }, 30000);
 }
 
 function setupRssButton() {
