@@ -41,6 +41,7 @@
         locationNameInput: document.getElementById('location_name'),
         reactorTypeInput: document.getElementById('reactor_type'),
         installedPowerInput: document.getElementById('installed_power'),
+        webhookUrlInput: document.getElementById('webhook_url'), // <-- Adăugat aici
         toast: document.getElementById('toast-success'),
         mapContainer: document.getElementById('reactors-map'),
         sensorModal: document.getElementById('sensor-modal'),
@@ -1051,7 +1052,8 @@
             reactor_type: refs.reactorTypeInput.value,
             installed_power: Number(refs.installedPowerInput.value),
             latitude: Number(refs.latitudeInput.value),
-            longitude: Number(refs.longitudeInput.value)
+            longitude: Number(refs.longitudeInput.value),
+            webhook_url: refs.webhookUrlInput ? refs.webhookUrlInput.value.trim() : '' // <-- Adăugat aici
         };
     }
 

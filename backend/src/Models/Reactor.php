@@ -19,6 +19,7 @@ class Reactor {
     private float $elevation_meters;
     private \DateTime $created_at;
     private ?\DateTime $last_maintenance;
+    private string $webhook_url;
     private array $sensors = [];
 
     public function __construct(
@@ -37,7 +38,8 @@ class Reactor {
         float $distance_to_nearest_city_km,
         float $elevation_meters,
         \DateTime $created_at,
-        ?\DateTime $last_maintenance
+        ?\DateTime $last_maintenance,
+        ?string $webhook_url = null
     ) {
         $this->id                          = $id;
         $this->name                        = $name;
@@ -55,6 +57,7 @@ class Reactor {
         $this->elevation_meters            = $elevation_meters;
         $this->created_at                  = $created_at;
         $this->last_maintenance            = $last_maintenance;
+        $this->webhook_url                 = $webhook_url ?? '';
     }
 
     public static function fromArray(array $data): self {
@@ -78,6 +81,7 @@ class Reactor {
             elevation_meters:              (float) $data['elevation_meters'],
             created_at:              $createdAt,
             last_maintenance:        $lastMaintenance,
+            webhook_url:                   $data['webhook_url'] ?? null,
         );
     }
 
@@ -116,5 +120,13 @@ class Reactor {
 
     public function getSensors(): array {
         return $this->sensors;
+    }
+
+    public function getWebhookUrl(): string { 
+        return $this->webhook_url; 
+    }
+
+    public function setWebhookUrl(string $webhook_url): void {
+        $this->webhook_url = $webhook_url;
     }
 }
