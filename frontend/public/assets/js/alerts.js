@@ -1,64 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. INJECTĂM STRUCTURA HTML CURATĂ
+    const sunetAlarma = new Audio('./assets/alert_sound.mp3');
+    sunetAlarma.loop = true; 
+
+    // Set cu alertele ignorate — nu se resetează niciodată automat
+    const ignoredAlertIds = new Set();
+
     const alertHTML = `
         <div id="nwGlobalOverlay" class="nw-alert-overlay">
-            <div class="nw-alert-box">
-                
-                <div id="nwAlertHeader" class="nw-alert-header">
-                    <span id="nwAlertIcon">⚠️</span> 
-                    <span id="nwAlertTitle">ALARMĂ SISTEM</span>
+            <div class="nw-alert-box" style="position: relative;">
+                <div id="nwAlertHeader" class="nw-alert-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span id="nwAlertIcon">⚠️</span> 
+                        <span id="nwAlertTitle">ALARMĂ SISTEM</span>
+                    </div>
+                    <button id="nwBtnClosePopup" style="background: none; border: none; color: inherit; font-size: 24px; font-weight: bold; cursor: pointer; padding: 0 10px;">&times;</button>
                 </div>
-                
                 <div class="nw-alert-body">
                     <h2 id="nwAlertReactor" class="nw-alert-reactor-name">Reactor</h2>
                     <p id="nwAlertMessage" class="nw-alert-message">Mesaj alertă</p>
                 </div>
-                
                 <div class="nw-alert-footer">
-                    <button id="nwBtnShowForm" class="nw-btn nw-btn-action">
-                        INTERVINO / REZOLVĂ ALARMA
-                    </button>
-
+                    <button id="nwBtnShowForm" class="nw-btn nw-btn-action">INTERVINO / REZOLVĂ ALARMA</button>
                     <div id="nwResolveForm" class="nw-resolve-form">
                         <label class="nw-form-label">Jurnal de intervenție (Obligatoriu):</label>
                         <textarea id="nwResolveNotes" class="nw-textarea" rows="3" placeholder="Ex: Am redus puterea pompei la 80%..."></textarea>
-                        
-                        <button id="nwBtnSubmit" class="nw-btn nw-btn-submit">
-                            CONFIRMĂ SALVAREA
-                        </button>
+                        <button id="nwBtnSubmit" class="nw-btn nw-btn-submit">CONFIRMĂ SALVAREA</button>
                     </div>
                 </div>
-
             </div>
         </div>
     `;
     document.body.insertAdjacentHTML('beforeend', alertHTML);
 
-    // 2. PRELUĂM ELEMENTELE DIN DOM
     const overlay = document.getElementById('nwGlobalOverlay');
     const header = document.getElementById('nwAlertHeader');
     const iconText = document.getElementById('nwAlertIcon');
     const reactorText = document.getElementById('nwAlertReactor');
     const messageText = document.getElementById('nwAlertMessage');
-    
     const btnShowForm = document.getElementById('nwBtnShowForm');
     const formContainer = document.getElementById('nwResolveForm');
     const btnSubmit = document.getElementById('nwBtnSubmit');
     const notesInput = document.getElementById('nwResolveNotes');
+    const btnClosePopup = document.getElementById('nwBtnClosePopup');
 
     let currentAlertId = null;
 
-    // 3. FUNCȚIA CARE AFIȘEAZĂ ALARMA
     function showGlobalAlert(alert) {
-        if (overlay.classList.contains('nw-show')) return; // Dacă e deja vizibilă, nu facem nimic
+        // Nu redeschide dacă e deja vizibil
+        if (overlay.classList.contains('nw-show')) return;
+        // Nu redeschide dacă a fost ignorat de utilizator
+        if (ignoredAlertIds.has(alert.id)) return;
 
         currentAlertId = alert.id;
         reactorText.textContent = alert.reactor_name;
         messageText.textContent = alert.message;
 
-        // Setăm culorile în funcție de severitate
         header.classList.remove('nw-severity-critical', 'nw-severity-warning');
-        
         if (alert.severity === 'critical') {
             header.classList.add('nw-severity-critical');
             iconText.textContent = '🚨';
@@ -67,41 +64,54 @@ document.addEventListener("DOMContentLoaded", () => {
             iconText.textContent = '⚠️';
         }
 
-        // Resetăm starea formularului (în caz că a rămas deschis de la o alertă anterioară)
         btnShowForm.style.display = 'block';
         formContainer.classList.remove('nw-show-form');
         notesInput.value = '';
 
-        // Arătăm overlay-ul
         overlay.classList.add('nw-show');
-        
-        // Opțional: Aici poți pune sunet
-        // new Audio('assets/sounds/alarm.mp3').play().catch(e => console.log('Sunet blocat de browser.'));
+
+        // Sunetul pornește odată cu popup-ul
+        if (sunetAlarma.paused) {
+            sunetAlarma.play().catch(e => console.log('Sunet blocat de browser.', e));
+        }
     }
 
-    // 4. LOGICA DE VERIFICARE (POLLING LA 5 SECUNDE)
     async function checkAlerts() {
         try {
-            // Se presupune că folosești funcția globală authFetch pe care ai configurat-o deja
             const res = await window.authFetch('/alerts/active');
-            
             if (res.ok) {
                 const alerts = await res.json();
                 
                 if (alerts.length > 0) {
-                    showGlobalAlert(alerts[0]); // Arătăm cea mai recentă alertă
+                    const latestAlert = alerts[0];
+                    showGlobalAlert(latestAlert);
+
+                    // Dacă alerta e ignorată, sunetul continuă în fundal
+                    if (ignoredAlertIds.has(latestAlert.id) && sunetAlarma.paused) {
+                        sunetAlarma.play().catch(e => console.log('Sunet blocat de browser.', e));
+                    }
                 } else {
-                    // Dacă un alt operator a rezolvat alerta între timp, ascundem fereastra automat
+                    // Nu mai există alerte active — curățăm tot
                     overlay.classList.remove('nw-show');
                     currentAlertId = null;
+                    ignoredAlertIds.clear();
+                    sunetAlarma.pause();
+                    sunetAlarma.currentTime = 0;
                 }
             }
         } catch (e) {
-            console.error("Eroare la preluarea alertelor", e);
+            console.error("Eroare:", e);
         }
     }
 
-    // 5. EVENIMENTE BUTOANE
+    btnClosePopup.addEventListener('click', () => {
+        // Adăugăm alerta în Set — popup-ul nu va mai reapărea, sunetul continuă
+        if (currentAlertId !== null) {
+            ignoredAlertIds.add(currentAlertId);
+        }
+        overlay.classList.remove('nw-show');
+    });
+
     btnShowForm.addEventListener('click', () => {
         btnShowForm.style.display = 'none';
         formContainer.classList.add('nw-show-form');
@@ -110,41 +120,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     btnSubmit.addEventListener('click', async () => {
         if (!currentAlertId) return;
-        
         const notes = notesInput.value.trim();
-        if (!notes) {
-            alert("Te rog să completezi acțiunile întreprinse!");
-            notesInput.focus();
-            return;
-        }
+        if (!notes) { alert("Completează acțiunile!"); return; }
         
-        btnSubmit.textContent = "SE SALVEAZĂ...";
         btnSubmit.disabled = true;
-
         try {
             const res = await window.authFetch(`/alerts/${currentAlertId}/resolve`, {
                 method: 'POST',
                 body: JSON.stringify({ notes: notes })
             });
-            
             if (res.ok) {
-                // Succes! Ascundem fereastra.
                 overlay.classList.remove('nw-show');
+                ignoredAlertIds.delete(currentAlertId);
                 currentAlertId = null;
-            } else {
-                const data = await res.json();
-                alert(data.error || "Eroare la confirmare.");
+                sunetAlarma.pause();
+                sunetAlarma.currentTime = 0;
             }
-        } catch (e) {
-            alert("Eroare de rețea.");
         } finally {
-            // Resetăm butonul indiferent de rezultat
-            btnSubmit.textContent = "CONFIRMĂ SALVAREA";
             btnSubmit.disabled = false;
         }
     });
 
-    // 6. PORNIREA VERIFICĂRILOR
     setInterval(checkAlerts, 5000);
-    checkAlerts(); // Executăm o dată imediat cum se încarcă pagina
+    checkAlerts();
 });

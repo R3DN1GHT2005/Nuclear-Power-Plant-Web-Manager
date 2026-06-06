@@ -37,7 +37,7 @@
         </button>
         <div class="avatar">IA</div>
         <button class="logout-btn">
-             <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Deconectare
         </button>
     </div>
@@ -62,51 +62,27 @@
         </div>
 
         <div class="scroll-area">
-            <div class="reactor-grid" id="reactor-grid-container">
-                </div>
+            <div class="reactor-grid" id="reactor-grid-container"></div>
         </div>
     </div>
 
     <div class="col-right">
-        <div class="panel-card flex-fill">
-            <div class="detail-section mb-12">
-                <header class="det-h">
-                    <div>
-                        <div class="det-t text-red">⚠ Reactor 3 — Alertă activă</div>
-                        <div class="det-s">Detalii parametri în timp real</div>
-                    </div>
-                    <span class="pill pill-alert">CRITIC</span>
-                </header>
-                <div class="gauge-row">
-                    <div class="gauge">
-                        <div class="gauge-ring">
-                            <svg viewBox="0 0 64 64"><circle class="gauge-track" cx="32" cy="32" r="27"/><circle cx="32" cy="32" r="27" class="stroke-red" stroke-dashoffset="42"/></svg>
-                            <div class="gauge-val-wrap"><div class="gauge-num text-red">412</div><div class="gauge-unit">°C</div></div>
-                        </div>
-                        <div class="gauge-lbl">Temperatură</div>
-                    </div>
-                    <div class="gauge">
-                        <div class="gauge-ring">
-                            <svg viewBox="0 0 64 64"><circle class="gauge-track" cx="32" cy="32" r="27"/><circle cx="32" cy="32" r="27" class="stroke-amber" stroke-dashoffset="52"/></svg>
-                            <div class="gauge-val-wrap"><div class="gauge-num text-amber">158</div><div class="gauge-unit">bar</div></div>
-                        </div>
-                        <div class="gauge-lbl">Presiune</div>
-                    </div>
-                    <div class="gauge">
-                        <div class="gauge-ring">
-                            <svg viewBox="0 0 64 64"><circle class="gauge-track" cx="32" cy="32" r="27"/><circle cx="32" cy="32" r="27" class="stroke-amber" stroke-dashoffset="90"/></svg>
-                            <div class="gauge-val-wrap"><div class="gauge-num text-amber">2.4</div><div class="gauge-unit">mSv/h</div></div>
-                        </div>
-                        <div class="gauge-lbl">Radiație</div>
-                    </div>
-                </div>
-                <div class="hist-row">
-                    <div class="hist-item"><span class="hist-label">Putere</span><div class="hist-bar-bg"><div class="bar-fill bf-red" style="width:76%"></div></div><span class="hist-val">76%</span></div>
-                    <div class="hist-item"><span class="hist-label">Răcire</span><div class="hist-bar-bg"><div class="bar-fill bf-amber" style="width:82%"></div></div><span class="hist-val">820 m³/h</span></div>
-                    <div class="hist-item"><span class="hist-label">Uzură</span><div class="hist-bar-bg"><div class="bar-fill bf-amber" style="width:44%"></div></div><span class="hist-val">44%</span></div>
-                </div>
-            </div>
 
+        <!-- ALERTE LIVE -->
+        <div class="panel-card">
+            <div style="padding: 14px 18px 10px; display: flex; align-items: baseline; justify-content: space-between;">
+                <div>
+                    <div style="font-size:15px; font-weight:500; color:var(--color-text-primary);">Alerte operative</div>
+                    <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Notificări sistem — necesită acțiune</div>
+                </div>
+                <a href="#" style="font-size:13px; color:var(--color-text-info); text-decoration:none;">Toate →</a>
+            </div>
+            <div style="height:0.5px; background:var(--color-border-tertiary); margin:0 18px;"></div>
+            <div id="alerts-container" style="padding: 14px 18px 16px; display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+
+        <!-- JURNAL EVENIMENTE -->
+        <div class="panel-card flex-fill">
             <div class="detail-section flex-fill">
                 <header class="det-h">
                     <div>
@@ -138,8 +114,10 @@
                 </div>
             </div>
         </div>
+
     </div>
 </main>
+
 <script src="assets/js/api.js"></script>
 <script src="assets/js/reactors.js"></script>
 <script src="assets/js/alerts.js"></script>

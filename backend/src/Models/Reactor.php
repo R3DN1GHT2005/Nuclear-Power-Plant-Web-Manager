@@ -81,7 +81,7 @@ class Reactor {
             elevation_meters:              (float) $data['elevation_meters'],
             created_at:              $createdAt,
             last_maintenance:        $lastMaintenance,
-            webhook_url:                   $data['webhook_url'] ?? null,
+            webhook_url:                   $data['webhook_discord'] ?? null,
         );
     }
 
