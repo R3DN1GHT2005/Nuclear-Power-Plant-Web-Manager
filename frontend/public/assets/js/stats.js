@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (refs.efficiencyBars) {
-            refs.efficiencyBars.innerHTML = '<div class="bc-col" style="grid-column:1/-1; text-align:center; color: var(--text-3); padding-top: 24px;">Se încarcă datele din backend...</div>';
+            refs.efficiencyBars.innerHTML = '<div class="bc-col" style="grid-column:1/-1; text-align:center; color: var(--text-3); padding-top: 24px;">Se încarcă datele din sistem...</div>';
         }
 
         if (refs.trendSvg) {
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (refs.comparisonBody) {
-            refs.comparisonBody.innerHTML = '<tr><td colspan="6" style="padding:16px; color: var(--text-3);">Se încarcă datele din backend...</td></tr>';
+            refs.comparisonBody.innerHTML = '<tr><td colspan="6" style="padding:16px; color: var(--text-3);">Se încarcă datele din sistem...</td></tr>';
         }
 
         if (refs.riskMatrixWrap) {
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setText('kpi-energy-desc', `Estimare pentru ${formatDays(state.days)} din reactoarele active`);
 
         setText('kpi-risk-value', `${formatPercent(averageRisk, 1)} / 10`);
-        setText('kpi-risk-desc', `Media riscului seismic din backend`);
+        setText('kpi-risk-desc', `Media riscului seismic din rețea`);
 
         setText('kpi-availability-value', `${formatPercent(availability, 1)}%`);
         setText('kpi-availability-desc', `${activeReactors} / ${totalReactors} reactoare active`);
