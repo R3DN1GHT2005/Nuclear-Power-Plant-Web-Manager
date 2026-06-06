@@ -201,6 +201,18 @@ const NuclearAPI = {
     }
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await authFetch('/auth/logout', { method: 'POST' });
+            } catch (e) {}
+            window.location.href = 'login.html';
+        });
+    }
+});
+
 // Expunem funcțiile global pentru a le putea folosi în orice alt fișier JS
 window.authFetch = authFetch;
 window.NuclearAPI = NuclearAPI;
