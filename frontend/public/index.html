@@ -3,31 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuclearWatch — Dashboard</title>
+    <title>NuclearWatch — Panou principal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/assets/css/alerts.css">
-    <link rel="stylesheet" href="/assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/alerts.css">
 </head>
 <body>
 
 <nav class="navbar" id="top-navbar">
     <div class="nav-left">
-        <a class="logo" href="dashboard.html">
-            <div class="logo-icon">
-                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
-                    <circle cx="8" cy="8" r="6.5" stroke="white" stroke-width="1" stroke-dasharray="2 2"/>
-                </svg>
-            </div>
-            NuclearWatch
+        <a class="logo" href="index.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
         </a>
-        <a class="nav-link active" href="dashboard.html">Stația mea</a>
-        <a class="nav-link" href="reactor-statistics.html" id="nav-statistics" style="display:none">Statistici</a>
-        <a class="nav-link" href="management.html" id="nav-management" style="display:none">Management</a>
-        <a class="nav-link" href="reactor.html" id="nav-reactor" style="display:none">Vezi reactorul</a>
     </div>
     <div class="nav-right">
         <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
@@ -36,18 +25,14 @@
 
 <div class="main tech-dash">
 
-    <!-- KPI BAR -->
     <div class="kpi-row" id="tech-kpis">
         <p class="loading-msg">Se încarcă datele reactorului...</p>
     </div>
 
-    <!-- GRID PRINCIPAL -->
     <div class="dash-grid">
 
-        <!-- COL STÂNGA: Senzori + Statistici + Alerte -->
         <div class="col-left">
 
-            <!-- Senzori live -->
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="head-info">
@@ -61,7 +46,6 @@
                 </div>
             </div>
 
-            <!-- Statistici -->
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="head-info">
@@ -81,7 +65,6 @@
                 </div>
             </div>
 
-            <!-- Alerte active -->
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="head-info">
@@ -97,10 +80,8 @@
 
         </div>
 
-        <!-- COL DREAPTA: Mentenanță + RSS -->
         <div class="col-right">
 
-            <!-- Mentenanță -->
             <div class="panel-card">
                 <div class="panel-head">
                     <div class="head-info">
@@ -117,7 +98,6 @@
                 </div>
             </div>
 
-            <!-- Flux RSS -->
             <div class="panel-card">
                 <div class="rss-header">
                     <div class="rss-title-row">
@@ -143,17 +123,18 @@
     </div>
 </div>
 
-<script src="/assets/js/api.js"></script>
-<script src="/assets/js/utils/helpers.js"></script>
-<script src="/assets/js/utils/status.js"></script>
-<script src="/assets/js/utils/dom.js"></script>
-<script src="/assets/js/features/shared/stats-calculator.js"></script>
-<script src="/assets/js/features/shared/maintenance-view.js"></script>
-<script src="/assets/js/features/dashboard/dashboard-kpis.js"></script>
-<script src="/assets/js/features/dashboard/dashboard-stats.js"></script>
-<script src="/assets/js/features/dashboard/dashboard-feed.js"></script>
-<script src="/assets/js/features/dashboard/dashboard-init.js"></script>
-<script src="/assets/js/rss.js"></script>
-<script src="/assets/js/alerts.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/navbar.js"></script>
+<script src="assets/js/utils/helpers.js"></script>
+<script src="assets/js/utils/status.js"></script>
+<script src="assets/js/utils/dom.js"></script>
+<script src="assets/js/features/shared/stats-calculator.js"></script>
+<script src="assets/js/features/shared/maintenance-view.js"></script>
+<script src="assets/js/features/dashboard/dashboard-kpis.js"></script>
+<script src="assets/js/features/dashboard/dashboard-stats.js"></script>
+<script src="assets/js/features/dashboard/dashboard-feed.js"></script>
+<script src="assets/js/features/dashboard/dashboard-init.js"></script>
+<script src="assets/js/alerts.js"></script>
+<script src="assets/js/rss.js"></script>
 </body>
 </html>
