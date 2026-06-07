@@ -30,8 +30,8 @@ const NAV_API_URL = (() => {
         links.push({ href: 'admin-accounts.html', label: 'Administrare Conturi' });
     } else if (role === 'manager') {
         links.push({ href: 'dashboard.html', label: 'Stația mea' });
-        links.push({ href: 'reactor-statistici.html', label: 'Statistici' });
-        links.push({ href: 'gestionare.html', label: 'Gestionare' });
+        links.push({ href: 'reactor-statistics.html', label: 'Statistici' });
+        links.push({ href: 'management.html', label: 'Management' });
         links.push({ href: 'reactor.html', label: 'Vezi reactorul' });
     }
 

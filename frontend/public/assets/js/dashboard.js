@@ -12,8 +12,8 @@
 
     const isManager = me.role === 'manager';
     if (isManager) {
-        document.getElementById('nav-statistici').style.display = '';
-        document.getElementById('nav-gestionare').style.display = '';
+        document.getElementById('nav-statistics').style.display = '';
+        document.getElementById('nav-management').style.display = '';
         document.getElementById('nav-reactor').style.display = '';
     }
 

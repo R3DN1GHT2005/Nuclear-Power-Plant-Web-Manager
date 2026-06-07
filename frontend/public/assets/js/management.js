@@ -1,4 +1,4 @@
-(async function initGestionare() {
+(async function initManagement() {
     const meRes = await authFetch('/auth/me', { method: 'GET' });
     if (!meRes.ok) { window.location.href = 'login.html'; return; }
     const me = await meRes.json();
@@ -11,8 +11,6 @@
     const reactorId = reactor.id;
 
     window.gReactorId = reactorId;
-    window.startMaint = () => startMaint(reactorId);
-    window.stopMaint  = () => stopMaint(reactorId);
 
     renderInfo(reactor);
     loadMaintenance(reactorId);
@@ -26,6 +24,53 @@
         btn.classList.add('active');
         loadMaintenance(reactorId);
     });
+
+    /* ── Modal maintenance ──────────────────── */
+    const modalMaint = document.getElementById('modal-start-maint');
+    const dateInput = document.getElementById('maint-date');
+    const reasonInput = document.getElementById('maint-reason');
+
+    document.querySelectorAll('.btn-close-modal, .modal-overlay').forEach(el => {
+        el.addEventListener('click', e => {
+            if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('btn-close-modal')) {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+            }
+        });
+    });
+
+    document.getElementById('modal-maint-confirm').addEventListener('click', async () => {
+        const endDate = dateInput.value;
+        const reason = reasonInput.value;
+        if (!endDate) { alert('Data estimată de finalizare este obligatorie.'); return; }
+        modalMaint.classList.remove('open');
+        try {
+            const res = await authFetch('/reactors/' + reactorId + '/maintenance/start', {
+                method: 'POST',
+                body: JSON.stringify({ estimated_end_date: endDate, reason: reason || null })
+            });
+            if (res.ok) { location.reload(); }
+            else { const err = await res.json(); alert(err.error || 'Eroare'); }
+        } catch { alert('Eroare de rețea.'); }
+    });
+
+    window.startMaint = () => {
+        dateInput.value = '';
+        reasonInput.value = '';
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+        modalMaint.classList.add('open');
+    };
+
+    window.stopMaint = () => {
+        if (!confirm('Finalizezi mentenanța? Reactorul va deveni activ.')) return;
+        (async () => {
+            try {
+                const res = await authFetch('/reactors/' + reactorId + '/maintenance/stop', { method: 'POST' });
+                if (res.ok) { location.reload(); }
+                else { const err = await res.json(); alert(err.error || 'Eroare'); }
+            } catch { alert('Eroare de rețea.'); }
+        })();
+    };
 })();
 
 function renderInfo(r) {
@@ -110,35 +155,6 @@ async function loadMaintenance(reactorId) {
     } catch { list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>'; }
 }
 
-async function startMaint(reactorId) {
-    const reason = prompt('Motivul mentenanței:');
-    if (!reason) return;
-    const existing = prompt('Note / detalii suplimentare (opțional):', '');
-    const days = prompt('Durata estimată (zile):', '1');
-    if (!days) return;
-    try {
-        const body = { estimated_end_date: days + ' days', reason };
-        if (existing) body.notes = existing;
-        const res = await authFetch('/reactors/' + reactorId + '/maintenance/start', {
-            method: 'POST', body: JSON.stringify(body)
-        });
-        if (res.ok) { location.reload(); }
-        else { const err = await res.json(); alert(err.error || 'Eroare'); }
-    } catch { alert('Eroare de rețea.'); }
-}
-
-async function stopMaint(reactorId) {
-    const notes = prompt('Note de finalizare:');
-    if (!notes) return;
-    try {
-        const res = await authFetch('/reactors/' + reactorId + '/maintenance/stop', {
-            method: 'POST', body: JSON.stringify({ notes })
-        });
-        if (res.ok) { location.reload(); }
-        else { const err = await res.json(); alert(err.error || 'Eroare'); }
-    } catch { alert('Eroare de rețea.'); }
-}
-
 /* ── Personnel (read-only) ───────────── */
 async function loadPersonnel(reactorId) {
     const body = document.getElementById('personnel-body');
@@ -169,8 +185,7 @@ async function loadAlertHistory(reactorId) {
     try {
         const res = await authFetch('/alerts/history/reactor/' + reactorId, { method: 'GET' });
         if (!res.ok) {
-            const errText = res.status === 403 ? 'Acces restricționat.' : 'Eroare server.';
-            body.innerHTML = '<p class="empty-msg">' + errText + '</p>';
+            body.innerHTML = '<p class="empty-msg">' + (res.status === 403 ? 'Acces restricționat.' : 'Eroare server.') + '</p>';
             return;
         }
         const payload = await res.json();
