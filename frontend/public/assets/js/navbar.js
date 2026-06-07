@@ -28,10 +28,12 @@ const NAV_API_URL = (() => {
         links.push({ href: 'location.html', label: 'Amplasare' });
         links.push({ href: 'alerts-history.html', label: 'Alerte' });
         links.push({ href: 'admin-accounts.html', label: 'Administrare Conturi' });
-    } else if (role === 'manager' || role === 'tehnician') {
+    } else if (role === 'manager') {
         links.push({ href: 'station-view.html', label: 'Stația mea' });
         links.push({ href: 'stats.html', label: 'Statistici' });
     }
+
+    // tehnician — no nav links, only logo + logout
 
     const left = nav.querySelector('.nav-left');
     if (!left) return;

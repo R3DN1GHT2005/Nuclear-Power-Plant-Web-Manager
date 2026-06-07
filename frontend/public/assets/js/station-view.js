@@ -5,22 +5,14 @@
         return;
     }
     const me = await meRes.json();
-    const role = me.role;
-    const userId = me.id;
-
-    if (role !== 'manager' && role !== 'tehnician') {
+    if (me.role !== 'manager') {
         window.location.href = 'index.html';
         return;
     }
 
     const banner = document.getElementById('role-banner');
-    if (role === 'manager') {
-        banner.textContent = 'Manager Stație — ' + (me.first_name || '') + ' ' + (me.last_name || '');
-        banner.className = 'role-banner manager';
-    } else {
-        banner.textContent = 'Tehnician — ' + (me.first_name || '') + ' ' + (me.last_name || '');
-        banner.className = 'role-banner technician';
-    }
+    banner.textContent = 'Manager Stație — ' + (me.first_name || '') + ' ' + (me.last_name || '');
+    banner.className = 'role-banner manager';
 
     const reactorRes = await authFetch('/reactors/my', { method: 'GET' });
     if (!reactorRes.ok) {
@@ -32,13 +24,10 @@
     renderKpis(reactor);
     renderSpecs(reactor);
 
-    loadAlerts(reactor.id, role, userId);
+    loadAlerts(reactor.id);
     loadMaintenanceHistory(reactor.id);
-
-    if (role === 'manager') {
-        loadPersonnel(reactor.id);
-        addMaintenanceControls(reactor.id);
-    }
+    loadPersonnel(reactor.id);
+    addMaintenanceControls(reactor.id);
 })();
 
 function renderKpis(r) {
@@ -94,7 +83,7 @@ function renderSpecs(r) {
     ).join('');
 }
 
-async function loadAlerts(reactorId, role, userId) {
+async function loadAlerts(reactorId) {
     const list = document.getElementById('alerts-list');
     try {
         const res = await authFetch('/alerts/active', { method: 'GET' });
@@ -107,13 +96,12 @@ async function loadAlerts(reactorId, role, userId) {
             return;
         }
 
-        const isManager = role === 'manager';
         list.innerHTML = data.map(a => `
             <div class="alert-item">
                 <span class="alert-severity ${a.severity}">${a.severity}</span>
                 <span class="alert-msg">${a.message || '—'}</span>
                 <div class="alert-actions">
-                    ${isManager ? `<button class="btn-sm primary" onclick="resolveAlert(${a.id})">Rezolvă</button>` : ''}
+                    <button class="btn-sm primary" onclick="resolveAlert(${a.id})">Rezolvă</button>
                 </div>
             </div>
         `).join('');
@@ -129,7 +117,7 @@ async function resolveAlert(alertId) {
             body: JSON.stringify({ notes: 'Rezolvat din Stația mea' })
         });
         if (res.ok) {
-            loadAlerts(null, 'manager', null);
+            loadAlerts();
         } else {
             const err = await res.json();
             alert(err.error || 'Eroare la rezolvare');

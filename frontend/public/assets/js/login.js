@@ -22,41 +22,31 @@ async function postJson(url, body) {
     };
 }
 
-async function fetchWithToken(url) {
-    const res = await fetch(url, {
-        method: 'GET',
-        credentials: 'include'
-    });
-    const json = await res.json().catch(() => null);
-    return { ok: res.ok, status: res.status, body: json };
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
-    
+
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const data = { 
-                email: this.email.value, 
-                password: this.password.value 
+
+            const data = {
+                email: this.email.value,
+                password: this.password.value
             };
-            
-            const response = await postJson(`${LOGIN_API_URL}/auth/login`, data);
-            
-            if (response.ok) {
-                const userRes = await fetchWithToken(`${LOGIN_API_URL}/auth/me`);
-                if (userRes.ok && userRes.body) {
-                    const role = userRes.body.role;
-                    if (role === 'manager' || role === 'tehnician') {
-                        window.location.href = 'station-view.html';
-                        return;
-                    }
+
+            const res = await postJson(`${LOGIN_API_URL}/auth/login`, data);
+
+            if (res.ok && res.body && res.body.user) {
+                const role = res.body.user.role;
+                if (role === 'tehnician') {
+                    window.location.href = 'dashboard-tehnician.html';
+                } else if (role === 'manager') {
+                    window.location.href = 'station-view.html';
+                } else {
+                    window.location.href = 'index.html';
                 }
-                window.location.href = 'index.html';
             } else {
-                alert(response.body?.error || 'Eroare la autentificare');
+                alert(res.body?.error || 'Eroare la autentificare');
             }
         });
     }
