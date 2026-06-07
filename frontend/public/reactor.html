@@ -7,9 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/reactor.css">
-    <link rel="stylesheet" href="assets/css/alerts.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=2">
+    <link rel="stylesheet" href="assets/css/reactor.css?v=2">
+    <link rel="stylesheet" href="assets/css/alerts.css?v=2">
 </head>
 <body>
 
@@ -58,40 +58,6 @@
                     <button class="btn-action btn-prim hidden" id="btn-finish-maint">Finalizare Mentenanță</button>
                     <button class="btn-action btn-outline" id="btn-change-status">Schimbă status</button>
                     <button class="btn-action btn-outline" id="btn-add-sensor">+ Senzor nou</button>
-            </div>
-        </div>
-
-        <div class="panel-card mb-12">
-            <div class="detail-section">
-                <header class="det-h">
-                    <div>
-                        <div class="det-t">Statistici Reactor</div>
-                        <div class="det-s">Indicatori live pentru reactorul curent</div>
-                    </div>
-                </header>
-
-                <div id="reactor-stats-grid" style="display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
-                    <div class="spec-item" style="padding: 14px;">
-                        <span class="spec-lbl">Status</span>
-                        <span class="spec-val" id="reactor-stat-status">--</span>
-                    </div>
-                    <div class="spec-item" style="padding: 14px;">
-                        <span class="spec-lbl">Eficiență</span>
-                        <span class="spec-val" id="reactor-stat-efficiency">--%</span>
-                    </div>
-                    <div class="spec-item" style="padding: 14px;">
-                        <span class="spec-lbl">Putere instalată</span>
-                        <span class="spec-val" id="reactor-stat-power">--</span>
-                    </div>
-                    <div class="spec-item" style="padding: 14px;">
-                        <span class="spec-lbl">Senzori</span>
-                        <span class="spec-val" id="reactor-stat-sensors">--</span>
-                    </div>
-                    <div class="spec-item" style="padding: 14px;">
-                        <span class="spec-lbl">Alerte active</span>
-                        <span class="spec-val" id="reactor-stat-alerts">--</span>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -218,34 +184,34 @@
 
                 <div class="right-stats-grid" id="reactor-summary-grid">
                     <div class="right-stat-card">
-                        <span class="right-stat-label">Citiri în perioadă</span>
+                        <span class="right-stat-label">Citiri perioadă</span>
                         <span class="right-stat-value" id="summary-readings-count">--</span>
-                        <span class="right-stat-hint">Toate citirile filtrate după perioada selectată</span>
+                        <span class="right-stat-hint">În perioada selectată</span>
                     </div>
                     <div class="right-stat-card">
                         <span class="right-stat-label">Medie citiri</span>
                         <span class="right-stat-value" id="summary-average-reading">--</span>
-                        <span class="right-stat-hint">Media valorilor înregistrate de senzori</span>
+                        <span class="right-stat-hint">Media valorilor înregistrate</span>
                     </div>
                     <div class="right-stat-card">
-                        <span class="right-stat-label">Alerte în perioadă</span>
+                        <span class="right-stat-label">Alerte perioadă</span>
                         <span class="right-stat-value" id="summary-alerts-count">--</span>
-                        <span class="right-stat-hint">Alerte totale și critice pentru reactor</span>
+                        <span class="right-stat-hint">Totale și critice</span>
                     </div>
                     <div class="right-stat-card">
                         <span class="right-stat-label">Citiri critice</span>
                         <span class="right-stat-value" id="summary-critical-count">--</span>
-                        <span class="right-stat-hint">Valori ieșite din intervalele sigure</span>
+                        <span class="right-stat-hint">În afara limitelor sigure</span>
                     </div>
                     <div class="right-stat-card">
                         <span class="right-stat-label">Senzori activi</span>
                         <span class="right-stat-value" id="summary-sensors-count">--</span>
-                        <span class="right-stat-hint">Senzorii montați pe reactorul curent</span>
+                        <span class="right-stat-hint">Montați pe reactor</span>
                     </div>
                     <div class="right-stat-card">
                         <span class="right-stat-label">Ultima citire</span>
                         <span class="right-stat-value" id="summary-last-reading">--</span>
-                        <span class="right-stat-hint">Momentul celei mai recente înregistrări</span>
+                        <span class="right-stat-hint">Cea mai recentă înregistrare</span>
                     </div>
                 </div>
             </div>
@@ -365,9 +331,9 @@
 <!-- ══════════════════════════════════════════════════════
      SCRIPTURI
      ══════════════════════════════════════════════════════ -->
-<script src="assets/js/api.js"></script>
-<script src="assets/js/reactor-details.js"></script>
-<script src="assets/js/alerts.js"></script>
+<script src="assets/js/api.js?v=2"></script>
+<script src="assets/js/reactor-details.js?v=2"></script>
+<script src="assets/js/alerts.js?v=2"></script>
 
 </body>
 </html>

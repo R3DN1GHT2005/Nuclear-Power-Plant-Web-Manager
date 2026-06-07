@@ -129,25 +129,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return option ? option.label : 'Activ';
     }
 
-    function renderReactorStats(reactor) {
-        const setText = (id, value) => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.textContent = value;
-            }
-        };
-
-        if (!reactor) {
-            return;
-        }
-
-        setText('reactor-stat-status', getStatusLabel(reactor.status));
-        setText('reactor-stat-efficiency', `${reactor.current_efficiency ?? 0}%`);
-        setText('reactor-stat-power', reactor.installed_power ? `${reactor.installed_power} MW` : '—');
-        setText('reactor-stat-sensors', `${(reactor.sensors || []).length}`);
-        setText('reactor-stat-alerts', `${state.activeAlertsCount}`);
-    }
-
     function renderReactorDetails(reactor) {
         const setElText = (id, text) => { if(document.getElementById(id)) document.getElementById(id).textContent = text; };
         
@@ -213,7 +194,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (btnStop) btnStop.disabled = false;
         }
 
-        renderReactorStats(reactor);
     }
 
     function renderSensors(sensors) {
@@ -437,12 +417,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             .filter(Boolean)
             .sort((left, right) => right.getTime() - left.getTime())[0];
 
-        summaryReadingsCount.textContent = `${readings.length}`;
-        summaryAverageReading.textContent = readings.length ? `${averageReading.toFixed(1)}` : '—';
-        summaryAlertsCount.textContent = `${alerts.length}`;
-        summaryCriticalCount.textContent = `${criticalReadings.length}`;
-        summarySensorsCount.textContent = `${sensors.length}`;
-        summaryLastReading.textContent = latestReading ? formatSmallTime(latestReading.toISOString()) : '—';
+        function setVal(el, val, colorClass = '') {
+            el.textContent = val;
+            el.className = 'right-stat-value' + (colorClass ? ' ' + colorClass : '');
+        }
+
+        setVal(summaryReadingsCount, `${readings.length}`, 'text-green');
+        setVal(summaryAverageReading, readings.length ? `${averageReading.toFixed(1)}` : '—');
+        const alertColor = alerts.length === 0 ? 'text-green' : alerts.length > 5 ? 'text-red' : 'text-amber';
+        setVal(summaryAlertsCount, `${alerts.length}`, alertColor);
+        const critColor = criticalReadings.length === 0 ? 'text-green' : 'text-red';
+        setVal(summaryCriticalCount, `${criticalReadings.length}`, critColor);
+        setVal(summarySensorsCount, `${sensors.length}`, 'text-purple');
+        setVal(summaryLastReading, latestReading ? formatSmallTime(latestReading.toISOString()) : '—');
 
         if (summarySubtitle) {
             summarySubtitle.textContent = `${formatPeriodLabel(periodDays)} · ${readings.length} citiri, ${alerts.length} alerte`;
@@ -474,7 +461,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         </div>`;
                     if (countPill) countPill.classList.add('hidden');
                     if (alertSub) alertSub.textContent = `Evenimente înregistrate`;
-                    renderReactorStats(state.currentReactor);
                     renderRightSummary();
                     return;
                 }
@@ -504,7 +490,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>`;
                 }).join('');
 
-                renderReactorStats(state.currentReactor);
                 renderRightSummary();
             }
         } catch (e) {
@@ -583,7 +568,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const s = status.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         if (s.includes("activ") || s.includes("operaț")) return "pill-active";
         if (s.includes("alert")) return "pill-alert";
-        if (s.includes("mentenanț")) return "pill-maint";
+        if (s.includes("mentenant")) return "pill-maint";
         if (s.includes("constructie")) return "pill-blue";
         return "pill-off";
     }
