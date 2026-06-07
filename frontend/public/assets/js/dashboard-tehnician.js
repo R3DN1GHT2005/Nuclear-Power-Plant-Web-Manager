@@ -20,11 +20,12 @@
     const reactor   = await reactorRes.json();
     const reactorId = reactor.id;
 
+    const alertContainer = document.getElementById('alerts-container');
+    if (alertContainer) alertContainer.dataset.reactorId = reactorId;
+
     renderKpis(reactor);
     loadSensors(reactorId);
     loadReadingsAndStats(reactorId);
-    loadActiveAlerts(reactorId);
-    loadAlertHistory(reactorId);
     loadRssFeed();
     loadMaintenance(reactorId);
 
@@ -224,85 +225,6 @@ async function loadReadingsAndStats(reactorId) {
     }
 }
 
-/* ── Active alerts ───────────────────── */
-async function loadActiveAlerts(reactorId) {
-    const list       = document.getElementById('alerts-list');
-    const countBadge = document.getElementById('active-alerts-count');
-    try {
-        const res = await authFetch('/alerts/active', { method: 'GET' });
-        if (!res.ok) { list.innerHTML = '<p class="empty-msg">Eroare la încărcare.</p>'; return; }
-
-        const payload = await res.json();
-        const alerts  = payload.data || payload || [];
-        const mine    = alerts.filter(a => a.reactor_id === reactorId);
-
-        if (countBadge) countBadge.textContent = mine.length ? mine.length + ' activă' : '';
-
-        if (!mine.length) {
-            list.innerHTML = '<p class="empty-msg">Nicio alertă activă.</p>';
-            return;
-        }
-
-        list.innerHTML = mine.map(a => `
-            <div class="alert-item">
-                <div class="alert-left">
-                    <span class="alert-severity ${a.severity || ''}">${a.severity || '—'}</span>
-                    <span class="alert-msg">${a.message || ''}</span>
-                </div>
-                <div class="alert-right">
-                    <span class="alert-time">${a.created_at ? new Date(a.created_at).toLocaleString('ro-RO') : ''}</span>
-                    <button class="btn-sm primary" onclick="intervine(${a.id})">Intervine</button>
-                </div>
-            </div>`).join('');
-    } catch {
-        list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
-    }
-}
-
-/* ── Intervine ───────────────────────── */
-async function intervine(alertId) {
-    const notes = prompt('Descrie intervenția ta:');
-    if (!notes) return;
-    try {
-        const res = await authFetch('/alerts/' + alertId + '/resolve', {
-            method: 'POST',
-            body: JSON.stringify({ notes })
-        });
-        if (res.ok) { alert('Alertă rezolvată cu succes!'); location.reload(); }
-        else { const err = await res.json(); alert(err.error || 'A apărut o eroare.'); }
-    } catch { alert('Eroare de rețea.'); }
-}
-
-/* ── Alert history ───────────────────── */
-async function loadAlertHistory(reactorId) {
-    const list = document.getElementById('alerts-history-list');
-    try {
-        const res = await authFetch('/alerts/history/reactor/' + reactorId, { method: 'GET' });
-        if (!res.ok) { list.innerHTML = '<p class="empty-msg">Eroare la încărcare.</p>'; return; }
-
-        const payload = await res.json();
-        const alerts  = payload.data || payload || [];
-
-        if (!alerts.length) {
-            list.innerHTML = '<p class="empty-msg">Nicio alertă anterioară.</p>';
-            return;
-        }
-
-        list.innerHTML = alerts.slice(-10).reverse().map(a => `
-            <div class="alert-item">
-                <div class="alert-left">
-                    <span class="alert-severity ${a.severity || ''}">${a.severity || '—'}</span>
-                    <span class="alert-msg">${a.message || ''}</span>
-                </div>
-                <div class="alert-right">
-                    <span class="alert-time">${a.created_at ? new Date(a.created_at).toLocaleDateString('ro-RO') : ''}</span>
-                </div>
-            </div>`).join('');
-    } catch {
-        list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
-    }
-}
-
 /* ── RSS ─────────────────────────────── */
 async function loadRssFeed() {
     const list = document.getElementById('rss-list');
@@ -385,7 +307,7 @@ async function loadMaintenance(reactorId) {
             return `
             <div class="maint-item">
                 <div class="maint-left">
-                    <span class="maint-badge ${badge}">${label}</span>
+                    <span class="maint-badge ${badge}">${badge}</span>
                     <span class="maint-reason">${text}</span>
                 </div>
                 <div class="maint-right">

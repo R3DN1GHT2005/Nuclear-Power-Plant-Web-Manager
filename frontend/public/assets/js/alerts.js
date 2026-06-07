@@ -252,7 +252,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!listContainer) return;
 
         const urlParams = new URLSearchParams(window.location.search);
-        const reactorId = urlParams.get('id');
+        let reactorId = urlParams.get('id');
+        if (!reactorId) reactorId = listContainer?.dataset?.reactorId;
         const endpoint = reactorId ? `/alerts/history/reactor/${reactorId}` : `/alerts/history`;
 
         try {
@@ -339,8 +340,12 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const res = await window.authFetch('/alerts/active');
             if (res.ok) {
-                const alerts = await res.json();
-                
+                let alerts = await res.json();
+
+                const container = document.getElementById('alerts-container');
+                const reactorId = container?.dataset?.reactorId;
+                if (reactorId) alerts = alerts.filter(a => a.reactor_id === parseInt(reactorId));
+
                 if (alerts.length > 0) {
                     const latestAlert = alerts[0];
                     showGlobalAlert(latestAlert);

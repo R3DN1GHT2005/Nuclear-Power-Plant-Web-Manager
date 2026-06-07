@@ -3,6 +3,22 @@
    Folosește variabilele din style.css
 ========================================= */
 
+/* ── Variabile pentru alerts.js ───────── */
+:root {
+    --color-background-primary: var(--surface);
+    --color-background-secondary: var(--surface-2);
+    --color-border-tertiary: var(--border);
+    --color-border-secondary: var(--border-md);
+    --color-border-primary: var(--text);
+    --color-text-primary: var(--text);
+    --color-text-secondary: var(--text-2);
+    --color-text-success: var(--green);
+    --color-background-success: transparent;
+    --color-border-success: var(--green);
+    --border-radius-lg: var(--radius);
+    --border-radius-md: var(--radius-sm);
+}
+
 /* ── Anulează .main > div doar pentru tech-dash ─── */
 .tech-dash > div {
     display: grid !important;
