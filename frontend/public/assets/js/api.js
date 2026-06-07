@@ -91,6 +91,20 @@ const NuclearAPI = {
         return true;
     },
 
+    async updateReactorStatus(reactorId, status) {
+        const response = await authFetch(`/reactors/${reactorId}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP Error: ${response.status}`);
+        }
+
+        return await response.json();
+    },
+
     // ==========================================
     // ── RAPOARTE / STATISTICI ──
     // ==========================================

@@ -11,6 +11,7 @@
         pickerMarker: null,
         activeSensorReactorId: null,
         editingSensorId: null,
+        selectedStatusReactorId: null,
         sensorTypeProfiles: {},
         sensorTypesLoaded: false,
         sensorTypesLoading: null
@@ -55,8 +56,22 @@
         sensorUnitInput: document.getElementById('sensor_unit'),
         sensorMinInput: document.getElementById('min_safe_value'),
         sensorMaxInput: document.getElementById('max_safe_value'),
-        submitSensorButton: document.getElementById('submit-sensor-btn')
+        submitSensorButton: document.getElementById('submit-sensor-btn'),
+        statusModal: document.getElementById('status-modal'),
+        statusModalSubtitle: document.getElementById('status-modal-subtitle'),
+        closeStatusModalBtn: document.getElementById('close-status-modal'),
+        cancelStatusModalBtn: document.getElementById('cancel-status-modal'),
+        confirmStatusModalBtn: document.getElementById('confirm-status-modal'),
+        statusSelect: document.getElementById('status-select')
     };
+
+    const statusOptions = [
+        { value: 'Activ', label: 'Activ' },
+        { value: 'Mentenanță', label: 'Mentenanță' },
+        { value: 'Oprit', label: 'Oprit' },
+        { value: 'Alertă', label: 'Alertă' },
+        { value: 'In Constructie', label: 'În construcție' }
+    ];
 
     function init() {
         if (!window.L) {
@@ -167,6 +182,22 @@
         }
 
         return { color: '#2563eb', badgeClass: 'badge-blue' };
+    }
+
+    function normalizeStatusChoice(status) {
+        const normalized = normalizeStatus(status);
+        if (normalized === 'activ') return 'Activ';
+        if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') return 'Mentenanță';
+        if (normalized === 'oprit') return 'Oprit';
+        if (normalized === 'alerta' || normalized === 'critic' || normalized === 'critica' || normalized === 'stare critica') return 'Alertă';
+        if (normalized === 'in constructie' || normalized === 'constructie') return 'In Constructie';
+        return 'Activ';
+    }
+
+    function getStatusLabel(status) {
+        const normalized = normalizeStatusChoice(status);
+        const option = statusOptions.find((item) => item.value === normalized);
+        return option ? option.label : 'Activ';
     }
 
     function statusCircleClass(status) {
@@ -459,21 +490,23 @@
     function buildPopupContent(reactor) {
         const power = safeNumber(reactor.installed_power).toFixed(2);
         const efficiency = safeNumber(reactor.current_efficiency).toFixed(2);
-        const normalized = normalizeStatus(reactor.status);
-        const wear = normalized === 'activ' || normalized === 'mentenanta'
-            ? `<br><strong>Uzura estimata:</strong> ${(100 - safeNumber(reactor.current_efficiency)).toFixed(2)}%`
-            : '';
 
         return `
-            <div style="font-size:12px; line-height:1.45;">
-                <strong>${escapeHtml(reactor.name || '-')}</strong><br>
-                <strong>Locatie:</strong> ${escapeHtml(reactor.location_name || '-')}<br>
-                <strong>Tip:</strong> ${escapeHtml(reactor.reactor_type || '-')}<br>
-                <strong>Status:</strong> ${escapeHtml(reactor.status || '-')}<br>
-                <strong>Putere instalata:</strong> ${power} MW<br>
-                <strong>Eficienta curenta:</strong> ${efficiency}%
-                ${wear}
-                <div style="margin-top:10px;">
+            <div style="font-size:12px; line-height:1.45; min-width: 280px;">
+                <div style="margin-bottom: 8px; font-size: 13px; font-weight: 700; color: #0f172a;">${escapeHtml(reactor.name || '-')}</div>
+                <div><strong>Locație:</strong> ${escapeHtml(reactor.location_name || '-')}</div>
+                <div><strong>Tip:</strong> ${escapeHtml(reactor.reactor_type || '-')}</div>
+                <div><strong>Status curent:</strong> ${escapeHtml(reactor.status || '-')}</div>
+                <div><strong>Putere instalată:</strong> ${power} MW</div>
+                <div><strong>Eficiență curentă:</strong> ${efficiency}%</div>
+                <div style="margin-top:12px; padding: 12px; border: 1px solid rgba(37,99,235,.2); border-radius: 12px; background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%); box-shadow: 0 8px 18px rgba(37,99,235,.08);">
+                    <div style="font-size: 11px; font-weight: 800; margin-bottom: 8px; color: #1d4ed8; text-transform: uppercase; letter-spacing: .04em;">Schimbă status</div>
+                    <select class="form-select" data-status-select="${reactor.id}" style="width: 100%; margin-bottom: 10px; min-height: 38px;">
+                        ${statusOptions.map((option) => `<option value="${option.value}" ${option.value === normalizeStatusChoice(reactor.status) ? 'selected' : ''}>${option.label}</option>`).join('')}
+                    </select>
+                    <button type="button" class="btn reactor-status-btn" data-reactor-id="${reactor.id}" style="width: 100%;">Salvează status</button>
+                </div>
+                <div style="margin-top:8px;">
                     <button type="button" class="btn sensor-manage-btn" data-sensor-reactor-id="${reactor.id}">Gestiune Senzori</button>
                 </div>
             </div>
@@ -511,6 +544,22 @@
             });
 
             marker.bindPopup(buildPopupContent(reactor));
+            marker.on('popupopen', (event) => {
+                const popupElement = event.popup?.getElement?.();
+                const statusButton = popupElement?.querySelector('.reactor-status-btn');
+                if (statusButton) {
+                    statusButton.addEventListener('click', async () => {
+                        const statusSelect = popupElement?.querySelector(`[data-status-select="${reactor.id}"]`);
+                        const nextStatus = statusSelect ? statusSelect.value : normalizeStatusChoice(reactor.status);
+                        await submitStatusChange(reactor.id, nextStatus);
+                    });
+                }
+
+                const sensorButton = popupElement?.querySelector('.sensor-manage-btn');
+                if (sensorButton) {
+                    sensorButton.addEventListener('click', () => loadSensorsForReactor(reactor.id));
+                }
+            });
             marker.addTo(state.markerLayer);
         });
     }
@@ -614,7 +663,7 @@
             </div>
             <div class="status-summary-item status-summary-item--risk">
                 <div class="status-summary-label">Risc seismic mediu</div>
-                <div class="status-summary-value">${formatPercent(seismic10, 1)} / 10</div>
+                <div class="status-summary-value">${formatNumber(seismic10, 3)} / 10</div>
                 <div class="status-summary-note">Scală normalizată din datele senzorilor</div>
             </div>
         `;
@@ -654,6 +703,51 @@
     function closeModal(modal) {
         modal.classList.remove('show');
         modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function openStatusModal(reactor) {
+        if (!reactor || !refs.statusModal || !refs.statusSelect) {
+            return;
+        }
+
+        state.selectedStatusReactorId = Number(reactor.id);
+        refs.statusSelect.value = normalizeStatusChoice(reactor.status);
+
+        if (refs.statusModalSubtitle) {
+            refs.statusModalSubtitle.textContent = `Reactor: ${reactor.name} · ${reactor.location_name}`;
+        }
+
+        openModal(refs.statusModal);
+    }
+
+    async function submitStatusChange(reactorId = null, statusValue = null) {
+        const targetReactorId = reactorId || state.selectedStatusReactorId;
+        if (!targetReactorId) {
+            return;
+        }
+
+        const reactor = getReactorById(targetReactorId);
+        if (!reactor) {
+            showToastMessage('Reactorul nu a fost găsit.');
+            return;
+        }
+
+        const nextStatus = statusValue || (refs.statusSelect ? refs.statusSelect.value : null) || normalizeStatusChoice(reactor.status);
+
+        try {
+            const updated = await window.NuclearAPI.updateReactorStatus(reactor.id, nextStatus);
+
+            if (updated) {
+                if (refs.statusModal) {
+                    closeModal(refs.statusModal);
+                }
+                showToastMessage(`Status actualizat: ${getStatusLabel(nextStatus)}`);
+                await refreshReactors();
+            }
+        } catch (error) {
+            console.error(error);
+            showToastMessage(error.message || 'Eroare la actualizarea statusului.', 'error');
+        }
     }
 
     function showFormError(message) {
@@ -900,6 +994,15 @@
     return `${value || 0}%`;
     }
 
+    function formatNumber(value, decimals = 3) {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) {
+            return (0).toFixed(decimals);
+        }
+
+        return numeric.toFixed(decimals);
+    }
+
     async function loadSensorsForReactor(reactorId) {
         const reactor = getReactorById(reactorId);
         state.activeSensorReactorId = Number(reactorId);
@@ -1119,6 +1222,9 @@
             ensurePickerMap();
         });
         safeBindClick(refs.closePickerModalBtn, () => closeModal(refs.pickerModal));
+        safeBindClick(refs.closeStatusModalBtn, () => closeModal(refs.statusModal));
+        safeBindClick(refs.cancelStatusModalBtn, () => closeModal(refs.statusModal));
+        safeBindClick(refs.confirmStatusModalBtn, () => submitStatusChange());
 
         if (refs.reactorModal) {
             refs.reactorModal.addEventListener('click', (event) => {
@@ -1140,6 +1246,14 @@
             refs.sensorModal.addEventListener('click', (event) => {
                 if (event.target === refs.sensorModal) {
                     closeModal(refs.sensorModal);
+                }
+            });
+        }
+
+        if (refs.statusModal) {
+            refs.statusModal.addEventListener('click', (event) => {
+                if (event.target === refs.statusModal) {
+                    closeModal(refs.statusModal);
                 }
             });
         }

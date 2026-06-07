@@ -90,6 +90,7 @@ try {
     // Operațiuni critice pe reactoare
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
     $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor', [AdminMiddleware::class]); 
+    $router->patch('/api/reactors/{id}/status', ReactorController::class, 'updateStatus', [AuthMiddleware::class]);
     $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor', [AdminMiddleware::class]); 
 
     //senzori pentru simulator

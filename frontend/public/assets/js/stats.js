@@ -23,6 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
         wearList: document.getElementById('wear-list'),
         logoutBtn: document.getElementById('btn-logout')
     };
+        const pageSubtitle = document.getElementById('stats-page-subtitle');
+        const efficiencyBarsSubtitle = document.getElementById('efficiency-bars-subtitle');
+        const comparisonSubtitle = document.getElementById('comparison-subtitle');
+        const riskSubtitle = document.getElementById('risk-subtitle');
+        const environmentSubtitle = document.getElementById('environment-subtitle');
+        const wearSubtitle = document.getElementById('wear-subtitle');
 
     /**
      * Local helpers and resilient API wrappers.
@@ -285,8 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
         setText('kpi-availability-value', `${formatPercent(availability, 1)}%`);
         setText('kpi-availability-desc', `${activeReactors} / ${totalReactors} reactoare active`);
 
-        setText('trend-title', `Trend eficiență medie — ${formatDays(state.days)}`);
-        setText('trend-subtitle', 'Centrala în ansamblu');
+            setText('trend-title', `Trend eficiență medie — ${formatDays(state.days)}`);
+            setText('trend-subtitle', `Centrala în ansamblu · ${formatDays(state.days)}`);
+            setText('efficiency-bars-subtitle', `${formatDays(state.days)} · comparativ cu ținta de 90%`);
+            setText('comparison-subtitle', `Principali indicatori de performanță · ${formatDays(state.days)}`);
+            setText('risk-subtitle', `Probabilitate × Impact · ${formatDays(state.days)}`);
+            setText('environment-subtitle', `Date live din senzori · ${formatDays(state.days)}`);
+            setText('wear-subtitle', `Estimare bazată pe ore funcționare și mentenanță · ${formatDays(state.days)}`);
+            setText('stats-page-subtitle', `Performanță, eficiență, risc și uzură · ${formatDays(state.days)}`);
     }
 
     function renderEfficiencyBars() {
