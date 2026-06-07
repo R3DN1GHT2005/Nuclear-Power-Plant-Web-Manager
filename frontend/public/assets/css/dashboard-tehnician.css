@@ -28,11 +28,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px !important;
-    flex-shrink: 20px !important;
 }
-
-@media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 640px)  { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
 
 .loading-msg {
     grid-column: 1 / -1;
@@ -86,10 +82,6 @@
     align-items: start;
     width: 100%;
     min-width: 0;
-}
-
-@media (max-width: 900px) {
-    .dash-grid { grid-template-columns: 1fr; }
 }
 
 .col-left,
@@ -187,6 +179,7 @@
 /* ── Sensor grid ───────────────────────── */
 .sensor-grid {
     display: grid;
+    /* Nativ responsiv: creează coloane câte încap, min 145px */
     grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
     gap: 7px;
     padding: 10px 16px 12px;
@@ -280,6 +273,7 @@
     display: flex;
     gap: 3px;
     flex-shrink: 0;
+    flex-wrap: wrap; /* Adăugat pentru responsivitate */
 }
 
 .period-btn {
@@ -300,6 +294,7 @@
 /* ── Maintenance tabs ──────────────────── */
 .tab-bar {
     display: flex;
+    flex-wrap: wrap; /* Adăugat pentru a nu ieși din ecran */
     gap: 4px;
     padding: 8px 16px 4px;
 }
@@ -502,3 +497,56 @@
     50%       { opacity: 0.4; }
 }
 
+/* =========================================
+   MEDIA QUERIES PENTRU RESPONSIVITATE
+========================================= */
+
+/* Tablete (sub 900px) */
+@media (max-width: 900px) {
+    .dash-grid { 
+        grid-template-columns: 1fr; /* Colapsează gridul principal pe o singură coloană */
+    }
+    .kpi-row { 
+        grid-template-columns: repeat(2, 1fr); /* 2 KPI-uri pe rând */
+    }
+}
+
+/* Telefoane mari (sub 640px) */
+@media (max-width: 640px) {
+    .stats-grid { 
+        grid-template-columns: 1fr; /* Statisticile trec una sub alta */
+    }
+}
+
+/* Telefoane mici (sub 480px) */
+@media (max-width: 480px) {
+    .tech-dash {
+        padding: 20px 10px !important; /* Spațiu mai mic pe margini pe mobil */
+    }
+    .kpi-row { 
+        grid-template-columns: 1fr; /* 1 KPI pe rând */
+    }
+    
+    .panel-head {
+        flex-direction: column; /* Pune titlul deasupra butoanelor */
+        align-items: flex-start;
+    }
+    
+    .period-switch {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .alert-item,
+    .maint-item {
+        flex-direction: column; /* Pune datele/statusul sub mesaj */
+        align-items: flex-start;
+    }
+
+    .alert-right,
+    .maint-right {
+        width: 100%;
+        justify-content: space-between; /* Împrăștie badge-ul și butonul */
+        margin-top: 5px;
+    }
+}
