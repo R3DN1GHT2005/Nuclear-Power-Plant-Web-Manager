@@ -185,4 +185,29 @@ class ReactorRepository {
         
         return $stmt->rowCount() > 0;
     }
+
+
+    public function updateEfficiency(int $id, float $efficiency): bool {
+        $stmt = $this->db->prepare("
+            UPDATE reactors 
+            SET current_efficiency = :efficiency 
+            WHERE id = :id
+        ");
+        $stmt->bindParam(':efficiency', $efficiency);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    
+    public function findAllActive(): array {
+        $stmt = $this->db->prepare("
+            SELECT * FROM reactors 
+            WHERE status = 'Activ'
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute();
+        return array_map(fn($row) => Reactor::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
 }

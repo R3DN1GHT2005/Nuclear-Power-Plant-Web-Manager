@@ -109,4 +109,41 @@ class ReactorController {
 
         Response::json(['message' => 'Reactor șters cu succes']);
     }
+
+
+    // PATCH /api/reactors/{id}/efficiency
+    public function updateEfficiency(int $id): void {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!$data || !isset($data['efficiency'])) {
+            Response::json(['error' => 'Câmpul efficiency lipsește'], 400);
+            return;
+        }
+
+        $efficiency = (float) $data['efficiency'];
+
+        if ($efficiency < 0 || $efficiency > 100) {
+            Response::json(['error' => 'Eficiența trebuie să fie între 0 și 100'], 400);
+            return;
+        }
+
+        $updated = $this->reactorService->updateEfficiency($id, $efficiency);
+
+        if (!$updated) {
+            Response::json(['error' => 'Reactor negăsit'], 404);
+            return;
+        }
+
+        Response::json(['message' => 'Eficiență actualizată cu succes']);
+    }
+
+
+    public function getActiveReactors(): void {
+        $reactors = $this->reactorService->getAllActive();
+        Response::json(array_map(fn($r) => [
+            'reactor_id' => $r->getId(),
+            'reactor_status' => $r->getStatus(),
+            'reactor_efficiency' => $r->getCurrentEfficiency()
+        ], $reactors));
+    }
 }

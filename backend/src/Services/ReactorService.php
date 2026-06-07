@@ -82,6 +82,7 @@ class ReactorService {
             cooling_water_source: $coolingWaterSource,
             distance_to_nearest_city_km: $distanceToNearestCityKm,
             elevation_meters: $elevationMeters,
+            webhook_url: $dto->webhook_url
         );
 
         return $this->reactorsRepository->create($insertDto);
@@ -181,4 +182,14 @@ class ReactorService {
 
         return self::STATUS_MAP[$key] ?? null;
     }
+
+    public function updateEfficiency(int $id, float $efficiency): bool {
+        return $this->reactorsRepository->updateEfficiency($id, $efficiency);
+    }
+
+    public function getAllActive(): array {
+        return $this->reactorsRepository->findAllActive();
+    }
+    
 }
+

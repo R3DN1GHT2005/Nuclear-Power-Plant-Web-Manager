@@ -8,7 +8,8 @@ class SensorConfig {
         private string $sensor_type,
         private float $min_safe_value,
         private float $max_safe_value,
-        private string $reactor_status
+        private string $reactor_status,
+        private int $reactor_id
     ) {}
 
     public static function fromArray(array $data): self {
@@ -17,7 +18,8 @@ class SensorConfig {
             (string) $data['sensor_type'],
             (float) ($data['min_safe_value'] ?? 0),
             (float) ($data['max_safe_value'] ?? 0),
-            $data['reactor_status'] ?? 'Oprit'
+            $data['reactor_status'] ?? 'Oprit',
+            (int) ($data['reactor_id'] ?? 0)
         );
     }
 
@@ -26,4 +28,5 @@ class SensorConfig {
     public function getMinSafeValue(): float { return $this->min_safe_value; }
     public function getMaxSafeValue(): float { return $this->max_safe_value; }
     public function getReactorStatus(): string { return $this->reactor_status; }
+    public function getReactorId(): int { return $this->reactor_id; }
 }

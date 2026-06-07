@@ -165,18 +165,29 @@ class SensorRepository {
     }
 
 
-    public function findAllWithReactorStatus(): array {
+        public function findAllWithReactorStatus(): array {
         $stmt = $this->db->query("
-            SELECT s.id, s.sensor_type, s.min_safe_value, s.max_safe_value,
-                r.status AS reactor_status
-            FROM sensors s
-            INNER JOIN reactors r ON r.id = s.reactor_id
-            ORDER BY s.last_update DESC
+            SELECT s.id, s.reactor_id, s.sensor_type, s.min_safe_value, s.max_safe_value,
+                r.status AS reactor_status,
+                r.current_efficiency AS reactor_efficiency
+            FROM reactors r
+            LEFT JOIN sensors s ON s.reactor_id = r.id
+            WHERE r.status = 'Activ'
+            ORDER BY r.id ASC, s.id ASC
         ");
-        return array_map(
-            fn($row) => \App\Models\SensorConfig::fromArray($row),
-            $stmt->fetchAll(PDO::FETCH_ASSOC)
-        );
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Separăm senzorii reali de reactoarele fără senzori
+        $result = [];
+        foreach ($rows as $row) {
+            if ($row['id'] !== null) {
+                // Reactor cu senzori — intrare normală
+                $result[] = \App\Models\SensorConfig::fromArray($row);
+            }
+            // Reactoarele fără senzori sunt ignorate aici — 
+            // eficiența lor e trimisă prin reactor_id din senzorii existenți
+        }
+        return $result;
     }
-    
+
 }

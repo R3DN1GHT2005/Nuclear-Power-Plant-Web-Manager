@@ -13,7 +13,8 @@ class SensorConfigMapper {
             type: $sensorConfig->getSensorType(),
             min_val: $sensorConfig->getMinSafeValue(),
             max_val: $sensorConfig->getMaxSafeValue(),
-            reactor_status: $sensorConfig->getReactorStatus()
+            reactor_status: $sensorConfig->getReactorStatus(),
+            reactor_id: $sensorConfig->getReactorId()
         );
     }
 
