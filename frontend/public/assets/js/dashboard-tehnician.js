@@ -4,25 +4,22 @@
 
 (async function initTechDashboard() {
 
-    /* ── Auth check ─────────────────────────────────────── */
     const meRes = await authFetch('/auth/me', { method: 'GET' });
     if (!meRes.ok) { window.location.href = 'login.html'; return; }
 
     const me = await meRes.json();
     if (me.role !== 'tehnician') { window.location.href = 'login.html'; return; }
 
-    /* ── Load reactor ───────────────────────────────────── */
     const reactorRes = await authFetch('/reactors/my', { method: 'GET' });
     if (!reactorRes.ok) {
         document.getElementById('tech-kpis').innerHTML =
-            '<p class="loading-msg" style="color:var(--text-3)">Nu ești asignat la niciun reactor.</p>';
+            '<p class="loading-msg">Nu ești asignat la niciun reactor.</p>';
         return;
     }
 
     const reactor   = await reactorRes.json();
     const reactorId = reactor.id;
 
-    /* ── Initial renders ────────────────────────────────── */
     renderKpis(reactor);
     loadSensors(reactorId);
     loadReadingsAndStats(reactorId);
@@ -31,7 +28,6 @@
     loadRssFeed();
     loadMaintenance(reactorId);
 
-    /* ── Period switch ──────────────────────────────────── */
     document.getElementById('stats-period').addEventListener('click', e => {
         const btn = e.target.closest('.period-btn');
         if (!btn) return;
@@ -40,7 +36,6 @@
         loadReadingsAndStats(reactorId);
     });
 
-    /* ── Maintenance tabs ───────────────────────────────── */
     document.getElementById('maint-tabs').addEventListener('click', e => {
         const btn = e.target.closest('.tab-btn');
         if (!btn) return;
@@ -51,12 +46,9 @@
 
 })();
 
-/* =============================================================
-   KPIs
-   ============================================================= */
+/* ── KPIs ─────────────────────────────── */
 function renderKpis(r) {
     const st = statusMeta(r.status);
-
     document.getElementById('tech-kpis').innerHTML = `
         <div class="metric-item">
             <div class="metric-label">Reactor</div>
@@ -65,7 +57,9 @@ function renderKpis(r) {
         <div class="metric-item">
             <div class="metric-label">Status</div>
             <div class="metric-value" style="color:${st.color};font-size:15px">
-                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${st.color};margin-right:5px;vertical-align:middle;animation:livepulse 2s ease-in-out infinite"></span>${st.label}
+                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;
+                      background:${st.color};margin-right:5px;vertical-align:middle;
+                      animation:statusPulse 2s ease-in-out infinite"></span>${st.label}
             </div>
         </div>
         <div class="metric-item">
@@ -75,8 +69,7 @@ function renderKpis(r) {
         <div class="metric-item">
             <div class="metric-label">Eficiență</div>
             <div class="metric-value">${r.current_efficiency != null
-                ? r.current_efficiency + '<span class="metric-unit">%</span>'
-                : '—'}</div>
+                ? r.current_efficiency + '<span class="metric-unit">%</span>' : '—'}</div>
         </div>
         <div class="metric-item">
             <div class="metric-label">Stab. sol</div>
@@ -104,13 +97,10 @@ function statusMeta(s) {
     return map[(s || '').toLowerCase()] || { color: 'var(--text-2)', label: s || '—' };
 }
 
-/* =============================================================
-   Sensors
-   ============================================================= */
+/* ── Sensors ─────────────────────────── */
 async function loadSensors(reactorId) {
     const sub  = document.getElementById('sensors-sub');
     const grid = document.getElementById('sensor-grid');
-
     try {
         const res = await authFetch('/reactors/' + reactorId + '/sensors', { method: 'GET' });
         if (!res.ok) { sub.textContent = 'Eroare la încărcare'; return; }
@@ -119,8 +109,8 @@ async function loadSensors(reactorId) {
         const sensors = Array.isArray(payload) ? payload : (payload.data || []);
 
         if (!sensors.length) {
-            sub.textContent    = 'Niciun senzor';
-            grid.innerHTML     = '<p class="empty-msg">Nicio citire disponibilă.</p>';
+            sub.textContent = 'Niciun senzor';
+            grid.innerHTML  = '<p class="empty-msg">Nicio citire disponibilă.</p>';
             return;
         }
 
@@ -130,13 +120,11 @@ async function loadSensors(reactorId) {
             const v  = parseFloat(s.current_value);
             const mn = parseFloat(s.min_safe_value);
             const mx = parseFloat(s.max_safe_value);
-
-            let cls = '';
+            let cls  = '';
             if (!isNaN(v) && !isNaN(mn) && !isNaN(mx)) {
-                if (v < mn || v > mx)                           cls = 'danger';
-                else if (v < mn * 1.1 || v > mx * 0.9)         cls = 'warning';
+                if (v < mn || v > mx)                    cls = 'danger';
+                else if (v < mn * 1.1 || v > mx * 0.9)  cls = 'warning';
             }
-
             return `
             <div class="sensor-card ${cls}">
                 <div class="sensor-type">${s.sensor_type || '—'}</div>
@@ -145,16 +133,13 @@ async function loadSensors(reactorId) {
                 <div class="sensor-update">${s.last_update ? new Date(s.last_update).toLocaleString('ro-RO') : ''}</div>
             </div>`;
         }).join('');
-
     } catch {
         sub.textContent = 'Eroare de rețea';
         grid.innerHTML  = '<p class="empty-msg">Nu s-au putut încărca senzorii.</p>';
     }
 }
 
-/* =============================================================
-   Statistics
-   ============================================================= */
+/* ── Stats ───────────────────────────── */
 async function loadReadingsAndStats(reactorId) {
     const activeBtn = document.querySelector('#stats-period .period-btn.active');
     const days      = parseInt(activeBtn ? activeBtn.dataset.days : '1', 10);
@@ -165,24 +150,19 @@ async function loadReadingsAndStats(reactorId) {
 
     try {
         const [readingsRes, alertsRes, sensorsRes] = await Promise.all([
-            authFetch('/sensors/readings/all',               { method: 'GET' }),
+            authFetch('/sensors/readings/all',                { method: 'GET' }),
             authFetch('/alerts/history/reactor/' + reactorId, { method: 'GET' }),
             authFetch('/reactors/' + reactorId + '/sensors',  { method: 'GET' })
         ]);
 
-        const allReadings = readingsRes.ok ? await readingsRes.json() : [];
-        const allAlerts   = alertsRes.ok  ? await alertsRes.json()   : [];
-        const sensorsData = sensorsRes.ok ? await sensorsRes.json()  : [];
-
-        const readings = Array.isArray(allReadings) ? allReadings : (allReadings.data || []);
-        const sensors  = Array.isArray(sensorsData) ? sensorsData : (sensorsData.data || []);
-        const alerts   = Array.isArray(allAlerts)   ? allAlerts   : (allAlerts.data  || []);
+        const readings = await safeJson(readingsRes);
+        const alerts   = await safeJson(alertsRes);
+        const sensors  = await safeJson(sensorsRes);
 
         const cutoff         = Date.now() - days * 86400000;
         const periodReadings = readings.filter(r => new Date(r.recorded_at).getTime() >= cutoff);
-        const periodAlerts   = alerts.filter(a   => new Date(a.created_at).getTime()  >= cutoff);
+        const periodAlerts   = alerts.filter(a  => new Date(a.created_at).getTime()  >= cutoff);
 
-        /* Build sensor map for critical readings check */
         const sensorMap = {};
         sensors.forEach(s => { sensorMap[s.id] = s; });
 
@@ -202,15 +182,11 @@ async function loadReadingsAndStats(reactorId) {
         const times  = periodReadings.map(r => r.recorded_at ? new Date(r.recorded_at) : null).filter(Boolean);
         const latest = times.length ? times.sort((a, b) => b - a)[0] : null;
 
-        const criticalAlerts = periodAlerts.filter(a => a.severity === 'critical').length;
-        const alertColor     = periodAlerts.length === 0
-            ? 'var(--green)'
+        const critCount  = periodAlerts.filter(a => a.severity === 'critical').length;
+        const alertColor = periodAlerts.length === 0 ? 'var(--green)'
             : periodAlerts.length > 3 ? 'var(--red)' : 'var(--amber)';
 
-        /* Update subtitle */
-        if (statsSub) {
-            statsSub.textContent = days === 1 ? 'Ultimele 24 ore' : `Ultimele ${days} zile`;
-        }
+        if (statsSub) statsSub.textContent = days === 1 ? 'Ultimele 24 ore' : `Ultimele ${days} zile`;
 
         statsGrid.innerHTML = `
             <div class="stat-card">
@@ -226,7 +202,7 @@ async function loadReadingsAndStats(reactorId) {
             <div class="stat-card">
                 <div class="stat-label">Alerte</div>
                 <div class="stat-value" style="color:${alertColor}">${periodAlerts.length}</div>
-                <div class="stat-hint">${criticalAlerts ? criticalAlerts + ' critice' : 'Nicio alertă'}</div>
+                <div class="stat-hint">${critCount ? critCount + ' critice' : 'Nicio alertă'}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Citiri critice</div>
@@ -240,23 +216,18 @@ async function loadReadingsAndStats(reactorId) {
             </div>
             <div class="stat-card">
                 <div class="stat-label">Ultima citire</div>
-                <div class="stat-value" style="font-size:14px">${latest ? formatTime(latest) : '—'}</div>
+                <div class="stat-value" style="font-size:15px">${latest ? formatTime(latest) : '—'}</div>
                 <div class="stat-hint">Cea mai recentă</div>
-            </div>
-        `;
-
+            </div>`;
     } catch {
         statsGrid.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
     }
 }
 
-/* =============================================================
-   Active Alerts
-   ============================================================= */
+/* ── Active alerts ───────────────────── */
 async function loadActiveAlerts(reactorId) {
-    const list        = document.getElementById('alerts-list');
-    const countBadge  = document.getElementById('active-alerts-count');
-
+    const list       = document.getElementById('alerts-list');
+    const countBadge = document.getElementById('active-alerts-count');
     try {
         const res = await authFetch('/alerts/active', { method: 'GET' });
         if (!res.ok) { list.innerHTML = '<p class="empty-msg">Eroare la încărcare.</p>'; return; }
@@ -265,10 +236,7 @@ async function loadActiveAlerts(reactorId) {
         const alerts  = payload.data || payload || [];
         const mine    = alerts.filter(a => a.reactor_id === reactorId);
 
-        /* Update badge */
-        if (countBadge) {
-            countBadge.textContent = mine.length ? mine.length + ' activă' : '';
-        }
+        if (countBadge) countBadge.textContent = mine.length ? mine.length + ' activă' : '';
 
         if (!mine.length) {
             list.innerHTML = '<p class="empty-msg">Nicio alertă activă.</p>';
@@ -285,45 +253,29 @@ async function loadActiveAlerts(reactorId) {
                     <span class="alert-time">${a.created_at ? new Date(a.created_at).toLocaleString('ro-RO') : ''}</span>
                     <button class="btn-sm primary" onclick="intervine(${a.id})">Intervine</button>
                 </div>
-            </div>
-        `).join('');
-
+            </div>`).join('');
     } catch {
         list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
     }
 }
 
-/* =============================================================
-   Intervine (resolve alert)
-   ============================================================= */
+/* ── Intervine ───────────────────────── */
 async function intervine(alertId) {
     const notes = prompt('Descrie intervenția ta:');
     if (!notes) return;
-
     try {
         const res = await authFetch('/alerts/' + alertId + '/resolve', {
             method: 'POST',
-            body:   JSON.stringify({ notes })
+            body: JSON.stringify({ notes })
         });
-
-        if (res.ok) {
-            alert('Alertă rezolvată cu succes!');
-            location.reload();
-        } else {
-            const err = await res.json();
-            alert(err.error || 'A apărut o eroare.');
-        }
-    } catch {
-        alert('Eroare de rețea.');
-    }
+        if (res.ok) { alert('Alertă rezolvată cu succes!'); location.reload(); }
+        else { const err = await res.json(); alert(err.error || 'A apărut o eroare.'); }
+    } catch { alert('Eroare de rețea.'); }
 }
 
-/* =============================================================
-   Alert History
-   ============================================================= */
+/* ── Alert history ───────────────────── */
 async function loadAlertHistory(reactorId) {
     const list = document.getElementById('alerts-history-list');
-
     try {
         const res = await authFetch('/alerts/history/reactor/' + reactorId, { method: 'GET' });
         if (!res.ok) { list.innerHTML = '<p class="empty-msg">Eroare la încărcare.</p>'; return; }
@@ -345,20 +297,15 @@ async function loadAlertHistory(reactorId) {
                 <div class="alert-right">
                     <span class="alert-time">${a.created_at ? new Date(a.created_at).toLocaleDateString('ro-RO') : ''}</span>
                 </div>
-            </div>
-        `).join('');
-
+            </div>`).join('');
     } catch {
         list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
     }
 }
 
-/* =============================================================
-   RSS Feed
-   ============================================================= */
+/* ── RSS ─────────────────────────────── */
 async function loadRssFeed() {
     const list = document.getElementById('rss-list');
-
     try {
         const tokenRes = await authFetch('/rss/token', { method: 'GET' });
         if (!tokenRes.ok) { list.innerHTML = '<p class="empty-msg">Eroare la token RSS.</p>'; return; }
@@ -374,55 +321,42 @@ async function loadRssFeed() {
         const xmlRes = await fetch(base + '/api/rss/alerts?token=' + encodeURIComponent(token));
         if (!xmlRes.ok) { list.innerHTML = '<p class="empty-msg">Eroare la flux RSS.</p>'; return; }
 
-        const xmlText = await xmlRes.text();
-        const xmlDoc  = new DOMParser().parseFromString(xmlText, 'text/xml');
-        const items   = xmlDoc.querySelectorAll('item');
+        const xmlDoc = new DOMParser().parseFromString(await xmlRes.text(), 'text/xml');
+        const items  = xmlDoc.querySelectorAll('item');
 
-        if (!items.length) {
-            list.innerHTML = '<p class="empty-msg">Nicio intrare RSS.</p>';
-            return;
-        }
+        if (!items.length) { list.innerHTML = '<p class="empty-msg">Nicio intrare RSS.</p>'; return; }
 
         const entries = [];
-        items.forEach(item => {
-            entries.push({
-                title:   item.querySelector('title')?.textContent   || '',
-                desc:    item.querySelector('description')?.textContent || '',
-                pubDate: item.querySelector('pubDate')?.textContent || ''
-            });
-        });
+        items.forEach(item => entries.push({
+            title:   item.querySelector('title')?.textContent       || '',
+            desc:    item.querySelector('description')?.textContent || '',
+            pubDate: item.querySelector('pubDate')?.textContent     || ''
+        }));
 
         list.innerHTML = entries.slice(0, 10).map(e => {
             const isCritical = e.title.includes('CRITIC');
             const isResolved = e.title.includes('REZOLVAT');
             const isInfo     = e.title.includes('INFO') || e.title.includes('STATISTICI');
-
             let severity = 'warning';
-            if (isCritical)          severity = 'critical';
+            if (isCritical)           severity = 'critical';
             if (isResolved || isInfo) severity = 'info';
-
-            const cleanDesc = e.desc.replace(/&#8203;/g, '').trim();
-            const dateStr   = e.pubDate ? new Date(e.pubDate).toLocaleString('ro-RO') : '';
 
             return `
             <div class="rss-item">
                 <div class="rss-head">
                     <span class="rss-severity ${severity}">${severity.toUpperCase()}</span>
-                    <span class="rss-date">${dateStr}</span>
+                    <span class="rss-date">${e.pubDate ? new Date(e.pubDate).toLocaleString('ro-RO') : ''}</span>
                 </div>
                 <div class="rss-title">${e.title}</div>
-                <div class="rss-desc">${cleanDesc}</div>
+                <div class="rss-desc">${e.desc.replace(/&#8203;/g, '').trim()}</div>
             </div>`;
         }).join('');
-
     } catch {
         list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
     }
 }
 
-/* =============================================================
-   Maintenance
-   ============================================================= */
+/* ── Maintenance ─────────────────────── */
 async function loadMaintenance(reactorId) {
     const list      = document.getElementById('maint-list');
     const activeTab = document.querySelector('#maint-tabs .tab-btn.active');
@@ -432,8 +366,8 @@ async function loadMaintenance(reactorId) {
         const res = await authFetch('/reactors/' + reactorId + '/maintenance/history', { method: 'GET' });
         if (!res.ok) { list.innerHTML = '<p class="empty-msg">Eroare la încărcare.</p>'; return; }
 
-        const payload = await res.json();
-        const records = payload.data || payload || [];
+        const payload  = await res.json();
+        const records  = payload.data || payload || [];
         const filtered = records.filter(r => showActive ? !r.is_completed : r.is_completed);
 
         if (!filtered.length) {
@@ -442,13 +376,12 @@ async function loadMaintenance(reactorId) {
         }
 
         list.innerHTML = filtered.slice(-10).reverse().map(r => {
-            const badge = r.is_completed ? 'done' : 'active';
+            const badge = r.is_completed ? 'done'   : 'active';
             const label = r.is_completed ? 'Finalizat' : 'Activ';
             const date  = r.is_completed
                 ? (r.completed_at ? new Date(r.completed_at).toLocaleDateString('ro-RO') : '')
                 : (r.started_at   ? new Date(r.started_at).toLocaleDateString('ro-RO')   : '');
-            const text  = r.notes || r.reason || 'Mentenanță #' + r.id;
-
+            const text = r.notes || r.reason || 'Mentenanță #' + r.id;
             return `
             <div class="maint-item">
                 <div class="maint-left">
@@ -460,15 +393,18 @@ async function loadMaintenance(reactorId) {
                 </div>
             </div>`;
         }).join('');
-
     } catch {
         list.innerHTML = '<p class="empty-msg">Eroare de rețea.</p>';
     }
 }
 
-/* =============================================================
-   Utilities
-   ============================================================= */
+/* ── Helpers ─────────────────────────── */
 function formatTime(d) {
     return d.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function safeJson(res) {
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.data || []);
 }
