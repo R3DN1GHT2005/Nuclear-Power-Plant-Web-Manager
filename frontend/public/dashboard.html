@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NuclearWatch — Dashboard Tehnician</title>
+    <title>NuclearWatch — Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
 
 <nav class="navbar" id="top-navbar">
     <div class="nav-left">
-        <a class="logo" href="dashboard-tehnician.html">
+        <a class="logo" href="dashboard.html">
             <div class="logo-icon">
                 <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
@@ -24,6 +24,12 @@
             </div>
             NuclearWatch
         </a>
+    </div>
+    <div class="nav-mid" id="nav-links">
+        <a class="nav-link active" href="dashboard.html">Stația mea</a>
+        <a class="nav-link" href="reactor-statistici.html" id="nav-statistici" style="display:none">Statistici</a>
+        <a class="nav-link" href="gestionare.html" id="nav-gestionare" style="display:none">Gestionare</a>
+        <a class="nav-link" href="reactor.html" id="nav-reactor" style="display:none">Vezi reactorul</a>
     </div>
     <div class="nav-right">
         <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
@@ -140,7 +146,7 @@
 </div>
 
 <script src="assets/js/api.js"></script>
-<script src="assets/js/dashboard-tehnician.js"></script>
+<script src="assets/js/dashboard.js"></script>
 <script src="assets/js/rss.js"></script>
 <script src="assets/js/alerts.js"></script>
 </body>

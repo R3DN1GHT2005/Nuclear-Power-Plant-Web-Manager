@@ -29,8 +29,10 @@ const NAV_API_URL = (() => {
         links.push({ href: 'alerts-history.html', label: 'Alerte' });
         links.push({ href: 'admin-accounts.html', label: 'Administrare Conturi' });
     } else if (role === 'manager') {
-        links.push({ href: 'station-view.html', label: 'Stația mea' });
-        links.push({ href: 'stats.html', label: 'Statistici' });
+        links.push({ href: 'dashboard.html', label: 'Stația mea' });
+        links.push({ href: 'reactor-statistici.html', label: 'Statistici' });
+        links.push({ href: 'gestionare.html', label: 'Gestionare' });
+        links.push({ href: 'reactor.html', label: 'Vezi reactorul' });
     }
 
     // tehnician — no nav links, only logo + logout

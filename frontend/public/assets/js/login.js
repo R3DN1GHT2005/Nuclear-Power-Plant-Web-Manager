@@ -38,10 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (res.ok && res.body && res.body.user) {
                 const role = res.body.user.role;
-                if (role === 'tehnician') {
-                    window.location.href = 'dashboard-tehnician.html';
-                } else if (role === 'manager') {
-                    window.location.href = 'station-view.html';
+                if (role === 'tehnician' || role === 'manager') {
+                    window.location.href = 'dashboard.html';
                 } else {
                     window.location.href = 'index.html';
                 }
