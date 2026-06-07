@@ -162,11 +162,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             effBar.className = "spec-bar-fill " + getBarClass(eff);
         }
 
-        const stab = reactor.soil_stability ?? 0;
-        setElText("stability-val", `${stab}%`);
+        const rawStab = reactor.soil_stability ?? 0;
+        const stab = rawStab > 1 ? rawStab : rawStab * 100;
+        setElText("stability-val", `${Math.round(stab)}%`);
         const stabBar = document.getElementById("stability-bar");
         if (stabBar) {
-            stabBar.style.width = `${stab}%`;
+            stabBar.style.width = `${Math.round(stab)}%`;
             stabBar.className = "spec-bar-fill " + getBarClass(stab);
         }
 
