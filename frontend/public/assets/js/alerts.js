@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const sunetAlarma = new Audio('./assets/alert_sound.mp3');
     sunetAlarma.loop = true; 
 
-    // Set cu alertele ignorate — nu se resetează niciodată automat în sesiune
     const ignoredAlertIds = new Set();
 
     const alertHTML = `
@@ -73,14 +72,12 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.classList.add('nw-show');
 
         if (sunetAlarma.paused) {
-            sunetAlarma.play().catch(e => console.log('Sunet blocat de browser. Interacționează cu pagina.', e));
+            sunetAlarma.play().catch(e => console.log('Sunet blocat de browser.', e));
         }
     }
 
     btnClosePopup.addEventListener('click', () => {
-        if (currentAlertId !== null) {
-            ignoredAlertIds.add(currentAlertId);
-        }
+        if (currentAlertId !== null) ignoredAlertIds.add(currentAlertId);
         overlay.classList.remove('nw-show');
     });
 
@@ -107,7 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentAlertId = null;
                 sunetAlarma.pause();
                 sunetAlarma.currentTime = 0;
-                // Forțăm reîncărcarea listei din dreapta instantaneu
                 fetchAndRenderList(); 
             }
         } finally {
@@ -116,11 +112,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =====================================================================
-    // 2. LOGICA PENTRU LISTA DE ALERTE (COLOANA DREAPTĂ)
+    // 2. LOGICA PENTRU LISTA DE ALERTE ACTIVE (COLOANA DREAPTĂ)
     // =====================================================================
     const listContainer = document.getElementById('alerts-container');
     
-    // Injectăm CSS-ul doar dacă există containerul pe pagină
     if (listContainer) {
         listContainer.style.cssText = 'display:flex; flex-direction:column; gap:10px;';
         
@@ -141,6 +136,15 @@ document.addEventListener("DOMContentLoaded", () => {
             .alert-confirm-btn-v2:hover { opacity: 0.85; }
             .alert-textarea-v2 { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); color: var(--color-text-primary); padding: 9px 11px; font-size: 12px; line-height: 1.5; resize: vertical; font-family: inherit; width: 100%; box-sizing: border-box; }
             .alert-textarea-v2:focus { outline: none; border-color: var(--color-border-primary); }
+            
+            /* Clasa pentru scroll în istoricul de pe pagina reactorului */
+            .history-scroll-box {
+                max-height: 400px;
+                overflow-y: auto;
+                padding-right: 4px;
+            }
+            .history-scroll-box::-webkit-scrollbar { width: 4px; }
+            .history-scroll-box::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
         `;
         document.head.appendChild(style);
     }
@@ -168,7 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderList(alerts) {
         if (!listContainer) return;
         
-        // === 1. SALVĂM STAREA ÎNAINTE DE REDESENARE ===
         const openForms = {};
         document.querySelectorAll('[id^="list-resolve-form-"]').forEach(form => {
             if (form.style.display === 'flex') {
@@ -178,7 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Desenăm alertele active
+        listContainer.style.padding = "0";
+
         listContainer.innerHTML = alerts.map(alert => {
             const isCritical = alert.severity === 'critical';
             const dotColor      = isCritical ? '#E24B4A'  : '#BA7517';
@@ -200,30 +204,29 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div class="alert-dot" style="background:${dotColor};"></div>
                         <i class="ti ${iconName}" style="font-size:18px; color:${iconColor};" aria-hidden="true"></i>
-                        <span style="font-size:19px; font-weight:500; color:var(--color-text-primary);">
+                        <span style="font-size:16px; font-weight:600; color:var(--color-text-primary);">
                             ${alert.reactor_name || 'Reactor necunoscut'}
                         </span>
-                        <span style="font-size:10px; font-weight:500; letter-spacing:0.5px; padding:3px 9px; border-radius:20px; background:${badgeBg}; color:${badgeColor}; border:0.5px solid ${badgeBorder};">${severityText}</span>
-                        <span style="font-size:12px; color:var(--color-text-secondary); margin-left:auto;">${timeAgo(alert.created_at)}</span>
+                        <span style="font-size:9px; font-weight:600; letter-spacing:0.5px; padding:2px 6px; border-radius:20px; background:${badgeBg}; color:${badgeColor}; border:0.5px solid ${badgeBorder};">${severityText}</span>
+                        <span style="font-size:11px; color:var(--color-text-secondary); margin-left:auto;">${timeAgo(alert.created_at)}</span>
                     </div>
-                    <div style="font-size:12.5px; line-height:1.65; color:${msgColor}; background:${msgBg}; border:0.5px solid ${msgBorderRest}; border-left:3px solid ${msgBorderL}; border-radius:0 var(--border-radius-md) var(--border-radius-md) 0; padding:10px 14px;">${alert.message || ''}</div>
+                    <div style="font-size:12px; line-height:1.5; color:${msgColor}; background:${msgBg}; border:0.5px solid ${msgBorderRest}; border-left:3px solid ${msgBorderL}; border-radius:0 var(--border-radius-md) var(--border-radius-md) 0; padding:8px 12px;">${alert.message || ''}</div>
                     <div>
                         <button class="alert-resolve-btn-v2 ${btnClass}" onclick="toggleResolveFormList(this, ${alert.id})">
-                            <i class="ti ti-tool" style="font-size:14px;" aria-hidden="true"></i> Intervino / Rezolvă alarma
+                            <i class="ti ti-tool" style="font-size:14px;" aria-hidden="true"></i> Intervino
                         </button>
                     </div>
                     <div id="list-resolve-form-${alert.id}" style="display:none; flex-direction:column; gap:8px;">
                         <div style="font-size:11px; color:var(--color-text-secondary); font-weight:500;">Jurnal de intervenție <span style="color:${dotColor};">*</span></div>
-                        <textarea class="alert-textarea-v2" id="list-resolve-notes-${alert.id}" rows="3" placeholder="Ex: Am redus puterea pompei la 80%..."></textarea>
+                        <textarea class="alert-textarea-v2" id="list-resolve-notes-${alert.id}" rows="3" placeholder="Ex: Am redus puterea pompei..."></textarea>
                         <button class="alert-confirm-btn-v2" onclick="submitResolveList(${alert.id}, this)">
-                            <i class="ti ti-check" style="font-size:14px;" aria-hidden="true"></i> Confirmă salvarea
+                            <i class="ti ti-check" style="font-size:14px;" aria-hidden="true"></i> Confirmă
                         </button>
                     </div>
                 </div>
             </div>`;
         }).join('');
 
-        // === 2. RESTAURĂM STAREA IMEDIAT DUPĂ REDESENARE ===
         Object.keys(openForms).forEach(alertId => {
             const form = document.getElementById(`list-resolve-form-${alertId}`);
             const textarea = document.getElementById(`list-resolve-notes-${alertId}`);
@@ -237,27 +240,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (icon) icon.className = 'ti ti-x';
                 btn.childNodes[btn.childNodes.length - 1].textContent = ' Anulează';
                 
-                if (document.activeElement.id === `list-resolve-notes-${alertId}`) {
-                    textarea.focus();
-                }
+                if (document.activeElement.id === `list-resolve-notes-${alertId}`) textarea.focus();
             }
         });
     }
 
     // =====================================================================
-    // 3. LOGICĂ NOUĂ PENTRU ISTORIC (CÂND NU SUNT ALERTE ACTIVE)
+    // 3. LOGICĂ ISTORIC (CÂND NU SUNT ALERTE ACTIVE SAU SUNTEM PE PAGINA REACTORULUI)
     // =====================================================================
     async function fetchAndRenderHistory() {
         if (!listContainer) return;
 
-        // Căutăm dacă suntem pe pagina unui anumit reactor (ex: reactor.html?id=5)
         const urlParams = new URLSearchParams(window.location.search);
         const reactorId = urlParams.get('id');
-
-        // Dacă avem ID în URL, cerem istoricul acelui reactor. Altfel, cerem pe tot sistemul (pentru index).
-        const endpoint = reactorId 
-            ? `/alerts/history/reactor/${reactorId}` 
-            : `/alerts/history`;
+        const endpoint = reactorId ? `/alerts/history/reactor/${reactorId}` : `/alerts/history`;
 
         try {
             const res = await window.authFetch(endpoint);
@@ -266,12 +262,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const historyAlerts = await res.json();
                 renderHistoryCards(historyAlerts, listContainer);
             } else if (res.status === 403) {
-                // Dacă un tehnician e pe Dashboard (fără ID) și nu are voie la istoricul global
                 listContainer.innerHTML = `
                     <div style="padding:32px 18px; display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--color-text-secondary);">
-                        <i class="ti ti-shield-lock" style="font-size:36px; opacity:0.4;"></i>
+                        <i class="ti ti-shield-lock" style="font-size:30px; opacity:0.4;"></i>
                         <div style="font-size:13px; font-weight:500;">Sistem stabil</div>
-                        <div style="font-size:12px; opacity:0.6;">(Vizualizarea istoricului global necesită drepturi de administrator)</div>
+                        <div style="font-size:11px; opacity:0.6;">(Vizualizarea istoricului global necesită drepturi de administrator)</div>
                     </div>`;
             }
         } catch (e) {
@@ -283,61 +278,62 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!historyAlerts || historyAlerts.length === 0) {
             listContainer.innerHTML = `
                 <div style="padding:32px 18px; display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--color-text-secondary);">
-                    <i class="ti ti-circle-check" style="font-size:36px; opacity:0.4;"></i>
+                    <i class="ti ti-circle-check" style="font-size:30px; opacity:0.4;"></i>
                     <div style="font-size:13px; font-weight:500;">Istoric curat</div>
-                    <div style="font-size:12px; opacity:0.6;">Nu s-au înregistrat erori anterioare.</div>
+                    <div style="font-size:11px; opacity:0.6;">Nu s-au înregistrat erori anterioare.</div>
                 </div>`;
             return;
         }
 
-        // Tăiem lista (tu ai pus 15)
         const recentHistory = historyAlerts.slice(0, 15);
-
         listContainer.style.padding = "0";
 
+        // === MODIFICAREA E AICI: Adăugăm un container grid cu 3 coloane auto-responsive ===
         listContainer.innerHTML = `
-            <div style="font-size: 11px; text-transform: uppercase; color: var(--color-text-secondary); letter-spacing: 0.5px; padding: 14px 20px; text-align: center; font-weight: 600; border-bottom: 1px solid var(--color-border-tertiary, #eaeaea);">
+            <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-secondary); letter-spacing: 0.5px; padding: 10px 14px; text-align: center; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.06);">
                 Ultimele ${recentHistory.length} intervenții soluționate
             </div>
             
-            <div style="display: flex; flex-direction: column; overflow-y: auto; max-height: 400px;">
-        ` + recentHistory.map((alert, index) => {
+            <div class="history-scroll-box" style="padding: 14px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+        ` + recentHistory.map((alert) => {
             const isCritical = alert.severity === 'critical';
             const badgeBg       = isCritical ? '#FCEBEB'  : '#FAEEDA';
             const badgeColor    = isCritical ? '#A32D2D'  : '#854F0B';
             const badgeBorder   = isCritical ? '#F09595'  : '#FAC775';
             const severityText  = isCritical ? 'CRITICĂ'  : 'AVERTIZARE';
-            
-            const borderBottom = index < recentHistory.length - 1 ? 'border-bottom: 1px solid var(--color-border-tertiary, #eaeaea);' : '';
 
+            // Fiecare alertă devine un "card" independent cu bordură
             return `
-            <div style="padding: 18px 20px; ${borderBottom} display: flex; flex-direction: column; gap: 8px;">
+            <div style="padding: 14px; display: flex; flex-direction: column; gap: 8px; background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
                 
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 15px; font-weight: 600; color: var(--color-text-primary);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <span style="font-size: 13px; font-weight: 600; color: #0F1923; line-height: 1.2;">
                             ${alert.reactor_name}
                         </span>
-                        <span style="font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: ${badgeBg}; color: ${badgeColor}; border: 0.5px solid ${badgeBorder};">
+                        <span style="align-self: flex-start; font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: ${badgeBg}; color: ${badgeColor}; border: 0.5px solid ${badgeBorder};">
                             ${severityText}
                         </span>
                     </div>
                     
-                    <span style="font-size: 12px; font-weight: 500; color: var(--color-text-secondary); background: var(--color-background-secondary, #f8f9fa); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--color-border-tertiary, #eaeaea);">
-                        ${formatExactTime(alert.created_at)}
+                    <span style="font-size: 9px; font-weight: 500; color: #8A96A8; background: #F8FAFC; padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); text-align: right;">
+                        ${formatExactTime(alert.created_at).replace('—', '<br>')}
                     </span>
                 </div>
 
-                <div style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.55;">
+                <div style="font-size: 11.5px; color: #4A5568; line-height: 1.45; margin-top: 4px;">
                     ${alert.message}
                 </div>
 
             </div>`;
-        }).join('') + `</div>`;
+        }).join('') + `
+                </div>
+            </div>`;
     }
 
     // =====================================================================
-    // 4. FETCH CENTRAL (RULAT LA 5 SECUNDE)
+    // 4. FETCH CENTRAL
     // =====================================================================
     async function fetchAndRenderList() {
         try {
@@ -345,7 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok) {
                 const alerts = await res.json();
                 
-                // 1. Verificăm popup-ul global
                 if (alerts.length > 0) {
                     const latestAlert = alerts[0];
                     showGlobalAlert(latestAlert);
@@ -361,11 +356,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     sunetAlarma.currentTime = 0;
                 }
 
-                // 2. Randăm lista vizuală din dreapta
                 if (alerts.length > 0) {
-                    renderList(alerts); // Sunt alerte active, le arătăm pe acelea
+                    renderList(alerts);
                 } else {
-                    fetchAndRenderHistory(); // ZERO alerte active, arătăm istoricul
+                    fetchAndRenderHistory();
                 }
             }
         } catch (e) {
@@ -386,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const icon = btn.querySelector('i');
         if (isVisible) {
             if (icon) icon.className = 'ti ti-tool';
-            btn.childNodes[btn.childNodes.length - 1].textContent = ' Intervino / Rezolvă alarma';
+            btn.childNodes[btn.childNodes.length - 1].textContent = ' Intervino';
         } else {
             if (icon) icon.className = 'ti ti-x';
             btn.childNodes[btn.childNodes.length - 1].textContent = ' Anulează';
@@ -418,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert('Eroare la salvare.');
                 btn.disabled = false;
                 if (icon) icon.className = 'ti ti-check';
-                btn.childNodes[btn.childNodes.length - 1].textContent = ' Confirmă salvarea';
+                btn.childNodes[btn.childNodes.length - 1].textContent = ' Confirmă';
             }
         } catch (e) {
             console.error(e);
@@ -426,9 +420,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // =====================================================================
-    // INIT
-    // =====================================================================
     setInterval(fetchAndRenderList, 5000);
     fetchAndRenderList();
 });

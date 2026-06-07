@@ -111,4 +111,17 @@ class SensorService {
     public function delete(int $id): bool {
         return $this->sensorRepository->delete($id);
     }
+
+
+    public function getLatestReadingsBySensor(int $sensorId, int $limit = 50): array {
+        return $this->sensorRepository->findLatestReadingsBySensor($sensorId, $limit);
+    }
+
+    public function getLatestReadingsAllSensors(int $limit = 50): array {
+        return $this->sensorRepository->findLatestReadingsAllSensors($limit);
+    }
+
+    public function getAllWithReactorStatus(): array {
+        return $this->sensorRepository->findAllWithReactorStatus();
+    }
 }

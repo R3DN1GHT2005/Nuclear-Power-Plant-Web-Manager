@@ -18,7 +18,7 @@ class ReactorMaintenanceService {
             $this->repository->beginTransaction();
 
             $this->repository->insertMaintenanceLog($reactorId, $dto->estimated_end_date, $dto->reason);
-            $this->repository->updateReactorStatus($reactorId, 'În mentenanță', 0);
+            $this->repository->updateReactorStatus($reactorId, 'Mentenanță', 0);
 
             $this->repository->commit();
         } catch (Exception $e) {

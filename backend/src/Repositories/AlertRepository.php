@@ -16,9 +16,10 @@ class AlertRepository {
     }
 
     public function getAllActive(): array {
-        $sql = "SELECT a.*, r.name as reactor_name 
+        $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
                 JOIN reactors r ON a.reactor_id = r.id
+                LEFT JOIN users u ON a.resolved_by = u.id
                 WHERE a.is_resolved = FALSE
                 ORDER BY a.created_at DESC";
                 
@@ -27,7 +28,6 @@ class AlertRepository {
         
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-       
         return array_map(fn($row) => AlertMapper::toModel($row), $rows);
     }
 
@@ -36,9 +36,10 @@ class AlertRepository {
      * @return Alert[]
      */
     public function getAllResolved(): array {
-        $sql = "SELECT a.*, r.name as reactor_name 
+        $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
                 JOIN reactors r ON a.reactor_id = r.id
+                LEFT JOIN users u ON a.resolved_by = u.id
                 WHERE a.is_resolved = TRUE
                 ORDER BY a.resolved_at DESC";
                 
@@ -54,9 +55,10 @@ class AlertRepository {
      * Găsește o alertă specifică după ID.
      */
     public function findById(int $id): ?Alert {
-        $sql = "SELECT a.*, r.name as reactor_name 
+        $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
                 JOIN reactors r ON a.reactor_id = r.id
+                LEFT JOIN users u ON a.resolved_by = u.id
                 WHERE a.id = :id";
                 
         $stmt = $this->db->prepare($sql);
@@ -71,11 +73,11 @@ class AlertRepository {
         return AlertMapper::toModel($row);
     }
 
-   
     public function findActiveByReactorAndSeverity(int $reactorId, AlertSeverity $severity): ?Alert {
-        $sql = "SELECT a.*, r.name as reactor_name 
+        $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
                 JOIN reactors r ON a.reactor_id = r.id
+                LEFT JOIN users u ON a.resolved_by = u.id
                 WHERE a.reactor_id = :reactor_id 
                   AND a.severity = :severity 
                   AND a.is_resolved = FALSE
@@ -96,7 +98,6 @@ class AlertRepository {
         return AlertMapper::toModel($row);
     }
 
-   
     public function resolve(int $alertId, int $userId, string $notes): bool {
         $sql = "UPDATE alerts 
                 SET is_resolved = TRUE, 
@@ -132,13 +133,11 @@ class AlertRepository {
         return $this->findById($newId);
     }
 
-
-
-
     public function getAll(): array {
-        $sql = "SELECT a.*, r.name as reactor_name 
+        $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
                 JOIN reactors r ON a.reactor_id = r.id
+                LEFT JOIN users u ON a.resolved_by = u.id
                 ORDER BY a.created_at DESC";
                 
         $stmt = $this->db->prepare($sql);
@@ -149,11 +148,11 @@ class AlertRepository {
         return array_map(fn($row) => AlertMapper::toModel($row), $rows);
     }
 
-  
     public function getAllByReactorId(int $reactorId): array {
-        $sql = "SELECT a.*, r.name as reactor_name 
+        $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
                 JOIN reactors r ON a.reactor_id = r.id
+                LEFT JOIN users u ON a.resolved_by = u.id
                 WHERE a.reactor_id = :reactor_id 
                 ORDER BY a.created_at DESC";
                 
@@ -164,6 +163,4 @@ class AlertRepository {
         
         return array_map(fn($row) => AlertMapper::toModel($row), $rows);
     }
-
-
 }

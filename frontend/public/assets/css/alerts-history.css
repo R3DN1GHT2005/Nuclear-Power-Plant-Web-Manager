@@ -1,0 +1,125 @@
+/* =============================================
+   alerts-history.css — Styling specific pentru tabelul de istoric
+============================================= */
+
+.history-table td {
+    vertical-align: top; /* Textul lung (notițele) să se alinieze sus */
+    padding: 16px 16px;
+    line-height: 1.5;
+}
+
+/* Formatare pentru mesaje lungi */
+.history-msg {
+    font-size: 12.5px;
+    color: #4A5568;
+    max-width: 300px;
+}
+
+.history-notes {
+    font-size: 12px;
+    color: #0F1923;
+    background: #F8FAFC;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+    font-style: italic;
+    max-width: 250px;
+}
+
+/* Badge Severitate */
+.badge-sev {
+    display: inline-flex;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.badge-sev.critical {
+    background: #FCEBEB;
+    color: #A32D2D;
+    border: 0.5px solid #F09595;
+}
+.badge-sev.warning {
+    background: #FAEEDA;
+    color: #854F0B;
+    border: 0.5px solid #FAC775;
+}
+
+/* Badge Status Intervenție */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-status.resolved {
+    background: #DEF7EC;
+    color: #03543F;
+    border: 1px solid #84E1BC;
+}
+.badge-status.active {
+    background: #FDF2F2;
+    color: #9B1C1C;
+    border: 1px solid #F8B4B4;
+    animation: pulseActive 2s infinite;
+}
+
+@keyframes pulseActive {
+    0% { box-shadow: 0 0 0 0 rgba(226, 75, 74, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(226, 75, 74, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(226, 75, 74, 0); }
+}
+
+/* Data / Timp */
+.time-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    color: #4A5568;
+}
+
+
+/* ── FORȚĂM LAYOUT-UL CENTRAT ── */
+.history-page-layout {
+    display: block !important; /* Suprascrie orice grid anterior */
+    max-width: 1450px !important;
+    margin: 0 auto !important;
+    padding: 2.5rem 2rem !important;
+}
+
+/* ── ZONA DE SCROLL PENTRU TABEL ── */
+.table-scroll-area {
+    width: 100%;
+    max-height: 70vh; /* Ocupă 70% din înălțimea ecranului și după apare scroll */
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* Facem scrollbar-ul să arate elegant */
+.table-scroll-area::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.table-scroll-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+.table-scroll-area::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 4px;
+}
+.table-scroll-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+/* Capul de tabel rămâne "lipit" când dăm scroll în jos */
+.history-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #F8FAFC; /* Aceeași culoare ca fundalul din header-ul tabelului */
+    box-shadow: 0 1px 0 rgba(0,0,0,0.08); /* Linie subtilă jos */
+}

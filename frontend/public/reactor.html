@@ -35,11 +35,11 @@
 
 
 <!-- ══════════════════════════════════════════════════════
-     LAYOUT PRINCIPAL — 2 coloane
+     LAYOUT PRINCIPAL — 3 coloane
      ══════════════════════════════════════════════════════ -->
-<main class="main split-layout hidden" id="reactor-details-layout">
+<main class="main triple-col-layout hidden" id="reactor-details-layout">
 
-    <!-- ── COLOANA STÂNGA: header + specificații + alerte ── -->
+    <!-- ── COLOANA STÂNGA: header + specificații ── -->
     <div class="col-left">
 
         <!-- Header cu titlu, status și butoane de acțiune -->
@@ -63,7 +63,7 @@
         </div>
 
         <!-- Card: Specificații tehnice -->
-        <div class="panel-card mb-12">
+        <div class="panel-card">
             <div class="detail-section">
                 <header class="det-h">
                     <div class="det-t">Specificații Tehnice</div>
@@ -115,27 +115,11 @@
             </div>
         </div>
 
-        <!-- Card: Jurnal alerte -->
-        <div class="panel-card flex-fill">
-            <div class="detail-section layout-flex-col">
-                <header class="det-h">
-                    <div>
-                        <div class="det-t">Jurnal Alerte</div>
-                        <div class="det-s" id="alert-sub">Evenimente înregistrate</div>
-                    </div>
-                    <span class="pill pill-alert hidden" id="alert-count-pill">0</span>
-                </header>
-                <div class="scroll-area layout-flex-1" id="alert-list">
-                    <div class="history-empty">Se încarcă alertele...</div>
-                </div>
-            </div>
-        </div>
-
     </div><!-- /col-left -->
 
 
-    <!-- ── COLOANA DREAPTA: tab-uri senzori + istoric ── -->
-    <div class="col-right">
+    <!-- ── COLOANA CENTRU: tab-uri senzori + istoric ── -->
+    <div class="col-center">
         <div class="panel-card flex-fill layout-flex-col">
 
             <!-- Tab-uri -->
@@ -178,6 +162,25 @@
             </div>
 
         </div>
+    </div><!-- /col-center -->
+
+
+    <!-- ── COLOANA DREAPTA: jurnal alerte ── -->
+    <div class="col-right">
+        <div class="panel-card flex-fill layout-flex-col">
+            <div class="detail-section layout-flex-col" style="height: 100%;">
+                <header class="det-h">
+                    <div>
+                        <div class="det-t">Jurnal Alerte</div>
+                        <div class="det-s" id="alert-sub">Evenimente înregistrate</div>
+                    </div>
+                    <span class="pill pill-alert hidden" id="alert-count-pill">0</span>
+                </header>
+                <div class="scroll-area layout-flex-1" id="alert-list">
+                    <div class="history-empty">Se încarcă alertele...</div>
+                </div>
+            </div>
+        </div>
     </div><!-- /col-right -->
 
 </main><!-- /reactor-details-layout -->
@@ -199,20 +202,14 @@
      ══════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-status">
     <div class="modal">
-
-        <!-- Icoana și titlul sunt setate dinamic din JS -->
         <div class="confirm-icon" id="modal-status-icon">🔄</div>
         <div class="modal-title" id="modal-status-title">Schimbare status</div>
         <div class="modal-sub">Confirmați schimbarea statusului reactorului.</div>
-
-        <!-- Avertisment opțional (ex: "Oprirea va întrerupe producția.") -->
         <div class="confirm-warning hidden" id="modal-status-warning"></div>
-
         <div class="modal-actions">
             <button class="btn btn-close-modal">Anulează</button>
             <button class="btn btn-prim" id="modal-status-confirm">Confirmă</button>
         </div>
-
     </div>
 </div>
 
@@ -222,19 +219,14 @@
      ══════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-add-sensor">
     <div class="modal">
-
         <div class="modal-title">Adaugă senzor nou</div>
         <div class="modal-sub">Alegeți tipul senzorului și setați limitele de siguranță.</div>
-
-        <!-- Tip senzor -->
         <div class="form-group">
             <label class="form-label" for="sensor-type">Tip senzor</label>
             <select class="form-select" id="sensor-type">
                 <option value="" disabled selected>Se încarcă tipurile...</option>
             </select>
         </div>
-
-        <!-- Limite Min / Max pe 2 coloane -->
         <div class="form-grid-2">
             <div class="form-group">
                 <label class="form-label" for="sensor-min">Limită Minimă</label>
@@ -245,12 +237,10 @@
                 <input class="form-input" type="number" step="0.1" id="sensor-max" placeholder="ex: 350">
             </div>
         </div>
-
         <div class="modal-actions">
             <button class="btn btn-close-modal">Anulează</button>
             <button class="btn btn-prim" id="modal-add-sensor-confirm" disabled>Adaugă</button>
         </div>
-
     </div>
 </div>
 
@@ -265,17 +255,14 @@
         <div class="confirm-icon">🔧</div>
         <div class="modal-title">Pornire Mentenanță</div>
         <div class="modal-sub">Reactorul va intra în revizie. Stabiliți data estimată de finalizare.</div>
-
         <div class="form-group mt-12">
             <label class="form-label" for="maint-date">Dată estimată finalizare *</label>
             <input class="form-input" type="date" id="maint-date">
         </div>
-        
         <div class="form-group">
             <label class="form-label" for="maint-reason">Motiv / Observații (opțional)</label>
             <textarea class="form-input" id="maint-reason" rows="2" placeholder="Ex: Revizie anuală la sistemul de răcire..."></textarea>
         </div>
-
         <div class="modal-actions">
             <button class="btn btn-close-modal">Anulează</button>
             <button class="btn btn-prim" id="modal-maint-confirm">Confirmă Oprirea</button>

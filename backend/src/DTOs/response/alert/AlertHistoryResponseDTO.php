@@ -11,6 +11,7 @@ class AlertHistoryResponseDTO {
         public readonly string $created_at,
         public readonly bool $is_resolved,
         public readonly ?int $resolved_by,
+        public readonly ?string $resolver_name,
         public readonly ?string $resolution_notes,
         public readonly ?string $resolved_at
     ) {}

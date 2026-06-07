@@ -15,7 +15,8 @@ class Alert {
         private ?string $resolutionNotes,
         private DateTime $createdAt,
         private ?DateTime $resolvedAt = null,
-        private ?string $reactorName = null 
+        private ?string $reactorName = null,
+        private ?string $resolverName = null
     ) {}
 
     public function getId(): int { return $this->id; }
@@ -28,6 +29,7 @@ class Alert {
     public function getCreatedAt(): DateTime { return $this->createdAt; }
     public function getResolvedAt(): ?DateTime { return $this->resolvedAt; }
     public function getReactorName(): ?string { return $this->reactorName; }
+    public function getResolverName(): ?string { return $this->resolverName; }
 
     
     public function resolve(int $userId, string $notes): void {

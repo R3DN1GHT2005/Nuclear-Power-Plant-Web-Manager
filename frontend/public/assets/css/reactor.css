@@ -2,7 +2,7 @@
    reactor.css — Pagina de detalii reactor (NuclearWatch)
    Structură:
    1.  Utilitare globale
-   2.  Layout principal (split 2 coloane)
+   2.  Layout principal (3 coloane: stânga / centru / dreapta)
    3.  Header & Action Bar
    4.  Card Specificații Tehnice
    5.  Bare de progres
@@ -20,7 +20,6 @@
 /* ─────────────────────────────────────────────
    1. UTILITARE GLOBALE
    ───────────────────────────────────────────── */
-
 .hidden {
     display: none !important;
 }
@@ -36,6 +35,13 @@
     min-height: 0;
 }
 
+.flex-fill {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 .text-amber {
     color: var(--amber);
 }
@@ -48,26 +54,55 @@
     margin-bottom: 12px;
 }
 
+.mt-12 {
+    margin-top: 12px;
+}
+
 
 /* ─────────────────────────────────────────────
-   2. LAYOUT PRINCIPAL — SPLIT 2 COLOANE
+   2. LAYOUT PRINCIPAL — 3 COLOANE
+   stânga: specificații fixe
+   centru: tab-uri (senzori / istoric / mentenanță) — flex
+   dreapta: jurnal alerte fixă
    ───────────────────────────────────────────── */
 
 #reactor-details-layout {
     display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 24px;
+    grid-template-columns: 360px 1fr 320px;
+    grid-template-rows: 1fr;
+    gap: 20px;
     width: 100%;
     max-width: 100%;
     padding: 24px;
     box-sizing: border-box;
+    /* înălțime: ecranul minus navbar (~60px) */
+    height: calc(100vh - 60px);
     align-items: start;
 }
 
+/* Coloanele ocupă toată înălțimea disponibilă */
 .col-left,
+.col-center,
 .col-right {
     width: 100%;
-    min-width: 0; /* previne overflow pe conținut lung */
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Coloana centru și dreapta: înălțime completă pentru scroll intern */
+.col-center,
+.col-right {
+    height: calc(100vh - 108px); /* 60px navbar + 24px padding top + 24px padding bottom */
+}
+
+.col-right .panel-card {
+    height: 100%;
+}
+
+.col-center .panel-card {
+    height: 100%;
 }
 
 
@@ -77,7 +112,7 @@
 
 .header-minimal {
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     align-items: stretch;
 }
 
@@ -104,16 +139,16 @@
 /* Bara cu butoane de acțiune (Pornire / Oprire / Mentenanță) */
 .action-bar {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .btn-action {
-    padding: 8px 16px;
+    padding: 7px 14px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     background: transparent;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-2);
     cursor: pointer;
@@ -123,6 +158,11 @@
 .btn-action:hover {
     background: var(--surface-2);
     color: var(--text);
+}
+
+.btn-action:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 /* Butonul "+ Senzor nou" are border punctat pentru a-l diferenția */
@@ -152,8 +192,8 @@
 .specs-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding: 16px;
+    gap: 14px;
+    padding: 14px 16px;
 }
 
 .spec-item {
@@ -163,7 +203,7 @@
 }
 
 .spec-lbl {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--text-3);
     text-transform: uppercase;
@@ -171,7 +211,7 @@
 }
 
 .spec-val {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text);
 }
@@ -184,20 +224,20 @@
 .specs-bars {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     padding: 0 16px 16px;
 }
 
 .spec-bar-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .spec-bar-lbl {
-    width: 120px;
+    width: 110px;
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-2);
 }
 
@@ -221,10 +261,10 @@
 .bf-red    { background: var(--red,    #ef4444); }
 
 .spec-bar-val {
-    width: 40px;
+    width: 36px;
     flex-shrink: 0;
     text-align: right;
-    font-size: 12px;
+    font-size: 11px;
     font-family: 'DM Mono', monospace;
     color: var(--text-2);
 }
@@ -244,7 +284,7 @@
 
 .tab-btn {
     padding: 12px 0;
-    margin-bottom: -1px; /* aliniază border-bottom cu linia tab-bar */
+    margin-bottom: -1px;
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
@@ -253,6 +293,7 @@
     color: var(--text-3);
     cursor: pointer;
     transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
 }
 
 .tab-btn:hover {
@@ -270,6 +311,7 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
+    overflow: hidden;
 }
 
 .tab-panel.active {
@@ -283,17 +325,18 @@
 
 .sensor-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 12px;
-    padding: 20px;
+    padding: 16px;
     overflow-y: auto;
+    align-content: start;
 }
 
 .sensor-card {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    padding: 16px;
+    padding: 14px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -320,14 +363,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
 }
 
 .select-sm {
-    max-width: 200px;
-    padding: 6px 10px;
+    max-width: 180px;
+    padding: 5px 8px;
     font-size: 12px;
 }
 
@@ -337,7 +380,7 @@
 }
 
 .history-empty {
-    padding: 40px 20px;
+    padding: 40px 16px;
     font-size: 13px;
     font-style: italic;
     color: var(--text-3);
@@ -347,13 +390,13 @@
 .history-row {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px 20px;
+    gap: 12px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--border-light, #f0f0f0);
 }
 
 .history-time {
-    width: 120px;
+    width: 110px;
     flex-shrink: 0;
     font-size: 11px;
     font-family: 'DM Mono', monospace;
@@ -361,7 +404,7 @@
 }
 
 .history-sensor {
-    width: 120px;
+    width: 110px;
     flex-shrink: 0;
     font-size: 13px;
     font-weight: 500;
@@ -377,19 +420,19 @@
 
 
 /* ─────────────────────────────────────────────
-   9. JURNAL ALERTE
+   9. JURNAL ALERTE — coloana dreaptă
    ───────────────────────────────────────────── */
 
 .alert-row {
     display: flex;
-    gap: 12px;
-    padding: 16px 20px;
+    gap: 10px;
+    padding: 12px 14px;
     border-bottom: 1px solid var(--border-light, #f0f0f0);
 }
 
 /* Bara colorată de severitate (stânga rândului) */
 .alert-sev {
-    width: 4px;
+    width: 3px;
     border-radius: 2px;
     flex-shrink: 0;
 }
@@ -400,18 +443,31 @@
 
 .alert-body {
     flex: 1;
+    min-width: 0;
 }
 
 .alert-msg {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text);
+    word-break: break-word;
 }
 
 .alert-meta {
     margin-top: 4px;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-3);
 }
+
+/* Scroll intern pentru lista de alerte */
+#alert-list {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+#alert-list::-webkit-scrollbar { width: 4px; }
+#alert-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+#alert-list::-webkit-scrollbar-track { background: transparent; }
 
 
 /* ─────────────────────────────────────────────
@@ -422,13 +478,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
+    padding: 10px 16px;
     border-top: 1px solid var(--border);
     flex-shrink: 0;
 }
 
 .footer-meta {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-3);
 }
 
@@ -440,7 +496,7 @@
 /* Fundalul întunecat care acoperă tot ecranul */
 .modal-overlay {
     position: fixed;
-    inset: 0;                         /* top/right/bottom/left: 0 */
+    inset: 0;
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -449,7 +505,7 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     opacity: 0;
-    pointer-events: none;             /* invizibil = nu interceptează click-uri */
+    pointer-events: none;
     transition: opacity 0.2s ease;
 }
 
@@ -465,7 +521,7 @@
     width: 100%;
     max-width: 440px;
     margin: 20px;
-    padding: 32px;
+    padding: 28px;
     background: var(--surface, #fff);
     border: 1px solid var(--border);
     border-radius: var(--radius, 12px);
@@ -480,15 +536,15 @@
 
 /* Iconița mare de confirmare (emoji) */
 .confirm-icon {
-    font-size: 36px;
+    font-size: 32px;
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     line-height: 1;
 }
 
 /* Titlul modalului */
 .modal-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text);
     text-align: center;
@@ -500,13 +556,13 @@
     font-size: 13px;
     color: var(--text-2);
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
-/* Avertisment portocaliu (ex: "Oprirea va întrerupe producția.") */
+/* Avertisment portocaliu */
 .confirm-warning {
     padding: 10px 14px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(245, 158, 11, 0.3);
     border-radius: var(--radius-sm, 8px);
@@ -520,19 +576,19 @@
     display: flex;
     gap: 10px;
     justify-content: flex-end;
-    margin-top: 24px;
+    margin-top: 20px;
 }
 
 /* ── Formulare în modal ── */
 
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .form-label {
     display: block;
     margin-bottom: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: var(--text-2);
     text-transform: uppercase;
@@ -542,7 +598,7 @@
 .form-select,
 .form-input {
     width: 100%;
-    padding: 9px 12px;
+    padding: 8px 11px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm, 8px);
@@ -569,7 +625,7 @@
 /* ── Butoane standard în modal ── */
 
 .btn {
-    padding: 9px 18px;
+    padding: 8px 16px;
     border-radius: var(--radius-sm, 8px);
     font-size: 13px;
     font-weight: 500;
@@ -654,4 +710,75 @@
     margin-bottom: 20px;
     font-size: 48px;
     opacity: 0.8;
+}
+
+/* Scroll pentru secțiunile interne */
+#sensor-grid-container,
+#history-list,
+#maintenance-history-list {
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    scrollbar-width: thin;
+}
+
+#sensor-grid-container::-webkit-scrollbar,
+#history-list::-webkit-scrollbar,
+#maintenance-history-list::-webkit-scrollbar { width: 4px; }
+#sensor-grid-container::-webkit-scrollbar-thumb,
+#history-list::-webkit-scrollbar-thumb,
+#maintenance-history-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE — sub 1280px colapsat la 2 col,
+   sub 768px la 1 coloană
+   ───────────────────────────────────────────── */
+@media (max-width: 1280px) {
+    #reactor-details-layout {
+        grid-template-columns: 320px 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+    }
+
+    .col-center {
+        height: auto;
+        min-height: 500px;
+    }
+
+    /* Jurnalul de alerte trece sub tab-uri, ocuplă ambele coloane */
+    .col-right {
+        grid-column: 1 / -1;
+        height: auto;
+        min-height: 300px;
+    }
+
+    .col-right .panel-card {
+        height: auto;
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    #reactor-details-layout {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .col-left,
+    .col-center,
+    .col-right {
+        height: auto;
+    }
+
+    .col-right {
+        grid-column: auto;
+    }
+
+    .col-center .panel-card,
+    .col-right .panel-card {
+        height: auto;
+        min-height: 400px;
+    }
 }

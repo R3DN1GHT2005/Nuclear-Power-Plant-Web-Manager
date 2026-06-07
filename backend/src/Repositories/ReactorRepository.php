@@ -59,11 +59,11 @@ class ReactorRepository {
             INSERT INTO reactors 
                  (name, location_name, latitude, longitude, status,
                   installed_power, soil_stability, seismic_risk,
-                  reactor_type, cooling_water_source, distance_to_nearest_city_km, elevation_meters)
+                  reactor_type, cooling_water_source, distance_to_nearest_city_km, elevation_meters, webhook_discord)
             VALUES 
                  (:name, :location_name, :latitude, :longitude, :status,
                   :installed_power, :soil_stability, :seismic_risk,
-                  :reactor_type, :cooling_water_source, :distance_to_nearest_city_km, :elevation_meters)
+                  :reactor_type, :cooling_water_source, :distance_to_nearest_city_km, :elevation_meters, :webhook_url)
             RETURNING *
         ");
 
@@ -80,6 +80,7 @@ class ReactorRepository {
               'cooling_water_source' => $dto->cooling_water_source,
               'distance_to_nearest_city_km' => $dto->distance_to_nearest_city_km,
               'elevation_meters' => $dto->elevation_meters,
+              'webhook_url' => $dto->webhook_url,
         ]);
 
         return Reactor::fromArray($stmt->fetch(PDO::FETCH_ASSOC));
@@ -167,6 +168,21 @@ class ReactorRepository {
         $stmt = $this->db->prepare("DELETE FROM reactors WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+
+    
+    public function updateStatus(int $id, string $newStatus): bool {
+        $stmt = $this->db->prepare("
+            UPDATE reactors 
+            SET status = :status 
+            WHERE id = :id
+        ");
+        $stmt->bindParam(':status', $newStatus, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
         return $stmt->rowCount() > 0;
     }
 }

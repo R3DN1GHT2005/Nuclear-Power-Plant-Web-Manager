@@ -121,6 +121,11 @@ try {
     // Înregistrare date senzor
     $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue', [AuthMiddleware::class]); 
 
+    $router->get('/api/sensors/types', SensorController::class, 'getSensorTypes', [AuthMiddleware::class]);
+    $router->get('/api/sensors/readings/all', SensorController::class, 'getLatestReadingsAllSensors', [AuthMiddleware::class]); // ← înaintea {id}
+    $router->get('/api/sensors', SensorController::class, 'getAllSensors', [AuthMiddleware::class]);
+    $router->get('/api/sensors/{id}', SensorController::class, 'getSensorById', [AuthMiddleware::class]);
+    $router->get('/api/sensors/{id}/readings', SensorController::class, 'getLatestReadingsBySensor', [AuthMiddleware::class]);
     // ==========================================
     // RUTE MENTENANȚĂ
     // ==========================================

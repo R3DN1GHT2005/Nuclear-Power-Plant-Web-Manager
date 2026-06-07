@@ -6,6 +6,7 @@ use App\Core\Response;
 use App\DTOs\Request\Sensor\CreateSensorRequestDTO;
 use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
 use App\DTOs\Request\Sensor\StoreMeasurementDTO;
+use App\Mappers\SensorReadingMapper;
 use App\Mappers\SensorMapper;
 use App\Services\SensorService;
 use App\Mappers\MeasurementMapper;
@@ -105,7 +106,7 @@ class SensorController {
 
     //controllere pt simulator
     public function getConfig(): void {
-        $sensors = $this->sensorService->getAll(); 
+        $sensors = $this->sensorService->getAllWithReactorStatus();
         Response::json(SensorConfigMapper::toResponseList($sensors));
     }
 
@@ -128,5 +129,22 @@ class SensorController {
         } catch (Exception $e) {
             Response::json(['error' => 'Eroare internă la salvarea datelor.'], 500);
         }
+    }
+
+    public function getLatestReadingsBySensor(int $sensorId): void {
+        $sensor = $this->sensorService->getById($sensorId);
+
+        if (!$sensor) {
+            Response::json(['error' => 'Senzor negăsit'], 404);
+            return;
+        }
+
+        $readings = $this->sensorService->getLatestReadingsBySensor($sensorId);
+        Response::json(SensorReadingMapper::toResponseList($readings));
+    }
+
+    public function getLatestReadingsAllSensors(): void {
+        $readings = $this->sensorService->getLatestReadingsAllSensors();
+        Response::json(SensorReadingMapper::toResponseList($readings));
     }
 }

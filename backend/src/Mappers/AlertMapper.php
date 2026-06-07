@@ -21,7 +21,8 @@ class AlertMapper {
             resolutionNotes: $data['resolution_notes'] ?? null,
             createdAt: new DateTime($data['created_at']),
             resolvedAt: isset($data['resolved_at']) ? new DateTime($data['resolved_at']) : null,
-            reactorName: $data['reactor_name'] ?? 'Reactor Necunoscut' // Extras din JOIN
+            reactorName: $data['reactor_name'] ?? 'Reactor Necunoscut',
+            resolverName: $data['resolver_name'] ?? null
         );
     }
 
@@ -59,6 +60,7 @@ class AlertMapper {
             created_at: $alert->getCreatedAt()->format('Y-m-d H:i:s'),
             is_resolved: $alert->isResolved(),
             resolved_by: $alert->getResolvedBy(),
+            resolver_name: $alert->getResolverName(),
             resolution_notes: $alert->getResolutionNotes(),
             resolved_at: $alert->getResolvedAt() ? $alert->getResolvedAt()->format('Y-m-d H:i:s') : null
         );

@@ -37,34 +37,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         console.log("4. Reactor găsit! Randăm interfața...", state.currentReactor);
         
-        // Randăm interfața cu datele primite
         renderReactorDetails(state.currentReactor);
         renderSensors(state.currentReactor.sensors || []);
         populateHistoryFilter(state.currentReactor.sensors || []);
         
-        // ===============================================
-        // ADAUGĂRI NOI: ÎNCĂRCARE DATE DIN BAZA DE DATE
-        // ===============================================
-        
-        // 1. Încărcăm Istoricul de Alerte REAL din baza de date
         await loadReactorSpecificLog(state.currentReactor.id);
-
-        // 2. Încărcăm Istoricul de Mentenanță
         await loadMaintenanceHistory(state.currentReactor.id);
-        
-        // ===============================================
+        await loadSensorHistory(); // încărcăm istoricul inițial (toți senzorii)
 
-        // Afișăm containerul principal
         if (layout) {
             layout.classList.remove("hidden");
             layout.style.display = "grid";
         }   
 
-        bindEvents(); // Atașăm funcționalitatea butoanelor
+        bindEvents();
+
+        // ── AUTO-REFRESH LA 10 SECUNDE ──
+        setInterval(autoRefresh, 10000);
 
     } catch (err) {
         console.error("❌ EROARE CRITICĂ:", err);
         showError();
+    }
+
+    // ==========================================
+    // ── AUTO-REFRESH ──
+    // ==========================================
+
+    async function autoRefresh() {
+        if (!state.currentReactor) return;
+        try {
+            const reactors = await window.NuclearAPI.getReactors();
+            const updated = reactors.find(r => r.id.toString() === state.currentReactor.id.toString());
+            if (!updated) return;
+
+            updated.status = state.currentReactor.status;
+
+            state.currentReactor = updated;
+            renderReactorDetails(updated);
+            renderSensors(updated.sensors || []);
+        } catch (err) {
+            console.warn("Refresh eșuat:", err);
+        }
     }
 
     // ==========================================
@@ -145,22 +159,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderSensors(sensors) {
         const container = document.getElementById("sensor-grid-container");
         if (!container) return;
-        
+
         if (sensors.length === 0) {
             container.innerHTML = `<div class="history-empty">Niciun senzor montat pe acest reactor.</div>`;
             return;
         }
 
         container.innerHTML = sensors.map((sensor) => {
-            const type = sensor.sensor_type || "Senzor";
-            const val = sensor.current_value != null ? sensor.current_value : "—";
+            const type = `${sensor.sensor_type || "Senzor"} #${sensor.id}`;
+            const val  = sensor.current_value ?? "—";
             const unit = sensor.unit || "";
-            const isWarn = type.toLowerCase().includes("temperatura") && val > 350;
+            const min  = sensor.min_safe_value ?? -Infinity;
+            const max  = sensor.max_safe_value ??  Infinity;
+
+            let sensorState = "ok";
+            if (val !== "—") {
+                const v      = parseFloat(val);
+                const margin = (max - min) * 0.15;
+                if (v > max || v < min)                        sensorState = "crit";
+                else if (v > max - margin || v < min + margin) sensorState = "warn";
+            }
+
+            const styles = {
+                ok:   { bg:"#EAF3DE", border:"#C0DD97", lbl:"#3B6D11", val:"#27500A", bdg:"#C0DD97", bdgT:"#27500A", icon:"ti-check",          txt:"Normal"     },
+                warn: { bg:"#FAEEDA", border:"#FAC775", lbl:"#854F0B", val:"#633806", bdg:"#FAC775", bdgT:"#633806", icon:"ti-alert-triangle",  txt:"Avertizare" },
+                crit: { bg:"#FCEBEB", border:"#F7C1C1", lbl:"#A32D2D", val:"#791F1F", bdg:"#F7C1C1", bdgT:"#791F1F", icon:"ti-alert-circle",   txt:"Critic"     },
+            };
+            const s = styles[sensorState];
 
             return `
-            <div class="sensor-card ${isWarn ? 'warn' : ''}">
-                <div class="spec-lbl">${type}</div>
-                <div class="spec-val ${isWarn ? 'text-amber' : ''}">${val} <span style="font-size:11px; color:var(--text-3);">${unit}</span></div>
+            <div style="background:${s.bg};border:1px solid ${s.border};
+                        border-radius:var(--radius-sm,10px);padding:16px;
+                        display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:10px;font-weight:500;letter-spacing:.06em;
+                             text-transform:uppercase;color:${s.lbl}">${type}</span>
+                <div style="font-size:22px;font-weight:500;color:${s.val};
+                            display:flex;align-items:baseline;gap:5px">
+                    ${val}
+                    <span style="font-size:12px;font-weight:400;opacity:.7">${unit}</span>
+                </div>
+                <span style="align-self:flex-start;font-size:10px;font-weight:500;
+                             padding:2px 8px;border-radius:20px;
+                             background:${s.bdg};color:${s.bdgT}">
+                    <i class="ti ${s.icon}" style="font-size:10px" aria-hidden="true"></i> ${s.txt}
+                </span>
             </div>`;
         }).join("");
     }
@@ -171,12 +213,102 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         select.innerHTML = '<option value="">Toți senzorii</option>';
         sensors.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.sensor_type}</option>`;
+            select.innerHTML += `<option value="${s.id}">${s.sensor_type} #${s.id}</option>`;
         });
     }
 
     // ==========================================
-    // ── NOU: LOGICĂ ALERTE REALE DIN DB ──
+    // ── ISTORIC CITIRI SENZORI ──
+    // ==========================================
+
+    async function loadSensorHistory(sensorId = null) {
+        const container = document.getElementById("history-list");
+        if (!container) return;
+
+        container.innerHTML = `<div class="history-empty">Se încarcă istoricul...</div>`;
+
+        try {
+            let url;
+            if (sensorId) {
+                url = `/sensors/${sensorId}/readings`;
+            } else {
+                url = `/sensors/readings/all`;
+            }
+
+            const res = await window.authFetch(url);
+
+            if (!res.ok) {
+                container.innerHTML = `<div class="history-empty">Eroare la încărcarea datelor.</div>`;
+                return;
+            }
+
+            const readings = await res.json();
+
+            if (!readings || readings.length === 0) {
+                container.innerHTML = `<div class="history-empty">Niciun istoric disponibil.</div>`;
+                return;
+            }
+
+            // Construim un map sensorId -> info senzor pentru label-uri
+            const sensorMap = {};
+            (state.currentReactor?.sensors || []).forEach(s => {
+                sensorMap[s.id] = s;
+            });
+
+            container.innerHTML = readings.map(reading => {
+                const sensor = sensorMap[reading.sensor_id];
+                const sensorLabel = sensor
+                    ? `${sensor.sensor_type} #${reading.sensor_id}`
+                    : `Senzor #${reading.sensor_id}`;
+                const unit = sensor?.unit || "";
+
+                // Determinăm starea valorii față de limitele senzorului
+                let stateColor = "#3B6D11";
+                let stateBg = "#EAF3DE";
+                let stateText = "Normal";
+
+                if (sensor) {
+                    const v = parseFloat(reading.recorded_value);
+                    const min = sensor.min_safe_value ?? -Infinity;
+                    const max = sensor.max_safe_value ?? Infinity;
+                    const margin = (max - min) * 0.15;
+
+                    if (v > max || v < min) {
+                        stateColor = "#A32D2D"; stateBg = "#FCEBEB"; stateText = "Critic";
+                    } else if (v > max - margin || v < min + margin) {
+                        stateColor = "#854F0B"; stateBg = "#FAEEDA"; stateText = "Avertizare";
+                    }
+                }
+
+                return `
+                <div style="display:flex;align-items:center;justify-content:space-between;
+                            padding:9px 12px;border-bottom:1px solid var(--color-border, #eee);
+                            font-size:12px;gap:12px;">
+                    <span style="font-weight:500;color:var(--color-text-primary,#111);
+                                 min-width:140px;white-space:nowrap;overflow:hidden;
+                                 text-overflow:ellipsis;">
+                        ${sensorLabel}
+                    </span>
+                    <span style="font-size:13px;font-weight:600;color:${stateColor};
+                                 background:${stateBg};padding:2px 8px;border-radius:20px;
+                                 white-space:nowrap;">
+                        ${reading.recorded_value} ${unit}
+                    </span>
+                    <span style="color:var(--color-text-secondary,#888);white-space:nowrap;
+                                 font-size:11px;margin-left:auto;">
+                        ${formatSmallTime(reading.recorded_at)}
+                    </span>
+                </div>`;
+            }).join("");
+
+        } catch (err) {
+            console.error("Eroare la încărcarea istoricului senzori:", err);
+            container.innerHTML = `<div class="history-empty">Eroare la încărcarea datelor.</div>`;
+        }
+    }
+
+    // ==========================================
+    // ── LOGICĂ ALERTE REALE DIN DB ──
     // ==========================================
     
     function formatSmallTime(dateStr) {
@@ -219,44 +351,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
                 const recentAlerts = historyAlerts.slice(0, 15);
-                logBox.style.padding = "0";
-
                 logBox.innerHTML = recentAlerts.map(alert => {
                     const isCrit = alert.severity === 'critical';
-                    const color = isCrit ? '#E24B4A' : '#BA7517'; 
-                    const bg = isCrit ? '#FCEBEB' : '#FAEEDA';
-                    const border = isCrit ? '#F09595' : '#FAC775';
-                    const label = isCrit ? 'CRITICĂ' : 'AVERTIZARE';
-                    
-                    let html = `
-                    <div style="padding: 16px; border-bottom: 1px solid var(--color-border-tertiary, #eaeaea);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span style="font-size: 10px; font-weight: 700; color: ${color}; background: ${bg}; padding: 3px 8px; border-radius: 6px; border: 0.5px solid ${border};">
-                                ${label}
+                    return `
+                    <div style="padding: 10px; border-bottom: 1px solid #eee; font-size: 11px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="font-weight: 700; color: ${isCrit ? '#E24B4A' : '#BA7517'};">
+                                ${isCrit ? 'CRITICĂ' : 'AVERTIZARE'}
                             </span>
-                            <span style="font-size: 11.5px; font-weight: 500; color: var(--color-text-secondary); background: var(--color-background-secondary, #f8f9fa); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--color-border-tertiary, #eaeaea);">
-                                ${formatSmallTime(alert.created_at)}
-                            </span>
+                            <span style="color: #999;">${formatSmallTime(alert.created_at)}</span>
                         </div>
-                        
-                        <div style="font-size: 13px; color: var(--color-text-primary); line-height: 1.5; margin-bottom: ${alert.is_resolved ? '8px' : '0'};">
-                            ${alert.message}
-                        </div>`;
-
-                    if (alert.is_resolved) {
-                        html += `
-                        <div style="font-size: 12px; color: var(--color-text-success, #2e7d32); background: #f1f8e9; padding: 8px 10px; border-left: 3px solid #4caf50; border-radius: 4px;">
-                            <strong style="font-weight: 600;">Soluționat:</strong> <span style="font-style: italic; opacity: 0.9;">${alert.resolution_notes || '-'}</span>
-                        </div>`;
-                    } else {
-                        html += `
-                        <div style="font-size: 11.5px; color: #E24B4A; font-weight: 600; margin-top: 6px;">
-                            ⚠️ Alertă Activă (Nerezolvată)
-                        </div>`;
-                    }
-
-                    html += `</div>`;
-                    return html;
+                        <div style="line-height: 1.3; color: #333; margin-bottom: 4px;">${alert.message}</div>
+                        ${alert.is_resolved ? `<div style="color: green; font-weight: bold;">✔ Rezolvat</div>` : '<div style="color: red; font-weight: bold;">⚠️ Activă</div>'}
+                    </div>`;
                 }).join('');
             }
         } catch (e) {
@@ -368,7 +475,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (targetId) {
                     document.getElementById(targetId)?.classList.add('active');
                 }
+
+                // Când se deschide tab-ul istoric, reîncărcăm datele
+                if (targetId === 'tab-istoric') {
+                    const selectedSensorId = document.getElementById('filter-sensor')?.value || null;
+                    loadSensorHistory(selectedSensorId || null);
+                }
             });
+        });
+
+        // ── FILTRU SENZOR în tab-ul Istoric citiri ──
+        document.getElementById('filter-sensor')?.addEventListener('change', (e) => {
+            const sensorId = e.target.value || null;
+            loadSensorHistory(sensorId);
         });
 
         document.querySelectorAll('.btn-close-modal, .modal-overlay').forEach(el => {
@@ -399,7 +518,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById('modal-status')?.classList.add('open');
         };
 
-        document.getElementById('btn-start')?.addEventListener('click', () => openStatusModal('Operațional', 'Pornire Reactor', '✅', null));
+        document.getElementById('btn-start')?.addEventListener('click', () => openStatusModal('Activ', 'Pornire Reactor', '✅', null));
         document.getElementById('btn-stop')?.addEventListener('click', () => openStatusModal('Oprit', 'Oprire Reactor', '🛑', 'Oprirea va întrerupe producția.'));
 
         document.getElementById('modal-status-confirm')?.addEventListener('click', async () => {
@@ -460,7 +579,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 if (res.ok) {
                     showToast('Reactorul a intrat în mentenanță.');
-                    state.currentReactor.status = 'În mentenanță';
+                    state.currentReactor.status = 'Mentenanță';
                     renderReactorDetails(state.currentReactor);
                     
                     await loadMaintenanceHistory(state.currentReactor.id);
@@ -484,7 +603,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 if (res.ok) {
                     showToast('Mentenanță finalizată. Reactor activat.');
-                    state.currentReactor.status = 'Operațional';
+                    state.currentReactor.status = 'Activ';
                     renderReactorDetails(state.currentReactor);
                     
                     await loadMaintenanceHistory(state.currentReactor.id);

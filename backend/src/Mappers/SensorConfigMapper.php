@@ -3,21 +3,21 @@
 namespace App\Mappers;
 
 use App\DTOs\Response\SensorConfigDTO;
-use App\Models\Sensor;
+use App\Models\SensorConfig;
 
 class SensorConfigMapper {
     
-    public static function toResponse(Sensor $sensor): SensorConfigDTO {
+    public static function toResponse(SensorConfig $sensorConfig): SensorConfigDTO {
         return new SensorConfigDTO(
-            sensor_id: $sensor->getId(),
-            type: $sensor->getSensorType(),
-            min_val: $sensor->getMinSafeValue(),
-            max_val: $sensor->getMaxSafeValue()
+            sensor_id: $sensorConfig->getId(),
+            type: $sensorConfig->getSensorType(),
+            min_val: $sensorConfig->getMinSafeValue(),
+            max_val: $sensorConfig->getMaxSafeValue(),
+            reactor_status: $sensorConfig->getReactorStatus()
         );
     }
 
-   
-    public static function toResponseList(array $sensors): array {
-        return array_map(fn($sensor) => self::toResponse($sensor), $sensors);
+    public static function toResponseList(array $sensorConfigs): array {
+        return array_map(fn($sc) => self::toResponse($sc), $sensorConfigs);
     }
 }

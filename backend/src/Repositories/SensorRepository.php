@@ -132,4 +132,51 @@ class SensorRepository {
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
+
+
+    public function findLatestReadingsBySensor(int $sensorId, int $limit = 50): array {
+        $stmt = $this->db->prepare("
+            SELECT * FROM sensor_readings
+            WHERE sensor_id = :sensor_id
+            ORDER BY recorded_at DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':sensor_id', $sensorId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return array_map(
+            fn($row) => \App\Models\SensorReading::fromArray($row),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
+    public function findLatestReadingsAllSensors(int $limit = 50): array {
+        $stmt = $this->db->prepare("
+            SELECT * FROM sensor_readings
+            ORDER BY recorded_at DESC
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return array_map(
+            fn($row) => \App\Models\SensorReading::fromArray($row),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
+
+    public function findAllWithReactorStatus(): array {
+        $stmt = $this->db->query("
+            SELECT s.id, s.sensor_type, s.min_safe_value, s.max_safe_value,
+                r.status AS reactor_status
+            FROM sensors s
+            INNER JOIN reactors r ON r.id = s.reactor_id
+            ORDER BY s.last_update DESC
+        ");
+        return array_map(
+            fn($row) => \App\Models\SensorConfig::fromArray($row),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+    
 }

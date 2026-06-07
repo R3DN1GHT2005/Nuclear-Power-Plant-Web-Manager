@@ -6,15 +6,17 @@ use App\Repositories\AlertRepository;
 use App\Models\Alert;
 use App\Enums\AlertSeverity;
 use App\Services\DiscordNotificationService;
+use App\Repositories\ReactorRepository;
 use Exception;
 
 class AlertService {
     private AlertRepository $alertRepository;
     private DiscordNotificationService $discordService;
-
+    private ReactorRepository $reactorRepository;
     public function __construct() {
         $this->alertRepository = new AlertRepository();
-        $this->discordService = new DiscordNotificationService(); // Am inițializat serviciul
+        $this->discordService = new DiscordNotificationService(); 
+        $this->reactorRepository = new ReactorRepository();
     }
 
     public function getActiveAlertsForUser(string $userRole, ?int $userReactorId): array {
@@ -25,30 +27,24 @@ class AlertService {
             if ($userRole === 'admin') {
                 return true;
             }
-            
-            // 2. Ceilalți (Manager / Tehnician) văd DOAR alertele de pe reactorul lor
+           
             if ($alert->getReactorId() === $userReactorId) {
-                
-                // Tehnicianul vede doar alertele CRITICE
+               
                 if ($userRole === 'tehnician') {
                     return $alert->getSeverity() === AlertSeverity::CRITICAL;
                 }
-                
-                // Managerul vede și WARNING și CRITICAL, dar doar pe reactorul lui
+               
                 return true; 
             }
 
-            return false; // Dacă nu e admin și nu e reactorul lui, nu vede nimic.
+            return false; 
         });
 
         return array_values($filteredAlerts);
     }
 
-    /**
-     * Operatorul își asumă și rezolvă o alertă
-     */
+    
     public function resolveAlert(int $alertId, int $userId, string $userRole, ?int $userReactorId, string $notes): bool {
-        // 1. Verificăm dacă alerta există
         $alert = $this->alertRepository->findById($alertId);
         
         if (!$alert) {
@@ -59,27 +55,24 @@ class AlertService {
             throw new Exception("Această alertă a fost deja rezolvată de alt operator.");
         }
 
-        // 2. BARIERĂ DE SECURITATE: Are voie să rezolve această alertă?
         if ($userRole !== 'admin') {
             if ($alert->getReactorId() !== $userReactorId) {
-                // Blocăm orice încercare de a opri o alarmă la un alt reactor!
                 throw new Exception("Acces Interzis! Nu poți opri alarme pentru un reactor la care nu ești asignat.");
             }
         }
-
-        // 3. Facem update-ul prin repository
         $resolved = $this->alertRepository->resolve($alertId, $userId, $notes);
         
         if (!$resolved) {
             throw new Exception("Eroare la salvarea intervenției în baza de date.");
         }
 
+        
+        $this->reactorRepository->updateStatus($alert->getReactorId(), 'Activ');
+      
         return true;
     }
 
-    /**
-     * Sistemul intern (senzorii) declanșează o alertă nouă
-     */
+    
     public function triggerAlert(int $reactorId, AlertSeverity $severity, string $message): Alert {
         $existingAlert = $this->alertRepository->findActiveByReactorAndSeverity($reactorId, $severity);
         
@@ -91,8 +84,9 @@ class AlertService {
             0, $reactorId, $severity, $message, false, null, null, new \DateTime()
         );
 
-        // 1. Salvăm alerta în baza de date
         $savedAlert = $this->alertRepository->create($alert);
+        $newStatus = ($severity === AlertSeverity::CRITICAL) ? 'Avarie' : 'Alertă';
+        $this->reactorRepository->updateStatus($reactorId, $newStatus);
 
         try {
             $severityLabel = $severity->name ?? 'ALERTĂ'; 
@@ -105,7 +99,7 @@ class AlertService {
             throw new Exception("Atenție, Discord a eșuat: " . $e->getMessage());
         }   
 
-        // Returnăm alerta cu succes
+       
         return $savedAlert;
     }
 
