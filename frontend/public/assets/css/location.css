@@ -3,9 +3,9 @@
     grid-template-columns: 7fr 3fr;
     gap: 16px;
     width: 100%;
-    height: auto;
-    min-height: 0;
-    align-items: start;
+    height: 100%;
+    min-height: calc(100vh - var(--nav-h) - 40px);
+    align-items: stretch;
 }
 
 .location-left,
@@ -15,6 +15,24 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.location-right {
+    height: 100%;
+}
+
+.location-right .panel-card.flex-fill {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.location-right .panel-card.flex-fill .scroll-area.reactor-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .status-summary-card {
