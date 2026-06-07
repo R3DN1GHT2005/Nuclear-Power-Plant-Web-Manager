@@ -170,8 +170,13 @@
     height: calc(100vh - 108px); /* 60px navbar + 24px padding top + 24px padding bottom */
 }
 
-.col-right .panel-card {
-    height: 100%;
+.col-right .panel-card.flex-fill {
+    flex: 1;
+    min-height: 0;
+}
+
+.col-right .panel-card:not(.flex-fill) {
+    flex-shrink: 0;
 }
 
 .col-center .panel-card {
@@ -826,9 +831,12 @@
         min-height: 300px;
     }
 
-    .col-right .panel-card {
-        height: auto;
+    .col-right .panel-card.flex-fill {
         min-height: 300px;
+    }
+
+    .col-right .panel-card:not(.flex-fill) {
+        min-height: auto;
     }
 }
 
@@ -850,8 +858,12 @@
     }
 
     .col-center .panel-card,
-    .col-right .panel-card {
+    .col-right .panel-card.flex-fill {
         height: auto;
         min-height: 400px;
+    }
+
+    .col-right .panel-card:not(.flex-fill) {
+        min-height: auto;
     }
 }
