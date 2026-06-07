@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Statistici</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/alerts.css">
+</head>
+<body>
+<script src="/assets/js/api.js"></script>
+<script>(async()=>{try{const r=await authFetch('/auth/me');if(r.ok){const u=await r.json();if(u.role==='manager'){window.location.href='reactor-statistics.html'}}}catch{}})()</script>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="index.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
+        </a>
+
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<main class="main split-layout">
+    
+    <div class="col-left">
+        
+        <div class="page-header">
+            <div>
+                <h1 class="ph-title">Statistici & Analiză</h1>
+                <p class="ph-sub" id="stats-page-subtitle">Performanță, eficiență, risc și uzură · perioada selectată</p>
+            </div>
+            <div class="time-range" id="stats-time-range">
+                <div class="tr" data-days="1">24h</div>
+                <div class="tr" data-days="7">7z</div>
+                <div class="tr active" data-days="30">30z</div>
+                <div class="tr" data-days="90">90z</div>
+                <div class="tr" data-days="365">1an</div>
+            </div>
+        </div>
+
+        <section class="kpi-grid" id="stats-kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Eficiență medie</div>
+                <div class="kpi-val text-green" id="kpi-efficiency-value">—</div>
+                <div class="kpi-desc trend-up" id="kpi-efficiency-desc">Se încarcă datele live...</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Energie produsă</div>
+                <div class="kpi-val text-purple" id="kpi-energy-value">—</div>
+                <div class="kpi-desc trend-up" id="kpi-energy-desc">Calculată din capacitatea live</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Indice de risc</div>
+                <div class="kpi-val text-amber" id="kpi-risk-value">—</div>
+                <div class="kpi-desc trend-down" id="kpi-risk-desc">Media tuturor reactoarelor</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Disponibilitate</div>
+                <div class="kpi-val text-green" id="kpi-availability-value">—</div>
+                <div class="kpi-desc trend-neutral" id="kpi-availability-desc">Raport activ / total</div>
+            </div>
+        </section>
+
+        <div class="scroll-area">
+            
+            <article class="chart-card" id="efficiency-bars-card">
+                <header class="cc-header">
+                    <div>
+                        <h3 class="cc-title">Eficiență per reactor</h3>
+                        <p class="cc-sub" id="efficiency-bars-subtitle">Selectați o perioadă pentru actualizare</p>
+                    </div>
+                    <div class="cc-legend">
+                        <div class="cc-leg-item"><div class="leg-dot bg-green"></div>Eficiență actuală</div>
+                        <div class="cc-leg-item"><div class="leg-line dashed"></div>Țintă 90%</div>
+                    </div>
+                </header>
+                <div class="chart-wrap" id="efficiency-bars-wrap">
+                    <div class="bar-chart-container">
+                        <div class="target-line"></div>
+                        <div class="bar-chart" id="efficiency-bars"></div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="chart-card" id="trend-card">
+                <header class="cc-header">
+                    <div>
+                        <h3 class="cc-title" id="trend-title">Trend eficiență medie</h3>
+                        <p class="cc-sub" id="trend-subtitle">Centrala în ansamblu · perioada selectată</p>
+                    </div>
+                </header>
+                <div class="chart-wrap pb-8" id="trend-wrap">
+                    <svg class="line-chart-svg" id="trend-svg" viewBox="0 0 460 90" preserveAspectRatio="none"></svg>
+                    <div class="x-axis-labels" id="trend-axis-labels"></div>
+                </div>
+            </article>
+
+            <article class="chart-card mb-0" id="comparison-card">
+                <header class="cc-header">
+                    <div>
+                        <h3 class="cc-title">Comparativ reactoare</h3>
+                        <p class="cc-sub" id="comparison-subtitle">Indicatori de performanță · perioada selectată</p>
+                    </div>
+                </header>
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>Reactor</th>
+                            <th>Efic. medie</th>
+                            <th>Disponib.</th>
+                            <th>Indice risc</th>
+                            <th>Uzură</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-table-body"></tbody>
+                </table>
+            </article>
+
+        </div>
+    </div>
+
+    <div class="col-right">
+        <div class="scroll-area">
+            
+            <article class="chart-card" id="risk-card">
+                <header class="cc-header">
+                    <div>
+                        <h3 class="cc-title">Matrice de risc</h3>
+                        <p class="cc-sub" id="risk-subtitle">Probabilitate × Impact · reactoare active</p>
+                    </div>
+                </header>
+                <div class="matrix-wrap" id="risk-matrix-wrap"></div>
+            </article>
+
+            <article class="chart-card" id="environment-card">
+                <header class="cc-header">
+                    <div>
+                        <h3 class="cc-title">Condiții operaționale</h3>
+                        <p class="cc-sub" id="environment-subtitle">Date live din senzori · amplasamentele reactoarelor</p>
+                    </div>
+                </header>
+                <div class="meteo-grid" id="environment-grid"></div>
+            </article>
+
+            <article class="chart-card mb-0" id="wear-card">
+                <header class="cc-header">
+                    <div>
+                        <h3 class="cc-title">Grad de uzură per reactor</h3>
+                        <p class="cc-sub" id="wear-subtitle">Estimare bazată pe ore funcționare și mentenanță</p>
+                    </div>
+                </header>
+                <div class="wear-list" id="wear-list"></div>
+            </article>
+
+        </div>
+    </div>
+
+</main>
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/utils/helpers.js"></script>
+<script src="/assets/js/utils/status.js"></script>
+<script src="/assets/js/utils/dom.js"></script>
+<script src="/assets/js/features/stats/stats-state.js"></script>
+<script src="/assets/js/features/stats/stats-kpi.js"></script>
+<script src="/assets/js/features/stats/stats-efficiency.js"></script>
+<script src="/assets/js/features/stats/stats-comparison.js"></script>
+<script src="/assets/js/features/stats/stats-risk.js"></script>
+<script src="/assets/js/features/stats/stats-environment.js"></script>
+<script src="/assets/js/features/stats/stats-wear.js"></script>
+<script src="/assets/js/features/stats/stats-init.js"></script>
+<script src="/assets/js/alerts.js"></script>
+</body>
+</html>

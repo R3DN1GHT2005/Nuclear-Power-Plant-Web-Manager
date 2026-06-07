@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // O funcție frumoasă de formatare a datei pentru tabel
 function formatTableDate(dateStr) {
-    if (!dateStr) return '<span style="color: #A0AEC0;">—</span>';
+    if (!dateStr) return '<span class="history-dash">—</span>';
     const d = new Date(dateStr.replace(' ', 'T'));
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -12,7 +12,7 @@ function formatTableDate(dateStr) {
     const hours = String(d.getHours()).padStart(2, '0');
     const mins = String(d.getMinutes()).padStart(2, '0');
     
-    return `${day}.${month}.${year} <br> <span style="color: #8A96A8; font-size: 10px;">ora ${hours}:${mins}</span>`;
+    return `${day}.${month}.${year} <br> <span class="history-date-sm">ora ${hours}:${mins}</span>`;
 }
 
 window.loadFullHistory = async function() {
@@ -53,18 +53,18 @@ window.loadFullHistory = async function() {
 
                 // Personal / Intervenient
                 const resolverName = alert.resolver_name 
-                    ? `<span style="font-weight: 500;">${alert.resolver_name}</span>` 
-                    : '<span style="color: #A0AEC0;">—</span>';
+                    ? `<span class="history-resolver-name">${alert.resolver_name}</span>` 
+                    : '<span class="history-dash">—</span>';
 
                 // Notițe
                 const notesHtml = alert.resolution_notes 
                     ? `<div class="history-notes">"${alert.resolution_notes}"</div>` 
-                    : '<span style="color: #A0AEC0;">—</span>';
+                    : '<span class="history-dash">—</span>';
 
                 return `
                 <tr>
-                    <td style="font-family: 'DM Mono'; font-size: 11px; color: #8A96A8;">#${alert.id}</td>
-                    <td style="font-weight: 600;">${alert.reactor_name}</td>
+                    <td class="history-id-cell">#${alert.id}</td>
+                    <td class="history-name-cell">${alert.reactor_name}</td>
                     <td>${sevBadge}</td>
                     <td>${statusBadge}</td>
                     <td><div class="history-msg">${alert.message}</div></td>
@@ -76,13 +76,13 @@ window.loadFullHistory = async function() {
             }).join('');
             
         } else if (res.status === 403) {
-            tbody.innerHTML = `<tr><td colspan="9" class="history-empty" style="color: #DC2626;">Nu aveți permisiunea de a vizualiza istoricul global (Necesită rol de Administrator).</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="history-empty history-error-text">Nu aveți permisiunea de a vizualiza istoricul global (Necesită rol de Administrator).</td></tr>`;
         } else {
             throw new Error("Eroare la preluarea datelor.");
         }
     } catch (e) {
         console.error(e);
-        tbody.innerHTML = `<tr><td colspan="9" class="history-empty" style="color: #DC2626;">Eroare de conexiune la server.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="history-empty history-error-text">Eroare de conexiune la server.</td></tr>`;
     } finally {
         if (btnRefresh) {
             btnRefresh.textContent = "🔄 Reîmprospătează";

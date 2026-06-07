@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch - Amplasare</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/location.css?v=2">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" href="/assets/css/alerts.css">
+</head>
+<body>
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="index.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
+        </a>
+
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<main class="main single-col">
+    <section class="location-layout">
+        <div class="location-left">
+            <div class="location-page-header">
+                <div>
+                    <h1 class="ph-title">Amplasare reactoare</h1>
+                    <p class="ph-sub">Actualizare automată la fiecare 5 secunde, fără refresh</p>
+                </div>
+                <div class="location-actions">
+                    <span class="pill pill-blue" id="last-refresh-pill">Ultima actualizare: -</span>
+                    <button class="btn btn-prim" id="open-add-reactor" type="button">Adauga Reactor</button>
+                </div>
+            </div>
+
+            <article class="panel-card location-map-card">
+                <header class="panel-header">
+                    <div>
+                        <h3 class="panel-title">Harta reactoare</h3>
+                        <p class="panel-sub">Click pe pin pentru detalii complete</p>
+                    </div>
+                </header>
+                <div class="location-map-wrap">
+                    <div id="reactors-map" aria-label="Harta reactoarelor"></div>
+                    <div class="map-overlay-legend" aria-label="Legenda statusuri">
+                        <div class="legend-item"><span class="legend-dot dot-gray"></span>Oprit</div>
+                        <div class="legend-item"><span class="legend-dot dot-green"></span>Activ</div>
+                        <div class="legend-item"><span class="legend-dot dot-yellow"></span>Mentenanta</div>
+                        <div class="legend-item"><span class="legend-dot dot-red"></span>Alerta / Stare critica</div>
+                        <div class="legend-item"><span class="legend-dot dot-blue"></span>In Constructie</div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <aside class="location-right">
+            <article class="panel-card status-summary-card" aria-label="Rezumat status reactoare">
+                <header class="panel-header">
+                    <div>
+                        <h3 class="panel-title">Rezumat operațional</h3>
+                        <p class="panel-sub">Indicatori rapizi calculați din datele live</p>
+                    </div>
+                </header>
+                <div id="status-cards" class="status-summary-grid"></div>
+            </article>
+
+            <article class="panel-card flex-fill">
+                <header class="panel-header">
+                    <div>
+                        <h3 class="panel-title">Reactoare monitorizate</h3>
+                        <p class="panel-sub">Lista se actualizează automat</p>
+                    </div>
+                </header>
+                <div class="scroll-area reactor-list" id="reactor-list"></div>
+            </article>
+
+            <article class="panel-card location-stats-flyout" aria-label="Statistici reactoare">
+                <header class="panel-header stats-panel-header">
+                    <div>
+                        <h3 class="panel-title">Statistici live</h3>
+                        <p class="panel-sub">Recalculate la fiecare refresh al datelor</p>
+                    </div>
+                </header>
+                <div class="stats-panel-body">
+                    <div class="stats-hero">
+                        <div class="stats-metric stats-metric-primary">
+                            <span>Putere instalată</span>
+                            <strong id="stat-total-power">0 MW</strong>
+                        </div>
+                        <div class="stats-metric">
+                            <span>Total reactoare</span>
+                            <strong id="stat-total-reactors">0</strong>
+                        </div>
+                    </div>
+
+                    <section class="stats-section">
+                        <div class="stats-section-head">
+                            <h4>Distribuție pe tip</h4>
+                            <span id="stat-type-total">0/0</span>
+                        </div>
+                        <div class="stats-list" id="stats-type-list"></div>
+                    </section>
+
+                    <section class="stats-section">
+                        <div class="stats-section-head">
+                            <h4>Stare operațională</h4>
+                            <span id="stat-status-total">0/0</span>
+                        </div>
+                        <div class="stats-list" id="stats-status-list"></div>
+                    </section>
+                </div>
+            </article>
+        </aside>
+    </section>
+</main>
+
+<div class="modal-overlay" id="reactor-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reactor-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="reactor-modal-title">Adauga Reactor</h2>
+                <p class="modal-subtitle">Completează formularul și trimite datele către sistem</p>
+            </div>
+            <button class="icon-close" type="button" id="close-reactor-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-error" id="reactor-form-error"></div>
+            <form id="reactor-form" novalidate>
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="name">name</label>
+                        <input id="name" name="name" type="text" required maxlength="255">
+                    </div>
+
+                    <div class="field full">
+                        <label for="location_name">location_name</label>
+                        <input id="location_name" name="location_name" type="text" required maxlength="255">
+                    </div>
+
+                    <div class="field">
+                        <label for="reactor_type">reactor_type</label>
+                        <select id="reactor_type" name="reactor_type" required>
+                            <option value="">Selecteaza tipul</option>
+                            <option value="CANDU">CANDU</option>
+                            <option value="SMR">SMR</option>
+                            <option value="PWR">PWR</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="installed_power">installed_power (MW)</label>
+                        <input id="installed_power" name="installed_power" type="number" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="field full">
+                        <label>Coordonate (latitude, longitude)</label>
+                        <div class="coords-row">
+                            <input id="latitude" name="latitude" type="number" step="any" placeholder="latitude" required>
+                            <input id="longitude" name="longitude" type="number" step="any" placeholder="longitude" required>
+                            <button class="btn" id="open-picker" type="button">Alege de pe harta</button>
+                        </div>
+                    </div>
+                    
+                    <div class="field full">
+                        <label for="webhook_url">webhook_url</label>
+                        <input id="webhook_url" name="webhook_url" type="url" placeholder="https://exemplu.com/api/webhook" required maxlength="255">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn" type="button" id="cancel-reactor-modal">Renunta</button>
+                    <button class="btn btn-success" type="submit" id="submit-reactor-btn">Salveaza</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="picker-modal" aria-hidden="true" style="z-index:1300;">
+    <div class="modal-card modal-card-small" role="dialog" aria-modal="true" aria-labelledby="picker-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="picker-modal-title">Alege coordonate de pe hartă</h2>
+                <p class="modal-subtitle">Click pe hartă pentru a prelua latitude și longitude</p>
+            </div>
+            <button class="icon-close" type="button" id="close-picker-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="picker-hint">După click, modalul se închide automat și valorile sunt completate în formular.</p>
+            <div id="picker-map"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="status-modal" aria-hidden="true" style="z-index:1320;">
+    <div class="modal-card modal-card-small" role="dialog" aria-modal="true" aria-labelledby="status-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="status-modal-title">Schimbă status</h2>
+                <p class="modal-subtitle" id="status-modal-subtitle">Selectați statusul nou pentru reactorul ales</p>
+            </div>
+            <button class="icon-close" type="button" id="close-status-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="field full">
+                <label class="form-label" for="status-select">Status nou</label>
+                <select class="form-select" id="status-select">
+                    <option value="Activ">Activ</option>
+                    <option value="Mentenanță">Mentenanță</option>
+                    <option value="Oprit">Oprit</option>
+                    <option value="Alertă">Alertă</option>
+                    <option value="In Constructie">În construcție</option>
+                </select>
+            </div>
+            <p class="picker-hint">Schimbarea se aplică imediat după confirmare.</p>
+            <div class="modal-footer" style="justify-content:flex-end;">
+                <button class="btn" type="button" id="cancel-status-modal">Renunță</button>
+                <button class="btn btn-success" type="button" id="confirm-status-modal">Confirmă</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast-success">Reactor adăugat cu succes</div>
+
+<div class="modal-overlay" id="sensor-modal" aria-hidden="true" style="z-index:1350;">
+    <div class="modal-card modal-card-large" role="dialog" aria-modal="true" aria-labelledby="sensor-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="sensor-modal-title">Gestiune Senzori</h2>
+                <p class="modal-subtitle" id="sensor-modal-subtitle">Selecteaza un reactor pentru a vedea senzorii</p>
+            </div>
+            <button class="icon-close" type="button" id="close-sensor-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body sensor-modal-body">
+            <div class="modal-error" id="sensor-form-error"></div>
+
+            <section class="sensor-section">
+                <div class="section-head">
+                    <h3 class="section-title">Lista senzorilor activi</h3>
+                    <span class="pill pill-blue" id="sensor-count-pill">0 senzori</span>
+                </div>
+                <div class="sensor-table-wrap">
+                    <table class="sensor-table">
+                        <thead>
+                            <tr>
+                                <th>Tip</th>
+                                <th>Unitate</th>
+                                <th>Limite</th>
+                                <th>Curent</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="sensor-list-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="sensor-section">
+                <div class="section-head">
+                    <h3 class="section-title">Adaugă senzor</h3>
+                </div>
+                <form id="sensor-form" class="sensor-form" novalidate>
+                    <div class="form-grid sensor-grid">
+                        <div class="field full">
+                            <label for="sensor_type">sensor_type</label>
+                            <select id="sensor_type" name="sensor_type" required>
+                                <option value="" selected disabled>Se încarcă tipurile...</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="sensor_unit">unit</label>
+                            <input id="sensor_unit" name="unit" type="text" maxlength="20">
+                        </div>
+                        <div class="field">
+                            <label for="min_safe_value">min_safe_value</label>
+                            <input id="min_safe_value" name="min_safe_value" type="number" step="any" required>
+                        </div>
+                        <div class="field">
+                            <label for="max_safe_value">max_safe_value</label>
+                            <input id="max_safe_value" name="max_safe_value" type="number" step="any" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit" id="submit-sensor-btn">Adaugă</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/navbar.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/assets/js/utils/helpers.js"></script>
+<script src="/assets/js/utils/status.js"></script>
+<script src="/assets/js/utils/dom.js"></script>
+<script src="/assets/js/features/location/location-state.js"></script>
+<script src="/assets/js/features/location/location-map.js"></script>
+<script src="/assets/js/features/location/location-renderer.js"></script>
+<script src="/assets/js/features/location/location-sensors.js"></script>
+<script src="/assets/js/features/location/location-reactor-form.js"></script>
+<script src="/assets/js/features/location/location-events.js"></script>
+<script src="/assets/js/features/location/location-init.js"></script>
+<script src="/assets/js/alerts.js"></script>
+</body>
+</html>

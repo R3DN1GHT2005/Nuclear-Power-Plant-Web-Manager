@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Istoric Alerte</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-accounts.css"> <link rel="stylesheet" href="/assets/css/alerts-history.css"> <link rel="stylesheet" href="/assets/css/alerts.css"> </head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="index.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
+        </a>
+
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<main class="main history-page-layout">
+    
+    <div class="page-header header-minimal" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="ph-title">Jurnal Global de Alerte</h1>
+            <p class="ph-sub">Istoricul complet al incidentelor și detaliile intervențiilor tehnice.</p>
+        </div>
+        <button class="btn btn-outline" id="btn-refresh-history" onclick="loadFullHistory()">🔄 Reîmprospătează</button>
+    </div>
+
+    <div class="panel-card" style="margin-bottom: 3rem;">
+        <div class="table-scroll-area">
+            <table class="admin-table history-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 12%;">Reactor</th>
+                        <th style="width: 10%;">Severitate</th>
+                        <th style="width: 10%;">Status</th>
+                        <th style="width: 20%;">Mesaj Alertă</th>
+                        <th style="width: 10%;">Declanșat la</th>
+                        <th style="width: 10%;">Rezolvat la</th>
+                        <th style="width: 10%;">Intervenient</th>
+                        <th style="width: 13%;">Note de rezolvare</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <tr><td colspan="9" class="history-empty">Se încarcă istoricul complet...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/navbar.js"></script>
+<script src="/assets/js/utils/helpers.js"></script>
+<script src="/assets/js/utils/status.js"></script>
+<script src="/assets/js/utils/dom.js"></script>
+<script src="/assets/js/alerts.js"></script>
+<script src="/assets/js/alerts-history.js"></script>
+</body>
+</html>

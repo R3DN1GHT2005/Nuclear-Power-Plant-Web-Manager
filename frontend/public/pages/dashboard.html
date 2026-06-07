@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/alerts.css">
+    <link rel="stylesheet" href="/assets/css/dashboard.css">
+</head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="dashboard.html">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
+                    <circle cx="8" cy="8" r="6.5" stroke="white" stroke-width="1" stroke-dasharray="2 2"/>
+                </svg>
+            </div>
+            NuclearWatch
+        </a>
+        <a class="nav-link active" href="dashboard.html">Stația mea</a>
+        <a class="nav-link" href="reactor-statistics.html" id="nav-statistics" style="display:none">Statistici</a>
+        <a class="nav-link" href="management.html" id="nav-management" style="display:none">Management</a>
+        <a class="nav-link" href="reactor.html" id="nav-reactor" style="display:none">Vezi reactorul</a>
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<div class="main tech-dash">
+
+    <!-- KPI BAR -->
+    <div class="kpi-row" id="tech-kpis">
+        <p class="loading-msg">Se încarcă datele reactorului...</p>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="dash-grid">
+
+        <!-- COL STÂNGA: Senzori + Statistici + Alerte -->
+        <div class="col-left">
+
+            <!-- Senzori live -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Senzori &amp; date live</div>
+                        <div class="panel-sub" id="sensors-sub">Se încarcă...</div>
+                    </div>
+                    <span class="live-pill">LIVE</span>
+                </div>
+                <div class="sensor-grid" id="sensor-grid">
+                    <p class="empty-msg">Se încarcă senzorii...</p>
+                </div>
+            </div>
+
+            <!-- Statistici -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Statistici</div>
+                        <div class="panel-sub" id="stats-sub">Ultimele 24 ore</div>
+                    </div>
+                    <div class="period-switch" id="stats-period">
+                        <button class="period-btn active" data-days="1">24h</button>
+                        <button class="period-btn" data-days="7">7z</button>
+                        <button class="period-btn" data-days="30">30z</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="stats-grid" id="stats-grid">
+                        <p class="empty-msg">Se încarcă...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerte active -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Alerte active</div>
+                        <div class="panel-sub">Reactorul tău</div>
+                    </div>
+                    <span class="count-badge" id="active-alerts-count"></span>
+                </div>
+                <div class="scroll-area" id="alerts-container">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COL DREAPTA: Mentenanță + RSS -->
+        <div class="col-right">
+
+            <!-- Mentenanță -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Mentenanță</div>
+                        <div class="panel-sub">Activă și istoric</div>
+                    </div>
+                </div>
+                <div class="tab-bar" id="maint-tabs">
+                    <button class="tab-btn active" data-maint="active">Activă</button>
+                    <button class="tab-btn" data-maint="history">Trecute</button>
+                </div>
+                <div class="scroll-area" id="maint-list">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+            <!-- Flux RSS -->
+            <div class="panel-card">
+                <div class="rss-header">
+                    <div class="rss-title-row">
+                        <div class="rss-title">
+                            <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="4" cy="16" r="2" fill="var(--amber)"/><path d="M2 9a9 9 0 0 1 9 9" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"/><path d="M2 4a14 14 0 0 1 14 14" stroke="var(--amber)" stroke-width="2" stroke-linecap="round"/></svg>
+                            Flux RSS — jurnal global
+                            <span class="rss-badge">Necesită cititor extern!</span>
+                        </div>
+                        <a class="rss-sub-btn" href="javascript:void(0);">Link</a>
+                    </div>
+                    <div class="rss-desc">Feed doar pentru angajați! NU DISTRIBUIȚI! Consecințele pot fi de natură penală!</div>
+                </div>
+                <div class="scroll-area" id="rss-container">
+                    <p style="text-align:center; padding: 20px; color: #666;">Se încarcă fluxul RSS...</p>
+                </div>
+                <div class="rss-footer">
+                    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    NU DISTRIBUIȚI! Consecințele pot fi de natură penală!
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/utils/helpers.js"></script>
+<script src="/assets/js/utils/status.js"></script>
+<script src="/assets/js/utils/dom.js"></script>
+<script src="/assets/js/features/shared/stats-calculator.js"></script>
+<script src="/assets/js/features/shared/maintenance-view.js"></script>
+<script src="/assets/js/features/dashboard/dashboard-kpis.js"></script>
+<script src="/assets/js/features/dashboard/dashboard-stats.js"></script>
+<script src="/assets/js/features/dashboard/dashboard-feed.js"></script>
+<script src="/assets/js/features/dashboard/dashboard-init.js"></script>
+<script src="/assets/js/rss.js"></script>
+<script src="/assets/js/alerts.js"></script>
+</body>
+</html>

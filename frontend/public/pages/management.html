@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/alerts.css">
+    <link rel="stylesheet" href="/assets/css/dashboard.css">
+    <link rel="stylesheet" href="/assets/css/station-view.css">
+    <link rel="stylesheet" href="/assets/css/reactor.css">
+</head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="dashboard.html">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
+                    <circle cx="8" cy="8" r="6.5" stroke="white" stroke-width="1" stroke-dasharray="2 2"/>
+                </svg>
+            </div>
+            NuclearWatch
+        </a>
+        <a class="nav-link" href="dashboard.html">Stația mea</a>
+        <a class="nav-link" href="reactor-statistics.html">Statistici</a>
+        <a class="nav-link active" href="management.html">Management</a>
+        <a class="nav-link" href="reactor.html">Vezi reactorul</a>
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<div class="main tech-dash">
+    <div class="kpi-row" id="mgt-kpis">
+        <p class="loading-msg">Se încarcă datele reactorului...</p>
+    </div>
+
+    <div class="dash-grid">
+        <div class="col-left">
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Mentenanță</div>
+                        <div class="panel-sub">Controlează și gestionează</div>
+                    </div>
+                    <div style="display:flex;gap:4px">
+                        <button class="btn-sm primary" onclick="startMaint()">Pornește</button>
+                        <button class="btn-sm danger" onclick="stopMaint()">Finalizează</button>
+                    </div>
+                </div>
+                <div class="tab-bar" id="maint-tabs">
+                    <button class="tab-btn active" data-maint="active">Activă</button>
+                    <button class="tab-btn" data-maint="history">Trecute</button>
+                </div>
+                <div class="scroll-area" id="maint-list" style="max-height:300px">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Echipă</div>
+                        <div class="panel-sub">Personal asignat</div>
+                    </div>
+                </div>
+                <div class="panel-body" id="personnel-body">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-right">
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Istoric alerte</div>
+                        <div class="panel-sub">Ultimele incidente</div>
+                    </div>
+                </div>
+                <div class="scroll-area" id="alert-history-body" style="max-height:300px">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-start-maint">
+    <div class="modal">
+        <div class="confirm-icon">🔧</div>
+        <div class="modal-title">Pornire Mentenanță</div>
+        <div class="modal-sub">Reactorul va intra în revizie. Stabiliți data estimată de finalizare.</div>
+        <div class="form-group mt-12">
+            <label class="form-label" for="maint-date">Dată estimată finalizare *</label>
+            <input class="form-input" type="date" id="maint-date">
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="maint-reason">Motiv / Observații (opțional)</label>
+            <textarea class="form-input" id="maint-reason" rows="2" placeholder="Ex: Revizie anuală la sistemul de răcire..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-close-modal">Anulează</button>
+            <button class="btn btn-prim" id="modal-maint-confirm">Confirmă Oprirea</button>
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/api.js"></script>
+<script src="/assets/js/utils/helpers.js"></script>
+<script src="/assets/js/utils/status.js"></script>
+<script src="/assets/js/utils/dom.js"></script>
+<script src="/assets/js/features/shared/maintenance-view.js"></script>
+<script src="/assets/js/features/shared/alert-history-view.js"></script>
+<script src="/assets/js/features/management/management-info.js"></script>
+<script src="/assets/js/features/management/management-init.js"></script>
+<script src="/assets/js/alerts.js"></script>
+</body>
+</html>
