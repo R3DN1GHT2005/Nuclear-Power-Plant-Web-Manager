@@ -518,7 +518,17 @@
             return;
         }
 
+        let openReactorId = null;
         if (state.markerLayer) {
+            state.markerLayer.eachLayer((marker) => {
+                if (marker.isPopupOpen && marker.isPopupOpen()) {
+                    const content = marker.getPopup()?.getContent();
+                    if (typeof content === 'string') {
+                        const match = content.match(/data-reactor-id="(\d+)"/);
+                        if (match) openReactorId = match[1];
+                    }
+                }
+            });
             state.markerLayer.remove();
         }
 
@@ -562,6 +572,15 @@
             });
             marker.addTo(state.markerLayer);
         });
+
+        if (openReactorId) {
+            state.markerLayer.eachLayer((marker) => {
+                const content = marker.getPopup()?.getContent();
+                if (typeof content === 'string' && content.includes(`data-reactor-id="${openReactorId}"`)) {
+                    marker.openPopup();
+                }
+            });
+        }
     }
 
     function renderReactorList(reactors) {
