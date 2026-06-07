@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Stația mea</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/station-view.css">
+</head>
+<body>
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="station-view.html">
+            <div class="logo-icon">⭕</div> NuclearWatch
+        </a>
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<div class="main" id="station-app">
+    <div class="role-banner" id="role-banner"></div>
+
+    <div class="metrics" id="station-kpis">
+        <p>Se încarcă datele reactorului...</p>
+    </div>
+
+    <div class="panel-card" id="reactor-specs" style="display:none;">
+        <div class="section-header">
+            <div>
+                <div class="section-title">Specificații tehnice</div>
+                <div class="section-sub" id="specs-sub"></div>
+            </div>
+        </div>
+        <div class="specs-grid" id="specs-grid"></div>
+    </div>
+
+    <div class="panel-card" id="alerts-card">
+        <div class="section-header">
+            <div>
+                <div class="section-title">Alerte active</div>
+                <div class="section-sub">Notificări operative</div>
+            </div>
+        </div>
+        <div class="scroll-area" id="alerts-list">
+            <p style="text-align:center;padding:20px;color:#666;">Se încarcă alertele...</p>
+        </div>
+    </div>
+
+    <div class="panel-card" id="maintenance-card">
+        <div class="section-header">
+            <div>
+                <div class="section-title">Mentenanță</div>
+                <div class="section-sub">Istoricul opririlor</div>
+            </div>
+        </div>
+        <div class="scroll-area" id="maintenance-list">
+            <p style="text-align:center;padding:20px;color:#666;">Se încarcă...</p>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/navbar.js"></script>
+<script src="assets/js/station-view.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Dashboard Tehnician</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard-tehnician.css">
+</head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="dashboard-tehnician.html">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
+                    <circle cx="8" cy="8" r="6.5" stroke="white" stroke-width="1" stroke-dasharray="2 2"/>
+                </svg>
+            </div>
+            NuclearWatch
+        </a>
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<div class="main tech-dash">
+
+    <!-- KPI BAR -->
+    <div class="kpi-row" id="tech-kpis">
+        <p class="loading-msg">Se încarcă datele reactorului...</p>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="dash-grid">
+
+        <!-- COL STÂNGA: Senzori + Statistici + Alerte -->
+        <div class="col-left">
+
+            <!-- Senzori live -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Senzori &amp; date live</div>
+                        <div class="panel-sub" id="sensors-sub">Se încarcă...</div>
+                    </div>
+                    <span class="live-pill">LIVE</span>
+                </div>
+                <div class="sensor-grid" id="sensor-grid">
+                    <p class="empty-msg">Se încarcă senzorii...</p>
+                </div>
+            </div>
+
+            <!-- Statistici -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Statistici</div>
+                        <div class="panel-sub" id="stats-sub">Ultimele 24 ore</div>
+                    </div>
+                    <div class="period-switch" id="stats-period">
+                        <button class="period-btn active" data-days="1">24h</button>
+                        <button class="period-btn" data-days="7">7z</button>
+                        <button class="period-btn" data-days="30">30z</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="stats-grid" id="stats-grid">
+                        <p class="empty-msg">Se încarcă...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerte active -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Alerte active</div>
+                        <div class="panel-sub">Reactorul tău</div>
+                    </div>
+                    <span class="count-badge" id="active-alerts-count"></span>
+                </div>
+                <div class="scroll-area" id="alerts-list">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+            <!-- Alerte anterioare -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Alerte anterioare</div>
+                        <div class="panel-sub">Ultimele 10 incidente</div>
+                    </div>
+                </div>
+                <div class="scroll-area" id="alerts-history-list">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COL DREAPTA: Mentenanță + RSS -->
+        <div class="col-right">
+
+            <!-- Mentenanță -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Mentenanță</div>
+                        <div class="panel-sub">Activă și istoric</div>
+                    </div>
+                </div>
+                <div class="tab-bar" id="maint-tabs">
+                    <button class="tab-btn active" data-maint="active">Activă</button>
+                    <button class="tab-btn" data-maint="history">Trecute</button>
+                </div>
+                <div class="scroll-area" id="maint-list">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+            <!-- RSS -->
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Flux RSS</div>
+                        <div class="panel-sub">Jurnal global evenimente</div>
+                    </div>
+                </div>
+                <div class="scroll-area" id="rss-list">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/dashboard-tehnician.js"></script>
+</body>
+</html>
