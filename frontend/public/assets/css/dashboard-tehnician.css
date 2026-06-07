@@ -5,30 +5,30 @@
 
 /* ── Anulează .main > div doar pentru tech-dash ─── */
 .tech-dash > div {
-    display: revert;
+    display: grid !important;
     flex-direction: revert;
-    gap: revert;
     overflow: revert;
     min-width: revert;
+    grid: 15 px !important;
 }
 
 /* ── Wrapper principal ─────────────────── */
 .tech-dash {
-    padding: 16px 20px;
+    padding: 50px 20px !important;
     width: 100%;
-    max-width: 1440px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 12px !important;
 }
 
 /* ── KPI Bar ───────────────────────────── */
 .kpi-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    flex-shrink: 0;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px !important;
+    flex-shrink: 20px !important;
 }
 
 @media (max-width: 1100px) { .kpi-row { grid-template-columns: repeat(4, 1fr); } }
@@ -46,7 +46,7 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 10px 14px;
+    padding: 20px 24px;
     box-shadow: var(--shadow);
     min-width: 0;
 }
@@ -81,7 +81,7 @@
 /* ── Grid principal ────────────────────── */
 .dash-grid {
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 60% 40%;
     gap: 12px;
     align-items: start;
     width: 100%;
@@ -428,6 +428,8 @@
 
 /* ── RSS ───────────────────────────────── */
 .rss-item {
+    display: flex;
+    flex-direction: column;
     padding: 8px 16px;
     border-bottom: 1px solid var(--border);
     font-size: 11px;
