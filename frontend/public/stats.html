@@ -36,7 +36,7 @@
         <div class="page-header">
             <div>
                 <h1 class="ph-title">Statistici & Analiză</h1>
-                <p class="ph-sub">Performanță, eficiență, risc și uzură · Centrala Nucleară NW-01</p>
+                <p class="ph-sub" id="stats-page-subtitle">Performanță, eficiență, risc și uzură · perioada selectată</p>
             </div>
             <div class="time-range" id="stats-time-range">
                 <div class="tr" data-days="1">24h</div>
@@ -76,7 +76,7 @@
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Eficiență per reactor</h3>
-                        <p class="cc-sub">Ultimele 30 zile · comparativ cu ținta de 90%</p>
+                        <p class="cc-sub" id="efficiency-bars-subtitle">Selectați o perioadă pentru actualizare</p>
                     </div>
                     <div class="cc-legend">
                         <div class="cc-leg-item"><div class="leg-dot bg-green"></div>Eficiență actuală</div>
@@ -94,8 +94,8 @@
             <article class="chart-card" id="trend-card">
                 <header class="cc-header">
                     <div>
-                        <h3 class="cc-title" id="trend-title">Trend eficiență medie — 30 zile</h3>
-                        <p class="cc-sub" id="trend-subtitle">Centrala în ansamblu</p>
+                        <h3 class="cc-title" id="trend-title">Trend eficiență medie</h3>
+                        <p class="cc-sub" id="trend-subtitle">Centrala în ansamblu · perioada selectată</p>
                     </div>
                 </header>
                 <div class="chart-wrap pb-8" id="trend-wrap">
@@ -108,7 +108,7 @@
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Comparativ reactoare</h3>
-                        <p class="cc-sub">Principali indicatori de performanță · ultimele 30 zile</p>
+                        <p class="cc-sub" id="comparison-subtitle">Indicatori de performanță · perioada selectată</p>
                     </div>
                 </header>
                 <table class="comp-table">
@@ -136,7 +136,7 @@
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Matrice de risc</h3>
-                        <p class="cc-sub">Probabilitate × Impact · reactoare active</p>
+                        <p class="cc-sub" id="risk-subtitle">Probabilitate × Impact · reactoare active</p>
                     </div>
                 </header>
                 <div class="matrix-wrap" id="risk-matrix-wrap"></div>
@@ -146,7 +146,7 @@
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Condiții operaționale</h3>
-                        <p class="cc-sub">Date live din senzori · amplasamentele reactoarelor</p>
+                        <p class="cc-sub" id="environment-subtitle">Date live din senzori · amplasamentele reactoarelor</p>
                     </div>
                 </header>
                 <div class="meteo-grid" id="environment-grid"></div>
@@ -156,7 +156,7 @@
                 <header class="cc-header">
                     <div>
                         <h3 class="cc-title">Grad de uzură per reactor</h3>
-                        <p class="cc-sub">Estimare bazată pe ore funcționare și mentenanță</p>
+                        <p class="cc-sub" id="wear-subtitle">Estimare bazată pe ore funcționare și mentenanță</p>
                     </div>
                 </header>
                 <div class="wear-list" id="wear-list"></div>

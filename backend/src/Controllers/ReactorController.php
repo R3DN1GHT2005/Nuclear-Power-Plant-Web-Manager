@@ -73,6 +73,31 @@ class ReactorController {
         Response::json(ReactorMapper::toResponse($reactor));
     }
 
+    // PATCH /api/reactors/{id}/status
+    public function updateStatus(int $id): void {
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!$data || !isset($data['status'])) {
+            Response::json(['error' => 'Status lipsă'], 400);
+            return;
+        }
+
+        try {
+            $reactor = $this->reactorService->changeStatus($id, (string) $data['status']);
+
+            if (!$reactor) {
+                Response::json(['error' => 'Reactor negăsit'], 404);
+                return;
+            }
+
+            Response::json(ReactorMapper::toResponse($reactor));
+        } catch (\InvalidArgumentException $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            Response::json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     // DELETE /api/reactors/{id}
     public function deleteReactor(int $id): void {
         $deleted = $this->reactorService->delete($id);

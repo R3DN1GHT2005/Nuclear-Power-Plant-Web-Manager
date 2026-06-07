@@ -48,27 +48,19 @@ class AnalyticsService {
     }
 
     public function getEfficiencyTrend(int $days = 30): array {
-        $stmt = $this->db->query("SELECT name, current_efficiency FROM reactors ORDER BY name");
-        $reactors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->db->prepare("\n                SELECT\n                    DATE(recorded_at) AS date,\n                    ROUND(AVG(efficiency)::numeric, 1) AS avg_efficiency\n                FROM efficiency_log\n                WHERE recorded_at >= NOW() - (:days || ' days')::interval\n                GROUP BY DATE(recorded_at)\n                ORDER BY DATE(recorded_at) ASC\n            ");
+            $stmt->execute(['days' => $days]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $trend = [];
-        $now = new \DateTime();
-
-        for ($i = $days; $i >= 0; $i--) {
-            $date = (clone $now)->modify("-{$i} days")->format('Y-m-d');
-            $sum = 0;
-
-            foreach ($reactors as $r) {
-                $base = (float) $r['current_efficiency'];
-                $variatie = rand(-5, 5);
-                $sum += min(100, max(0, $base + $variatie));
+            if (!empty($rows)) {
+                return $this->buildContinuousTrendFromLogs($days, $rows);
             }
-
-            $avg = count($reactors) > 0 ? round($sum / count($reactors), 1) : 0;
-            $trend[] = ['date' => $date, 'avg_efficiency' => $avg];
+        } catch (\Throwable $throwable) {
+            // Dacă tabela nu există sau apar întreruperi, folosim fallback fără a rupe pagina.
         }
 
-        return $trend;
+        return $this->buildFallbackTrendFromCurrentState($days);
     }
 
     public function getComparison(): array {
@@ -143,5 +135,57 @@ class AnalyticsService {
             ];
         }
         return $result;
+    }
+
+    private function buildFallbackTrendFromCurrentState(int $days): array {
+        $stmt = $this->db->query("SELECT current_efficiency FROM reactors");
+        $reactors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($reactors) === 0) {
+            return [];
+        }
+
+        $average = array_reduce($reactors, static function (float $carry, array $row): float {
+            return $carry + (float) ($row['current_efficiency'] ?? 0);
+        }, 0.0) / count($reactors);
+
+        return [[
+            'date' => (new \DateTimeImmutable())->format('Y-m-d'),
+            'avg_efficiency' => round($average, 1),
+        ]];
+    }
+
+    private function buildContinuousTrendFromLogs(int $days, array $rows): array {
+        $logMap = [];
+        foreach ($rows as $row) {
+            $logMap[(string) $row['date']] = round((float) $row['avg_efficiency'], 1);
+        }
+
+        $baseline = $this->getCurrentAverageEfficiency();
+        $trend = [];
+        $carry = null;
+        $today = new \DateTimeImmutable('today');
+
+        for ($offset = $days; $offset >= 0; $offset--) {
+            $date = $today->modify("-{$offset} days")->format('Y-m-d');
+
+            if (array_key_exists($date, $logMap)) {
+                $carry = $logMap[$date];
+            } elseif ($carry === null) {
+                $carry = $baseline;
+            }
+
+            $trend[] = [
+                'date' => $date,
+                'avg_efficiency' => round((float) $carry, 1),
+            ];
+        }
+
+        return $trend;
+    }
+
+    private function getCurrentAverageEfficiency(): float {
+        $row = $this->db->query("SELECT COALESCE(AVG(current_efficiency), 0) AS avg_efficiency FROM reactors")->fetch(PDO::FETCH_ASSOC);
+        return round((float) ($row['avg_efficiency'] ?? 0), 1);
     }
 }

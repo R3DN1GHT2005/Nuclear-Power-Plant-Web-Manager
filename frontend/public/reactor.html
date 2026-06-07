@@ -7,9 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/reactor.css">
-    <link rel="stylesheet" href="assets/css/alerts.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=2">
+    <link rel="stylesheet" href="assets/css/reactor.css?v=2">
+    <link rel="stylesheet" href="assets/css/alerts.css?v=2">
 </head>
 <body>
 
@@ -54,10 +54,9 @@
             </div>
 
             <div class="action-bar">
-                    <button class="btn-action" id="btn-start">Pornire</button>
-                    <button class="btn-action" id="btn-stop">Oprire</button>
                     <button class="btn-action" id="btn-maint">Mentenanță</button>
                     <button class="btn-action btn-prim hidden" id="btn-finish-maint">Finalizare Mentenanță</button>
+                    <button class="btn-action btn-outline" id="btn-change-status">Schimbă status</button>
                     <button class="btn-action btn-outline" id="btn-add-sensor">+ Senzor nou</button>
             </div>
         </div>
@@ -165,8 +164,59 @@
     </div><!-- /col-center -->
 
 
-    <!-- ── COLOANA DREAPTA: jurnal alerte ── -->
+    <!-- ── COLOANA DREAPTA: statistici + jurnal alerte ── -->
     <div class="col-right">
+        <div class="panel-card">
+            <div class="detail-section">
+                <header class="det-h" style="align-items: flex-start; gap: 12px;">
+                    <div>
+                        <div class="det-t">Statistici Reactor</div>
+                        <div class="det-s" id="reactor-summary-subtitle">Se încarcă datele reactorului...</div>
+                    </div>
+                    <div class="period-switch" id="reactor-period-switch">
+                        <button class="period-btn active" type="button" data-days="1">24h</button>
+                        <button class="period-btn" type="button" data-days="7">7z</button>
+                        <button class="period-btn" type="button" data-days="30">30z</button>
+                        <button class="period-btn" type="button" data-days="90">90z</button>
+                        <button class="period-btn" type="button" data-days="365">1an</button>
+                    </div>
+                </header>
+
+                <div class="right-stats-grid" id="reactor-summary-grid">
+                    <div class="right-stat-card">
+                        <span class="right-stat-label">Citiri perioadă</span>
+                        <span class="right-stat-value" id="summary-readings-count">--</span>
+                        <span class="right-stat-hint">În perioada selectată</span>
+                    </div>
+                    <div class="right-stat-card">
+                        <span class="right-stat-label">Medie citiri</span>
+                        <span class="right-stat-value" id="summary-average-reading">--</span>
+                        <span class="right-stat-hint">Media valorilor înregistrate</span>
+                    </div>
+                    <div class="right-stat-card">
+                        <span class="right-stat-label">Alerte perioadă</span>
+                        <span class="right-stat-value" id="summary-alerts-count">--</span>
+                        <span class="right-stat-hint">Totale și critice</span>
+                    </div>
+                    <div class="right-stat-card">
+                        <span class="right-stat-label">Citiri critice</span>
+                        <span class="right-stat-value" id="summary-critical-count">--</span>
+                        <span class="right-stat-hint">În afara limitelor sigure</span>
+                    </div>
+                    <div class="right-stat-card">
+                        <span class="right-stat-label">Senzori activi</span>
+                        <span class="right-stat-value" id="summary-sensors-count">--</span>
+                        <span class="right-stat-hint">Montați pe reactor</span>
+                    </div>
+                    <div class="right-stat-card">
+                        <span class="right-stat-label">Ultima citire</span>
+                        <span class="right-stat-value" id="summary-last-reading">--</span>
+                        <span class="right-stat-hint">Cea mai recentă înregistrare</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel-card flex-fill layout-flex-col">
             <div class="detail-section layout-flex-col" style="height: 100%;">
                 <header class="det-h">
@@ -204,7 +254,17 @@
     <div class="modal">
         <div class="confirm-icon" id="modal-status-icon">🔄</div>
         <div class="modal-title" id="modal-status-title">Schimbare status</div>
-        <div class="modal-sub">Confirmați schimbarea statusului reactorului.</div>
+        <div class="modal-sub" id="modal-status-sub">Alegeți starea și confirmați modificarea.</div>
+        <div class="form-group mt-12">
+            <label class="form-label" for="status-select">Status nou</label>
+            <select class="form-select" id="status-select">
+                <option value="Activ">Activ</option>
+                <option value="Mentenanță">Mentenanță</option>
+                <option value="Oprit">Oprit</option>
+                <option value="Alertă">Alertă</option>
+                <option value="In Constructie">În construcție</option>
+            </select>
+        </div>
         <div class="confirm-warning hidden" id="modal-status-warning"></div>
         <div class="modal-actions">
             <button class="btn btn-close-modal">Anulează</button>
@@ -273,9 +333,9 @@
 <!-- ══════════════════════════════════════════════════════
      SCRIPTURI
      ══════════════════════════════════════════════════════ -->
-<script src="assets/js/api.js"></script>
-<script src="assets/js/reactor-details.js"></script>
-<script src="assets/js/alerts.js"></script>
+<script src="assets/js/api.js?v=2"></script>
+<script src="assets/js/reactor-details.js?v=2"></script>
+<script src="assets/js/alerts.js?v=2"></script>
 
 </body>
 </html>

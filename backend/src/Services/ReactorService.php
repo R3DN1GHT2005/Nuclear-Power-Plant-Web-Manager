@@ -11,8 +11,21 @@ use App\Models\Reactor;
 use App\Repositories\ReactorRepository;
 use App\Repositories\SensorRepository;
 use App\Validators\Reactors\ValidatorFactory;
+use InvalidArgumentException;
 
 class ReactorService {
+    private const STATUS_MAP = [
+        'activ' => 'Activ',
+        'mentenanta' => 'Mentenanță',
+        'mentenanta planificata' => 'Mentenanță',
+        'oprit' => 'Oprit',
+        'alerta' => 'Alertă',
+        'critica' => 'Alertă',
+        'critic' => 'Alertă',
+        'in constructie' => 'In Constructie',
+        'constructie' => 'In Constructie',
+    ];
+
     private ReactorRepository $reactorsRepository;
     private SensorRepository $sensorRepository;
     private SeismicApiClient $seismicApi;
@@ -141,5 +154,31 @@ class ReactorService {
 
     public function delete(int $id): bool {
         return $this->reactorsRepository->delete($id);
+    }
+
+    public function changeStatus(int $id, string $status): ?Reactor {
+        $normalizedStatus = $this->normalizeStatus($status);
+
+        if ($normalizedStatus === null) {
+            throw new InvalidArgumentException('Status invalid. Folosiți una dintre stările: Activ, Mentenanță, Oprit, Alertă, În construcție.');
+        }
+
+        $this->reactorsRepository->updateStatus($id, $normalizedStatus);
+
+        return $this->getById($id);
+    }
+
+    private function normalizeStatus(string $status): ?string {
+        $key = trim($status);
+        if ($key === '') {
+            return null;
+        }
+
+        $key = mb_strtolower($key, 'UTF-8');
+        $key = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $key) ?: $key;
+        $key = preg_replace('/\s+/', ' ', $key);
+        $key = trim((string) $key);
+
+        return self::STATUS_MAP[$key] ?? null;
     }
 }

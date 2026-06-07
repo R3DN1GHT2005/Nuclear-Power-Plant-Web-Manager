@@ -97,6 +97,31 @@ CREATE INDEX IF NOT EXISTS idx_sensor_readings_date ON sensor_readings(recorded_
 CREATE INDEX IF NOT EXISTS idx_alerts_reactor_id ON alerts(reactor_id);
 CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);
 
+-- 8. ISTORIC EFICIENȚĂ PENTRU STATISTICI
+CREATE TABLE IF NOT EXISTS efficiency_log (
+    id SERIAL PRIMARY KEY,
+    reactor_id INTEGER REFERENCES reactors(id) ON DELETE CASCADE,
+    efficiency DOUBLE PRECISION NOT NULL,
+    recorded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_efficiency_log_reactor_date ON efficiency_log(reactor_id, recorded_at);
+CREATE INDEX IF NOT EXISTS idx_efficiency_log_date ON efficiency_log(recorded_at);
+
+CREATE OR REPLACE FUNCTION log_reactor_efficiency() RETURNS trigger AS $$
+BEGIN
+    INSERT INTO efficiency_log (reactor_id, efficiency, recorded_at)
+    VALUES (NEW.id, COALESCE(NEW.current_efficiency, 0), CURRENT_TIMESTAMP);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_reactor_efficiency_log ON reactors;
+CREATE TRIGGER trg_reactor_efficiency_log
+AFTER INSERT OR UPDATE OF current_efficiency ON reactors
+FOR EACH ROW
+EXECUTE FUNCTION log_reactor_efficiency();
+
 
 -- 1. Ștergem vechea tabelă de mentenanță (Atenție: se vor șterge datele vechi de mentenanță, dacă există!)
 DROP TABLE IF EXISTS maintenance_logs;

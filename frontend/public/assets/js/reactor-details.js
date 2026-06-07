@@ -5,8 +5,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const state = {
         currentReactor: null,
         pendingStatus: null,
-        allHistory: []
+        sensorReadings: [],
+        alertHistory: [],
+        maintenanceHistory: [],
+        selectedPeriodDays: 30,
+        activeAlertsCount: 0
     };
+
+    const statusOptions = [
+        { value: 'Activ', label: 'Activ' },
+        { value: 'Mentenanță', label: 'Mentenanță' },
+        { value: 'Oprit', label: 'Oprit' },
+        { value: 'Alertă', label: 'Alertă' },
+        { value: 'In Constructie', label: 'În construcție' }
+    ];
 
     // ── 2. PRELUARE ID DIN URL ──
     const params = new URLSearchParams(window.location.search);
@@ -15,6 +27,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const layout = document.getElementById("reactor-details-layout");
     const errorContainer = document.getElementById("error-container");
+    const summarySubtitle = document.getElementById('reactor-summary-subtitle');
+    const summaryReadingsCount = document.getElementById('summary-readings-count');
+    const summaryAverageReading = document.getElementById('summary-average-reading');
+    const summaryAlertsCount = document.getElementById('summary-alerts-count');
+    const summaryCriticalCount = document.getElementById('summary-critical-count');
+    const summarySensorsCount = document.getElementById('summary-sensors-count');
+    const summaryLastReading = document.getElementById('summary-last-reading');
 
     if (!reactorId) {
         console.error("❌ EROARE: Lipsește ID-ul reactorului din link.");
@@ -71,8 +90,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const updated = reactors.find(r => r.id.toString() === state.currentReactor.id.toString());
             if (!updated) return;
 
-            updated.status = state.currentReactor.status;
-
             state.currentReactor = updated;
             renderReactorDetails(updated);
             renderSensors(updated.sensors || []);
@@ -88,6 +105,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showError() {
         if (layout) layout.classList.add("hidden");
         if (errorContainer) errorContainer.classList.remove("hidden");
+    }
+
+    function normalizeStatusChoice(status) {
+        const normalized = (status || '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+
+        if (normalized === 'activ') return 'Activ';
+        if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') return 'Mentenanță';
+        if (normalized === 'oprit') return 'Oprit';
+        if (normalized === 'alerta' || normalized === 'critic' || normalized === 'critica' || normalized === 'stare critica') return 'Alertă';
+        if (normalized === 'in constructie' || normalized === 'constructie') return 'In Constructie';
+        return 'Activ';
+    }
+
+    function getStatusLabel(status) {
+        const normalized = normalizeStatusChoice(status);
+        const option = statusOptions.find((item) => item.value === normalized);
+        return option ? option.label : 'Activ';
     }
 
     function renderReactorDetails(reactor) {
@@ -123,11 +162,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             effBar.className = "spec-bar-fill " + getBarClass(eff);
         }
 
-        const stab = reactor.soil_stability ?? 0;
-        setElText("stability-val", `${stab}%`);
+        const rawStab = reactor.soil_stability ?? 0;
+        const stab = rawStab > 1 ? rawStab : rawStab * 100;
+        setElText("stability-val", `${Math.round(stab)}%`);
         const stabBar = document.getElementById("stability-bar");
         if (stabBar) {
-            stabBar.style.width = `${stab}%`;
+            stabBar.style.width = `${Math.round(stab)}%`;
             stabBar.className = "spec-bar-fill " + getBarClass(stab);
         }
 
@@ -154,6 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (btnStart) btnStart.disabled = false;
             if (btnStop) btnStop.disabled = false;
         }
+
     }
 
     function renderSensors(sensors) {
@@ -244,6 +285,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const readings = await res.json();
 
+            if (!sensorId) {
+                state.sensorReadings = Array.isArray(readings) ? readings : [];
+                renderRightSummary();
+            }
+
             if (!readings || readings.length === 0) {
                 container.innerHTML = `<div class="history-empty">Niciun istoric disponibil.</div>`;
                 return;
@@ -321,6 +367,81 @@ document.addEventListener("DOMContentLoaded", async () => {
         return `${hours}:${minutes} - ${day}.${month}`;
     }
 
+    function parseDateValue(value) {
+        if (!value) return null;
+        const date = new Date(String(value).replace(' ', 'T'));
+        return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function formatPeriodLabel(days) {
+        if (days === 1) return 'ultimele 24h';
+        if (days === 7) return 'ultimele 7 zile';
+        if (days === 30) return 'ultimele 30 zile';
+        if (days === 90) return 'ultimele 90 zile';
+        if (days === 365) return 'ultimul an';
+        return `ultimele ${days} zile`;
+    }
+
+    function filterByPeriod(items, dateGetter, days) {
+        const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+        return (items || []).filter((item) => {
+            const date = parseDateValue(dateGetter(item));
+            return date && date.getTime() >= cutoff;
+        });
+    }
+
+    function renderRightSummary() {
+        if (!summaryReadingsCount || !summaryAverageReading || !summaryAlertsCount || !summaryCriticalCount || !summarySensorsCount || !summaryLastReading) {
+            return;
+        }
+
+        const periodDays = state.selectedPeriodDays || 30;
+        const sensors = state.currentReactor?.sensors || [];
+        const readings = filterByPeriod(state.sensorReadings, (reading) => reading.recorded_at, periodDays);
+        const alerts = filterByPeriod(state.alertHistory, (alert) => alert.created_at, periodDays);
+
+        const sensorMap = new Map(sensors.map((sensor) => [String(sensor.id), sensor]));
+        const criticalReadings = readings.filter((reading) => {
+            const sensor = sensorMap.get(String(reading.sensor_id));
+            if (!sensor) return false;
+            const value = Number(reading.recorded_value);
+            const min = Number(sensor.min_safe_value ?? -Infinity);
+            const max = Number(sensor.max_safe_value ?? Infinity);
+            return Number.isFinite(value) && (value < min || value > max);
+        });
+
+        const averageReading = readings.length
+            ? readings.reduce((sum, reading) => sum + Number(reading.recorded_value || 0), 0) / readings.length
+            : 0;
+        const latestReading = readings
+            .map((reading) => parseDateValue(reading.recorded_at))
+            .filter(Boolean)
+            .sort((left, right) => right.getTime() - left.getTime())[0];
+
+        function setVal(el, val, colorClass = '') {
+            el.textContent = val;
+            el.className = 'right-stat-value' + (colorClass ? ' ' + colorClass : '');
+        }
+
+        setVal(summaryReadingsCount, `${readings.length}`, 'text-green');
+        setVal(summaryAverageReading, readings.length ? `${averageReading.toFixed(1)}` : '—');
+        const alertColor = alerts.length === 0 ? 'text-green' : alerts.length > 5 ? 'text-red' : 'text-amber';
+        setVal(summaryAlertsCount, `${alerts.length}`, alertColor);
+        const critColor = criticalReadings.length === 0 ? 'text-green' : 'text-red';
+        setVal(summaryCriticalCount, `${criticalReadings.length}`, critColor);
+        setVal(summarySensorsCount, `${sensors.length}`, 'text-purple');
+        setVal(summaryLastReading, latestReading ? formatSmallTime(latestReading.toISOString()) : '—');
+
+        if (summarySubtitle) {
+            summarySubtitle.textContent = `${formatPeriodLabel(periodDays)} · ${readings.length} citiri, ${alerts.length} alerte`;
+        }
+
+        document.querySelectorAll('.period-btn').forEach((button) => {
+            const isActive = Number(button.dataset.days || 0) === periodDays;
+            button.classList.toggle('active', isActive);
+        });
+    }
+
     async function loadReactorSpecificLog(id) {
         const logBox = document.getElementById('alert-list');
         const countPill = document.getElementById('alert-count-pill');
@@ -331,14 +452,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             const res = await window.authFetch(`/alerts/history/reactor/${id}`);
             if (res.ok) {
                 const historyAlerts = await res.json();
+                state.alertHistory = Array.isArray(historyAlerts) ? historyAlerts : [];
 
                 if (historyAlerts.length === 0) {
+                    state.activeAlertsCount = 0;
                     logBox.innerHTML = `
                         <div style="text-align: center; color: var(--color-text-secondary); font-style: italic; padding: 40px 20px;">
                             Sistem stabil. Nicio alertă.
                         </div>`;
                     if (countPill) countPill.classList.add('hidden');
                     if (alertSub) alertSub.textContent = `Evenimente înregistrate`;
+                    renderRightSummary();
                     return;
                 }
 
@@ -346,6 +470,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     countPill.textContent = historyAlerts.length;
                     countPill.classList.remove('hidden');
                 }
+                state.activeAlertsCount = historyAlerts.filter(alert => !alert.is_resolved).length;
                 if (alertSub) {
                     alertSub.textContent = `${historyAlerts.length} evenimente recente`;
                 }
@@ -365,6 +490,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ${alert.is_resolved ? `<div style="color: green; font-weight: bold;">✔ Rezolvat</div>` : '<div style="color: red; font-weight: bold;">⚠️ Activă</div>'}
                     </div>`;
                 }).join('');
+
+                renderRightSummary();
             }
         } catch (e) {
             console.error("Eroare la încărcarea jurnalului de alerte:", e);
@@ -381,6 +508,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const res = await window.authFetch(`/reactors/${id}/maintenance/history`);
             if (res.ok) {
                 const history = await res.json();
+                state.maintenanceHistory = Array.isArray(history) ? history : [];
                 renderMaintenanceHistoryList(history);
             }
         } catch (err) {
@@ -438,10 +566,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function getStatusPillClass(status) {
         if (!status) return "pill-off";
-        const s = status.toLowerCase();
+        const s = status.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         if (s.includes("activ") || s.includes("operaț")) return "pill-active";
         if (s.includes("alert")) return "pill-alert";
-        if (s.includes("mentenanț")) return "pill-maint";
+        if (s.includes("mentenant")) return "pill-maint";
+        if (s.includes("constructie")) return "pill-blue";
         return "pill-off";
     }
 
@@ -490,6 +619,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             loadSensorHistory(sensorId);
         });
 
+        document.querySelectorAll('.period-btn').forEach((button) => {
+            button.addEventListener('click', () => {
+                state.selectedPeriodDays = Number(button.dataset.days || 30);
+                renderRightSummary();
+            });
+        });
+
         document.querySelectorAll('.btn-close-modal, .modal-overlay').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('btn-close-modal')) {
@@ -499,11 +635,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         const openStatusModal = (newStatus, title, icon, warning) => {
-            state.pendingStatus = newStatus;
+            const statusSelect = document.getElementById('status-select');
+            state.pendingStatus = newStatus ? normalizeStatusChoice(newStatus) : normalizeStatusChoice(state.currentReactor?.status);
             
             const setVal = (id, val) => { if (document.getElementById(id)) document.getElementById(id).textContent = val; };
             setVal('modal-status-icon', icon);
             setVal('modal-status-title', title);
+
+            if (statusSelect) {
+                statusSelect.value = state.pendingStatus;
+            }
             
             const warnEl = document.getElementById('modal-status-warning');
             if (warnEl) {
@@ -518,23 +659,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById('modal-status')?.classList.add('open');
         };
 
-        document.getElementById('btn-start')?.addEventListener('click', () => openStatusModal('Activ', 'Pornire Reactor', '✅', null));
-        document.getElementById('btn-stop')?.addEventListener('click', () => openStatusModal('Oprit', 'Oprire Reactor', '🛑', 'Oprirea va întrerupe producția.'));
+        document.getElementById('btn-change-status')?.addEventListener('click', () => openStatusModal(null, 'Schimbare status', '🔄', 'Alegeți statusul dorit și confirmați.'));
 
         document.getElementById('modal-status-confirm')?.addEventListener('click', async () => {
             document.getElementById('modal-status')?.classList.remove('open');
+            const statusSelect = document.getElementById('status-select');
+            const chosenStatus = statusSelect ? statusSelect.value : state.pendingStatus;
             
             try {
-                const res = await window.authFetch(`/reactors/${state.currentReactor.id}`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ ...state.currentReactor, status: state.pendingStatus })
-                });
+                const updated = await window.NuclearAPI.updateReactorStatus(state.currentReactor.id, chosenStatus);
                 
-                if (res.ok) {
-                    state.currentReactor.status = state.pendingStatus;
+                if (updated) {
+                    state.currentReactor.status = chosenStatus;
                     renderReactorDetails(state.currentReactor);
-                    showToast(`Status actualizat: ${state.pendingStatus}`);
-                } else throw new Error("Eroare răspuns server");
+                    showToast(`Status actualizat: ${getStatusLabel(chosenStatus)}`);
+                }
             } catch (err) {
                 console.error(err);
                 showToast('Eroare la actualizare status.', 'error'); 

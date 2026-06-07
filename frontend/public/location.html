@@ -203,6 +203,35 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="status-modal" aria-hidden="true" style="z-index:1320;">
+    <div class="modal-card modal-card-small" role="dialog" aria-modal="true" aria-labelledby="status-modal-title">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title" id="status-modal-title">Schimbă status</h2>
+                <p class="modal-subtitle" id="status-modal-subtitle">Selectați statusul nou pentru reactorul ales</p>
+            </div>
+            <button class="icon-close" type="button" id="close-status-modal" aria-label="Inchide">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="field full">
+                <label class="form-label" for="status-select">Status nou</label>
+                <select class="form-select" id="status-select">
+                    <option value="Activ">Activ</option>
+                    <option value="Mentenanță">Mentenanță</option>
+                    <option value="Oprit">Oprit</option>
+                    <option value="Alertă">Alertă</option>
+                    <option value="In Constructie">În construcție</option>
+                </select>
+            </div>
+            <p class="picker-hint">Schimbarea se aplică imediat după confirmare.</p>
+            <div class="modal-footer" style="justify-content:flex-end;">
+                <button class="btn" type="button" id="cancel-status-modal">Renunță</button>
+                <button class="btn btn-success" type="button" id="confirm-status-modal">Confirmă</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="toast" id="toast-success">Reactor adăugat cu succes</div>
 
 <div class="modal-overlay" id="sensor-modal" aria-hidden="true" style="z-index:1350;">
