@@ -66,6 +66,29 @@ class UserRepository {
     /**
      * Caută un utilizator după Email (folosit mai ales la login/înregistrare)
      */
+    public function findByRole(string $role): array {
+        $sql = "
+            SELECT u.*, 
+                   rp.id as personnel_id, 
+                   rp.user_id, 
+                   rp.reactor_id, 
+                   rp.intervention_role 
+            FROM users u
+            LEFT JOIN reactor_personnel rp ON u.id = rp.user_id
+            WHERE u.role = :role
+            ORDER BY u.first_name ASC
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':role', $role);
+        $stmt->execute();
+
+        $users = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $users[] = $this->mapRowToUser($row);
+        }
+        return $users;
+    }
+
     public function findByEmail(string $email): ?User {
         $sql = "
             SELECT u.*, 

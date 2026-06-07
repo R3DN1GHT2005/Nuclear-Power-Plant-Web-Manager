@@ -15,6 +15,26 @@ class UserController {
         $this->userService = new UserService();
     }
 
+    // GET /api/users/technicians
+    public function getTechnicians(): void {
+        try {
+            $technicians = $this->userService->getTechnicians();
+            $result = array_map(fn($u) => [
+                'id' => $u->getId(),
+                'first_name' => $u->getFirstName(),
+                'last_name' => $u->getLastName(),
+                'email' => $u->getEmail(),
+                'reactor_id' => $u->getAssignment()?->getReactorId()
+            ], $technicians);
+            Response::json($result);
+        } catch (Exception $e) {
+            Response::json([
+                'error' => 'Eroare la aducerea tehnicienilor.',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // GET /api/users
    public function getAllUsers(): void {
         try {

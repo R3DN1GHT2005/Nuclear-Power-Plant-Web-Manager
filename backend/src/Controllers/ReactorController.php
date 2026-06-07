@@ -6,6 +6,8 @@ use App\Core\Response;
 use App\DTOs\Request\reactor\CreateReactorRequestDTO;
 use App\DTOs\Request\reactor\UpdateReactorDTO;
 use App\Mappers\ReactorMapper;
+use App\Middleware\AuthMiddleware;
+use App\Repositories\ReactorPersonnelRepository;
 use App\Services\ReactorService;
 use App\Exceptions\ValidationException;
 
@@ -26,6 +28,33 @@ class ReactorController {
     public function getReactorById(int $id): void {
         $reactor = $this->reactorService->getById($id);
 
+        if (!$reactor) {
+            Response::json(['error' => 'Reactor negăsit'], 404);
+            return;
+        }
+
+        Response::json(ReactorMapper::toResponse($reactor));
+    }
+
+    // GET /api/reactors/my
+    public function getMyReactor(): void {
+        $user = AuthMiddleware::getUser();
+        $userId = $user->userId ?? null;
+
+        if (!$userId) {
+            Response::json(['error' => 'Neautorizat'], 401);
+            return;
+        }
+
+        $personnelRepo = new ReactorPersonnelRepository();
+        $reactorId = $personnelRepo->getAssignedReactorId($userId);
+
+        if (!$reactorId) {
+            Response::json(['error' => 'Nu ești asignat la niciun reactor'], 404);
+            return;
+        }
+
+        $reactor = $this->reactorService->getById($reactorId);
         if (!$reactor) {
             Response::json(['error' => 'Reactor negăsit'], 404);
             return;
@@ -137,6 +166,13 @@ class ReactorController {
         Response::json(['message' => 'Eficiență actualizată cu succes']);
     }
 
+
+    // GET /api/reactors/{id}/personnel
+    public function getPersonnel(int $id): void {
+        $personnelRepo = new ReactorPersonnelRepository();
+        $personnel = $personnelRepo->findByReactorId($id);
+        Response::json($personnel);
+    }
 
     public function getActiveReactors(): void {
         $reactors = $this->reactorService->getAllActive();

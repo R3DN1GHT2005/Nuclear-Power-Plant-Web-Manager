@@ -1,8 +1,10 @@
 <?php
 namespace App\Controllers;
 
+use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use App\Services\SessionService;
+use App\Middleware\AuthMiddleware;
 use Exception;
 
 class AuthController {
@@ -135,6 +137,42 @@ setcookie('refresh_token', $session['refresh_token'], [
 
         http_response_code(200);
         echo json_encode(["message" => "Delogare cu succes!"]);
+    }
+
+    public function me(): void {
+        $jwtUser = AuthMiddleware::getUser();
+        $userId = $jwtUser->userId ?? null;
+
+        if (!$userId) {
+            http_response_code(401);
+            echo json_encode(["error" => "Neautorizat"]);
+            return;
+        }
+
+        $userRepo = new UserRepository();
+        $userModel = $userRepo->findById($userId);
+
+        if (!$userModel) {
+            http_response_code(404);
+            echo json_encode(["error" => "Utilizator negăsit"]);
+            return;
+        }
+
+        $reactorId = null;
+        $assignment = $userModel->getAssignment();
+        if ($assignment) {
+            $reactorId = $assignment->getReactorId();
+        }
+
+        http_response_code(200);
+        echo json_encode([
+            "id" => $userModel->getId(),
+            "email" => $userModel->getEmail(),
+            "first_name" => $userModel->getFirstName(),
+            "last_name" => $userModel->getLastName(),
+            "role" => $userModel->getRole()->value,
+            "reactor_id" => $reactorId
+        ]);
     }
 
     // ==========================================

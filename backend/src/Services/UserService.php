@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Middleware\AuthMiddleware;
 use App\Repositories\UserRepository;
 use App\Repositories\ReactorPersonnelRepository;
 use App\Models\User;
@@ -16,6 +17,10 @@ class UserService {
     public function __construct() {
         $this->userRepository = new UserRepository();
         $this->personnelRepository = new ReactorPersonnelRepository();
+    }
+
+    public function getTechnicians(): array {
+        return $this->userRepository->findByRole('tehnician');
     }
 
     public function getAll(): array {
@@ -46,9 +51,19 @@ class UserService {
 
     public function assignReactor(int $userId, ?int $reactorId): bool {
         $user = $this->getById($userId);
-        
+
         if (!$user) {
             throw new Exception("Utilizatorul nu a fost găsit.");
+        }
+
+        $currentUser = AuthMiddleware::getUser();
+        $currentRole = $currentUser->role ?? '';
+        if ($currentRole === 'manager') {
+            $currentUserId = $currentUser->userId ?? null;
+            $myReactorId = $currentUserId ? $this->personnelRepository->getAssignedReactorId($currentUserId) : null;
+            if ($myReactorId !== $reactorId) {
+                throw new Exception("Poți asigna utilizatori doar la reactorul tău.");
+            }
         }
 
         if ($reactorId === null) {

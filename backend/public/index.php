@@ -22,6 +22,7 @@ use App\Core\Router;
 
 use App\Middleware\AdminMiddleware;     
 use App\Middleware\AuthMiddleware;    
+use App\Middleware\ManagerOrAdminMiddleware;    
 use App\Middleware\SensorMiddleware;  
 
 $allowedOrigins = [
@@ -67,14 +68,16 @@ try {
     $router->post('/api/auth/login', AuthController::class, 'login');
     $router->post('/api/auth/refresh', AuthController::class, 'refresh');
     $router->post('/api/auth/logout', AuthController::class, 'logout');
+    $router->get('/api/auth/me', AuthController::class, 'me', [AuthMiddleware::class]);
     $router->put('/api/auth/password', AuthController::class, 'updatePassword', [AdminMiddleware::class]); 
 
     $router->post('/api/users', UserController::class, 'createUser', [AdminMiddleware::class]);
     $router->get('/api/users', UserController::class, 'getAllUsers', [AdminMiddleware::class]);
     $router->get('/api/users/{id}', UserController::class, 'getUserById', [AdminMiddleware::class]);
     $router->put('/api/users/{id}/password', UserController::class, 'updatePassword', [AdminMiddleware::class]);
-    $router->put('/api/users/{id}/reactor', UserController::class, 'assignToReactor', [AdminMiddleware::class]);
+    $router->put('/api/users/{id}/reactor', UserController::class, 'assignToReactor', [ManagerOrAdminMiddleware::class]);
     $router->delete('/api/users/{id}', UserController::class, 'deleteUser', [AdminMiddleware::class]);
+    $router->get('/api/users/technicians', UserController::class, 'getTechnicians', [ManagerOrAdminMiddleware::class]);
     
     $router->post('/api/user/rss-token/regenerate', UserController::class, 'regenerateRssToken', [AuthMiddleware::class]);
 
@@ -84,6 +87,7 @@ try {
     // -- Rute statice --
     $router->get('/api/reactors/active', ReactorController::class, 'getActiveReactors', [SensorMiddleware::class]);
     $router->get('/api/reactors', ReactorController::class, 'getAllReactors', [AuthMiddleware::class]); 
+    $router->get('/api/reactors/my', ReactorController::class, 'getMyReactor', [AuthMiddleware::class]);
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
     
     // -- Rute dinamice ({id}) --
@@ -94,8 +98,9 @@ try {
     $router->patch('/api/reactors/{id}/efficiency', ReactorController::class, 'updateEfficiency', [SensorMiddleware::class]);
     
     // -- Rute dependente de reactor (Mentenanță / Senzori asociați) --
-    $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [AdminMiddleware::class]);
-    $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [AdminMiddleware::class]);
+    $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [ManagerOrAdminMiddleware::class]);
+    $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [ManagerOrAdminMiddleware::class]);
+    $router->get('/api/reactors/{id}/personnel', ReactorController::class, 'getPersonnel', [ManagerOrAdminMiddleware::class]);
     $router->get('/api/reactors/{id}/maintenance/history', ReactorMaintenanceController::class, 'getHistory');
     $router->get('/api/reactors/{id}/sensors', SensorController::class, 'getSensorsByReactor', [AuthMiddleware::class]); 
     $router->post('/api/reactors/{id}/sensors', SensorController::class, 'addSensorToReactor', [AdminMiddleware::class]); 

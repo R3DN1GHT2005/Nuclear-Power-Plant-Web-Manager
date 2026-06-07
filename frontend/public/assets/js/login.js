@@ -11,7 +11,7 @@ async function postJson(url, body) {
     const res = await fetch(url, {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // CRITIC: Fără asta, browserul refuză cookie-urile setate de server!
+        credentials: 'include',
         body: JSON.stringify(body)
     });
     const json = await res.json().catch(() => null);
@@ -20,6 +20,15 @@ async function postJson(url, body) {
         status: res.status,
          body: json 
     };
+}
+
+async function fetchWithToken(url) {
+    const res = await fetch(url, {
+        method: 'GET',
+        credentials: 'include'
+    });
+    const json = await res.json().catch(() => null);
+    return { ok: res.ok, status: res.status, body: json };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,11 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 password: this.password.value 
             };
             
-            // MODIFICAREA ESTE AICI: Folosește 127.0.0.1 în loc de localhost
             const response = await postJson(`${LOGIN_API_URL}/auth/login`, data);
             
             if (response.ok) {
-                window.location.href = 'index.html'; 
+                const userRes = await fetchWithToken(`${LOGIN_API_URL}/auth/me`);
+                if (userRes.ok && userRes.body) {
+                    const role = userRes.body.role;
+                    if (role === 'manager' || role === 'tehnician') {
+                        window.location.href = 'station-view.html';
+                        return;
+                    }
+                }
+                window.location.href = 'index.html';
             } else {
                 alert(response.body?.error || 'Eroare la autentificare');
             }

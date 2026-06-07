@@ -6,6 +6,8 @@ namespace App\Controllers;
 require_once __DIR__ . '/../Mappers/ReactorMaintenanceMapper.php';
 
 use App\Core\Response;
+use App\Middleware\AuthMiddleware;
+use App\Repositories\ReactorPersonnelRepository;
 use App\Services\ReactorMaintenanceService;
 use App\Mappers\ReactorMaintenanceMapper;
 use InvalidArgumentException;
@@ -18,7 +20,24 @@ class ReactorMaintenanceController {
         $this->maintenanceService = new ReactorMaintenanceService();
     }
 
+    private function checkReactorAccess(int $reactorId): void {
+        $user = AuthMiddleware::getUser();
+        $role = $user->role ?? '';
+        if ($role !== 'admin') {
+            $userId = $user->userId ?? null;
+            if ($userId) {
+                $personnelRepo = new ReactorPersonnelRepository();
+                $assignedReactorId = $personnelRepo->getAssignedReactorId($userId);
+                if ($assignedReactorId !== $reactorId) {
+                    Response::json(['error' => 'Nu ai acces la acest reactor'], 403);
+                    exit;
+                }
+            }
+        }
+    }
+
     public function startMaintenance(int $reactorId): void {
+        $this->checkReactorAccess($reactorId);
         $data = json_decode(file_get_contents('php://input'), true);
 
         if (!$data) {
@@ -39,6 +58,7 @@ class ReactorMaintenanceController {
     }
 
     public function stopMaintenance(int $reactorId): void {
+        $this->checkReactorAccess($reactorId);
         try {
             $this->maintenanceService->stopMaintenance($reactorId);
             
