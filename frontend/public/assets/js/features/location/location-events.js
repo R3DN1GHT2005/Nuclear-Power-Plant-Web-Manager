@@ -113,3 +113,7 @@ function bindEvents() {
 
   safeBindSubmit(refs.form, submitCreateReactor);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  LocationState.init();
+});
