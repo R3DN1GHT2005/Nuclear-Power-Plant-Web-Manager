@@ -1,13 +1,19 @@
 /*
  * dashboard-index-init.js — Index (admin landing) page bootstrap
  * Fetches all reactors, computes global metrics, renders the
- * reactor table sorted by urgency. No role guard — navbar.js
- * handles role-specific navigation.
+ * reactor table sorted by urgency.
  */
 
 (async function initDashboardIndex() {
-    var meRes = await authFetch('/auth/me', { method: 'GET' });
-    if (!meRes.ok) { window.location.href = 'login.html'; return; }
+    document.documentElement.style.visibility = 'hidden';
+
+    try {
+        var meRes = await authFetch('/auth/me', { method: 'GET' });
+        if (!meRes.ok) { window.location.href = 'login.html'; return; }
+        var me = await meRes.json();
+        if (me.role !== 'admin') { window.location.href = 'login.html'; return; }
+    } catch (e) { window.location.href = 'login.html'; return; }
+    document.documentElement.style.visibility = '';
 
     var reactors = await NuclearAPI.getReactors();
     if (!reactors.length) {

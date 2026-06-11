@@ -6,15 +6,17 @@
  */
 
 (async function initDashboard() {
+    document.documentElement.style.visibility = 'hidden';
 
     var meRes = await authFetch('/auth/me', { method: 'GET' });
     if (!meRes.ok) { window.location.href = 'login.html'; return; }
 
     var me = await meRes.json();
-    if (me.role !== 'tehnician' && me.role !== 'manager') { window.location.href = 'login.html'; return; }
+    if (me.role !== 'tehnician' && me.role !== 'manager' && me.role !== 'admin') { window.location.href = 'login.html'; return; }
+    document.documentElement.style.visibility = '';
 
-    var isManager = me.role === 'manager';
-    if (isManager) {
+    var isManagerOrAdmin = me.role === 'manager' || me.role === 'admin';
+    if (isManagerOrAdmin) {
         document.getElementById('nav-statistics').style.display = '';
         document.getElementById('nav-management').style.display = '';
         document.getElementById('nav-reactor').style.display = '';

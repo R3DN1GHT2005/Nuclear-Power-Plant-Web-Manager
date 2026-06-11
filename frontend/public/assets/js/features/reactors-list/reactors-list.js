@@ -8,6 +8,16 @@
 var allReactors = [];
 
 document.addEventListener("DOMContentLoaded", async function() {
+    document.documentElement.style.visibility = 'hidden';
+
+    try {
+        var meRes = await authFetch('/auth/me', { method: 'GET' });
+        if (!meRes.ok) { window.location.href = 'login.html'; return; }
+        var me = await meRes.json();
+        if (me.role !== 'admin') { window.location.href = 'login.html'; return; }
+    } catch (e) { window.location.href = 'login.html'; return; }
+    document.documentElement.style.visibility = '';
+
     var gridContainer = document.getElementById("reactor-grid-container");
     gridContainer.innerHTML = '<p class="grid-placeholder-msg" style="color: var(--text-2);">Se încarcă datele...</p>';
 

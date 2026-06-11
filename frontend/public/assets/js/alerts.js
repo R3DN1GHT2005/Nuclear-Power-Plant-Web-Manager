@@ -1,12 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
+(function() {
     
-    // =====================================================================
-    // 1. LOGICA PENTRU POP-UP GLOBAL (ALARMĂ SONORĂ)
-    // =====================================================================
-    const sunetAlarma = new Audio('./assets/alert_sound.mp3');
-    sunetAlarma.loop = true; 
+// =====================================================================
+// 1. LOGICA PENTRU POP-UP GLOBAL (ALARMĂ SONORĂ)
+// =====================================================================
+const sunetAlarma = new Audio('./assets/alert_sound.mp3');
+sunetAlarma.loop = true; 
 
-    const ignoredAlertIds = new Set();
+const ignoredAlertIds = new Set();
 
     const alertHTML = `
         <div id="nwGlobalOverlay" class="nw-alert-overlay">
@@ -427,4 +427,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setInterval(fetchAndRenderList, 5000);
     fetchAndRenderList();
-});
+})();

@@ -53,6 +53,15 @@ var ReactorDetailsState = (function() {
   }
 
   async function init() {
+    document.documentElement.style.visibility = 'hidden';
+
+    try {
+      var meRes = await authFetch('/auth/me', { method: 'GET' });
+      if (!meRes.ok) { window.location.href = 'login.html'; return; }
+      var me = await meRes.json();
+      if (me.role !== 'manager' && me.role !== 'admin') { window.location.href = 'login.html'; return; }
+    } catch (e) { window.location.href = 'login.html'; return; }
+
     cacheRefs();
 
     var params = new URLSearchParams(window.location.search);
@@ -60,16 +69,14 @@ var ReactorDetailsState = (function() {
 
     if (!reactorId) {
       try {
-        var meRes = await authFetch('/auth/me', { method: 'GET' });
-        if (!meRes.ok) { showError(); return; }
-        var me = await meRes.json();
-        if (me.role !== 'tehnician' && me.role !== 'manager') { showError(); return; }
         var reactorRes = await authFetch('/reactors/my', { method: 'GET' });
         if (!reactorRes.ok) { showError(); return; }
         var reactor = await reactorRes.json();
         reactorId = reactor.id;
       } catch (e) { showError(); return; }
     }
+
+    document.documentElement.style.visibility = '';
 
     try {
       var reactors = await window.NuclearAPI.getReactors();
