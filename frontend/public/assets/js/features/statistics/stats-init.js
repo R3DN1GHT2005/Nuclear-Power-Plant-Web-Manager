@@ -5,10 +5,13 @@
  */
 
 (async function initStats() {
+    document.documentElement.style.visibility = 'hidden';
+
     var meRes = await authFetch('/auth/me', { method: 'GET' });
     if (!meRes.ok) { window.location.href = 'login.html'; return; }
     var me = await meRes.json();
-    if (me.role !== 'manager') { window.location.href = 'dashboard.html'; return; }
+    if (me.role !== 'manager' && me.role !== 'admin') { window.location.href = 'dashboard.html'; return; }
+    document.documentElement.style.visibility = '';
 
     var reactorRes = await authFetch('/reactors/my', { method: 'GET' });
     if (!reactorRes.ok) { document.getElementById('stats-kpis').innerHTML = '<p class="empty-msg">Nu ești asignat la niciun reactor.</p>'; return; }

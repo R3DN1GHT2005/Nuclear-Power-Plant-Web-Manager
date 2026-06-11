@@ -6,7 +6,6 @@
  */
 
 var LocationState = (function() {
-  var apiBase = typeof API_URL !== 'undefined' && API_URL ? API_URL : window.location.origin + '/api';
   var pollingIntervalMs = 5000;
 
   var state = {
@@ -96,28 +95,21 @@ var LocationState = (function() {
     return found;
   }
 
-  async function fetchReactors() {
-    var resp = await fetch(apiBase + '/reactors', {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    if (resp.status === 401) { window.location.href = 'login.html'; return []; }
-    if (!resp.ok) { throw new Error('Nu s-au putut prelua reactoarele (' + resp.status + ')'); }
-    var payload = await resp.json();
-    return Array.isArray(payload) ? payload : (Array.isArray(payload.data) ? payload.data : []);
-  }
-
   async function refreshReactors() {
     try {
-      var reactors = await fetchReactors();
+      var raw = await NuclearAPI.getReactors();
+      var reactors = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.data) ? raw.data : []);
       state.reactors = reactors;
       if (typeof renderMarkers === 'function') renderMarkers(reactors);
       if (typeof renderStatusCards === 'function') renderStatusCards(reactors);
       if (typeof renderReactorList === 'function') renderReactorList(reactors);
+      var stats;
+      if (typeof calculateReactorStats === 'function') { stats = calculateReactorStats(reactors); }
+      else { stats = createEmptyStats(); }
+      if (typeof renderReactorStats === 'function') renderReactorStats(stats);
       if (typeof updateLastRefresh === 'function') updateLastRefresh();
     } catch (error) {
-      console.error(error);
+      console.error('refreshReactors: EROARE', error);
       if (typeof renderReactorStats === 'function') renderReactorStats(createEmptyStats());
     }
   }
@@ -182,7 +174,6 @@ var LocationState = (function() {
     getHeaders: getHeaders,
     getReactorById: getReactorById,
     refreshReactors: refreshReactors,
-    fetchReactors: fetchReactors,
     startPolling: startPolling,
     stopPolling: stopPolling,
     submitStatusChange: submitStatusChange,

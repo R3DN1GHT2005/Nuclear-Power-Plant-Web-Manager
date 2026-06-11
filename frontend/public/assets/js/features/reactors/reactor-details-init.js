@@ -4,6 +4,6 @@
  * Replaces the monolithic reactor-details.js.
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   ReactorDetailsState.init();
 });
