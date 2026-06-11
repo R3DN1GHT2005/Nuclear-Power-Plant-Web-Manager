@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NuclearWatch — Reactor Statistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/alerts.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/station-view.css">
+</head>
+<body>
+
+<nav class="navbar" id="top-navbar">
+    <div class="nav-left">
+        <a class="logo" href="dashboard.html">
+            <div class="logo-icon">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="8" cy="8" r="3" stroke="white" stroke-width="1.5"/>
+                    <circle cx="8" cy="8" r="6.5" stroke="white" stroke-width="1" stroke-dasharray="2 2"/>
+                </svg>
+            </div>
+            NuclearWatch
+        </a>
+        <a class="nav-link" href="dashboard.html">Stația mea</a>
+        <a class="nav-link active" href="reactor-statistics.html">Statistici</a>
+        <a class="nav-link" href="management.html">Management</a>
+        <a class="nav-link" href="reactor.html">Vezi reactorul</a>
+    </div>
+    <div class="nav-right">
+        <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
+    </div>
+</nav>
+
+<div class="main tech-dash">
+    <div class="kpi-row" id="stats-kpis">
+        <p class="loading-msg">Se încarcă datele reactorului...</p>
+    </div>
+
+    <div class="dash-grid">
+        <div class="col-left">
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Statistici detaliate</div>
+                        <div class="panel-sub" id="stats-sub">Ultimele 24 ore</div>
+                    </div>
+                    <div class="period-switch" id="stats-period">
+                        <button class="period-btn active" data-days="1">24h</button>
+                        <button class="period-btn" data-days="7">7z</button>
+                        <button class="period-btn" data-days="30">30z</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="stats-grid" id="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+                        <p class="empty-msg">Se încarcă...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Istoric alerte</div>
+                        <div class="panel-sub" id="history-sub">Ultimele 15 incidente</div>
+                    </div>
+                </div>
+                <div class="panel-body" id="alert-history-body">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-right">
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Eficiență comparativă</div>
+                        <div class="panel-sub">Toate reactoarele</div>
+                    </div>
+                </div>
+                <div class="panel-body" id="efficiency-list">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-head">
+                    <div class="head-info">
+                        <div class="panel-title">Specificații reactor</div>
+                        <div class="panel-sub" id="specs-sub"></div>
+                    </div>
+                </div>
+                <div class="panel-body" id="specs-grid">
+                    <p class="empty-msg">Se încarcă...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/reactor-statistics.js"></script>
+<script src="assets/js/alerts.js"></script>
+</body>
+</html>

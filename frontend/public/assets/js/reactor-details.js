@@ -22,8 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // ── 2. PRELUARE ID DIN URL ──
     const params = new URLSearchParams(window.location.search);
-    const reactorId = params.get("id");
-    console.log("2. ID-ul extras din URL este:", reactorId);
+    let reactorId = params.get("id");
 
     const layout = document.getElementById("reactor-details-layout");
     const errorContainer = document.getElementById("error-container");
@@ -36,9 +35,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const summaryLastReading = document.getElementById('summary-last-reading');
 
     if (!reactorId) {
-        console.error("❌ EROARE: Lipsește ID-ul reactorului din link.");
-        showError();
-        return;
+        try {
+            const meRes = await authFetch('/auth/me', { method: 'GET' });
+            if (!meRes.ok) { showError(); return; }
+            const me = await meRes.json();
+            if (me.role !== 'tehnician' && me.role !== 'manager') { showError(); return; }
+            const reactorRes = await authFetch('/reactors/my', { method: 'GET' });
+            if (!reactorRes.ok) { showError(); return; }
+            const reactor = await reactorRes.json();
+            reactorId = reactor.id;
+        } catch { showError(); return; }
     }
 
     // ── 3. PRELUARE DATE REACTOR ──
