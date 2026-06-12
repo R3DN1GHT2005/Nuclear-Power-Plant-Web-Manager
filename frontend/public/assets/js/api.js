@@ -1,3 +1,11 @@
+/*
+ * frontend/public/assets/js/api.js
+ * API client — base URL, auth fetch wrapper with refresh-token rotation,
+ * and NuclearAPI object exposing all backend endpoints (reactors, sensors,
+ * alerts, users, auth, RSS, management, reports). Central HTTP layer for
+ * the entire frontend. Automatically redirects to login on 401 after
+ * a failed token refresh attempt.
+ */
 const API_URL = (() => {
     if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
         return `${window.location.protocol}//${window.location.hostname}:8082/api`;
@@ -15,12 +23,14 @@ async function authFetch(endpoint, options = {}) {
     const fetchOptions = {
         ...options,
         headers,
-        credentials: 'include' // Folosește cookie-uri (HttpOnly) pentru autentificare
+        credentials: 'include' 
+
     };
 
     let response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
 
-    // Mecanismul de Refresh Token
+    
+
     if (response.status === 401) {
         try {
             const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
@@ -30,7 +40,8 @@ async function authFetch(endpoint, options = {}) {
             });
 
             if (refreshResponse.ok) {
-                // Dacă refresh-ul a reușit, repetăm cererea inițială
+                
+
                 response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
             } else {
                 window.location.href = 'login.html';
@@ -45,15 +56,19 @@ async function authFetch(endpoint, options = {}) {
 }
 
 const NuclearAPI = {
-    // ==========================================
-    // ── REACTOARE ──
-    // ==========================================
+    
+
+    
+
+    
+
     
     async getReactors() {
         try {
             const response = await authFetch('/reactors', { method: 'GET' });
             
-            if (response.status === 401) return []; // Oprim dacă tot e 401 după refresh
+            if (response.status === 401) return []; 
+
             if (!response.ok) throw new Error("Eroare la preluarea reactoarelor");
             
             const data = await response.json();
@@ -105,9 +120,12 @@ const NuclearAPI = {
         return await response.json();
     },
 
-    // ==========================================
-    // ── RAPOARTE / STATISTICI ──
-    // ==========================================
+    
+
+    
+
+    
+
 
     async getKpi() {
         const response = await authFetch('/reports/kpi', { method: 'GET' });
@@ -145,11 +163,15 @@ const NuclearAPI = {
         return await response.json();
     },
 
-    // ==========================================
-    // ── SENZORI ──
-    // ==========================================
+    
 
-    // 1. Preia dicționarul de senzori din rețea (Celsius, Bar, limite etc.)
+    
+
+    
+
+
+    
+
     async getSensorTypes() {
         try {
             const response = await authFetch('/sensors/types', { method: 'GET' });
@@ -161,7 +183,8 @@ const NuclearAPI = {
         }
     },
 
-    // 2. Preia toți senzorii pentru un anumit reactor
+    
+
     async getSensorsByReactor(reactorId) {
         try {
             const response = await authFetch(`/reactors/${reactorId}/sensors`, { method: 'GET' });
@@ -175,7 +198,8 @@ const NuclearAPI = {
         }
     },
 
-    // 3. Adaugă un senzor nou pe un reactor
+    
+
     async addSensorToReactor(reactorId, sensorData) {
         const response = await authFetch(`/reactors/${reactorId}/sensors`, {
             method: 'POST',
@@ -186,10 +210,12 @@ const NuclearAPI = {
             const err = await response.json();
             throw new Error(err.error || "Eroare la adăugarea senzorului");
         }
-        return await response.json(); // Returnează senzorul creat
+        return await response.json(); 
+
     },
 
-    // 4. Editează un senzor existent (patch)
+    
+
     async updateSensor(sensorId, sensorData) {
         const response = await authFetch(`/sensors/${sensorId}`, {
             method: 'PATCH',
@@ -203,7 +229,8 @@ const NuclearAPI = {
         return true;
     },
 
-    // 5. Șterge un senzor
+    
+
     async deleteSensor(sensorId) {
         const response = await authFetch(`/sensors/${sensorId}`, { method: 'DELETE' });
 
@@ -227,6 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Expunem funcțiile global pentru a le putea folosi în orice alt fișier JS
+
+
 window.authFetch = authFetch;
 window.NuclearAPI = NuclearAPI;

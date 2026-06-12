@@ -1,3 +1,9 @@
+/*
+ * backend/src/Clients/SeismicApiClient.php
+ * SeismicApiClient — external HTTP API client that fetches environmental
+ * data (seismic, elevation, weather) from third-party services
+ * for reactor placement and monitoring.
+ */
 <?php
 
 namespace App\Clients;

@@ -1,9 +1,9 @@
 /*
- * dashboard-stats.js — Period-based statistics for dashboard
- * Uses fetchPeriodStats from features/shared/stats-calculator.js
- * for the shared data pipeline, then renders 6 stat cards.
+ * frontend/public/assets/js/features/dashboard/dashboard-stats.js
+ * Dashboard statistics — calls fetchPeriodStats from the shared
+ * calculator and renders six stat cards: reading count, average value,
+ * alerts, critical readings, sensor count, latest reading time.
  */
-
 async function loadDashboardStats(reactorId) {
     var activeBtn = document.querySelector('#stats-period .period-btn.active');
     var days = parseInt(activeBtn ? activeBtn.dataset.days : '1', 10);

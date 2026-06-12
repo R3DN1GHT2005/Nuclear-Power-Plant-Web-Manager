@@ -1,3 +1,9 @@
+/*
+ * backend/src/Controllers/AuthController.php
+ * AuthController — HTTP endpoint handler exposing auth
+ * routes. Parses request data, applies middleware, delegates to
+ * the corresponding service, and returns JSON responses.
+ */
 <?php
 namespace App\Controllers;
 
@@ -54,7 +60,8 @@ class AuthController {
             echo json_encode([
                 "message" => "Logare cu succes!",
                 "user" => $user
-                // Am eliminat "access_token" de aici pentru securitate, acum stă ascuns în cookie!
+                
+
             ]);
         } else {
             http_response_code(401);
@@ -63,7 +70,8 @@ class AuthController {
     }
 
     public function refresh() {
-        // Preluăm token-ul de refresh din cookie (generat automat de browser)
+        
+
         $refreshToken = $_COOKIE['refresh_token'] ?? null;
 
         if (!$refreshToken) {
@@ -72,11 +80,13 @@ class AuthController {
             return;
         }
 
-        // Generăm un nou Access Token dacă Refresh Token-ul e valid
+        
+
         $newAccessToken = $this->sessionService->refreshSession($refreshToken);
 
         if (!$newAccessToken) {
-            // Dacă token-ul a expirat sau nu există în DB, ștergem ambele cookie-uri
+            
+
             setcookie('refresh_token', '', time() - 3600, '/api/auth/refresh');
             setcookie('access_token', '', time() - 3600, '/');
             
@@ -85,10 +95,12 @@ class AuthController {
             return;
         }
 
-        // Extragem șirul de caractere din array-ul primit de la Service
+        
+
         $tokenString = is_array($newAccessToken) ? $newAccessToken['access_token'] : $newAccessToken;
 
-        // Setăm NOUL Access Token primit de la Service
+        
+
         setcookie('access_token', $tokenString, [
             'expires'  => time() + 900, 
             'path'     => '/',
@@ -101,7 +113,8 @@ class AuthController {
         echo json_encode([
             "success" => true,
             "message" => "Sesiune reîmprospătată"
-            // Nu mai trimitem noul token prin JSON, e deja actualizat în browser prin Set-Cookie
+            
+
         ]);
     }
 
@@ -109,7 +122,8 @@ class AuthController {
         $refreshToken = $_COOKIE['refresh_token'] ?? null;
 
         if ($refreshToken) {
-            // Ștergem sesiunea din baza de date
+            
+
             $this->sessionService->destroySession($refreshToken);
         }
 

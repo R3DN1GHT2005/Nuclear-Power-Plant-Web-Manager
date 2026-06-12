@@ -1,25 +1,8 @@
-/* =============================================================
-   reactor.css — Pagina de detalii reactor (NuclearWatch)
-   Structură:
-   1.  Utilitare globale
-   2.  Layout principal (3 coloane: stânga / centru / dreapta)
-   3.  Header & Action Bar
-   4.  Card Specificații Tehnice
-   5.  Bare de progres
-   6.  Tab-uri (Senzori / Istoric)
-   7.  Grila de senzori
-   8.  Filtru & Istoric citiri
-   9.  Jurnal Alerte
-   10. Footer panel
-   11. Modal overlay (popup)
-   12. Toast notificări
-   13. Ecran de eroare
-   ============================================================= */
-
-
-/* ─────────────────────────────────────────────
-   1. UTILITARE GLOBALE
-   ───────────────────────────────────────────── */
+/*
+ * frontend/public/assets/css/reactor.css
+ * Reactor details page styles — info header, sensor card grid, history
+ * tables, summary panel, filter tabs, period buttons.
+ */
 .hidden {
     display: none !important;
 }
@@ -132,12 +115,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   2. LAYOUT PRINCIPAL — 3 COLOANE
-   stânga: specificații fixe
-   centru: tab-uri (senzori / istoric / mentenanță) — flex
-   dreapta: jurnal alerte fixă
-   ───────────────────────────────────────────── */
+
 
 #reactor-details-layout {
     display: grid;
@@ -148,12 +126,12 @@
     max-width: 100%;
     padding: 24px;
     box-sizing: border-box;
-    /* înălțime: ecranul minus navbar (~60px) */
+    
     height: calc(100vh - 60px);
     align-items: start;
 }
 
-/* Coloanele ocupă toată înălțimea disponibilă */
+
 .col-left,
 .col-center,
 .col-right {
@@ -164,10 +142,10 @@
     gap: 16px;
 }
 
-/* Coloana centru și dreapta: înălțime completă pentru scroll intern */
+
 .col-center,
 .col-right {
-    height: calc(100vh - 108px); /* 60px navbar + 24px padding top + 24px padding bottom */
+    height: calc(100vh - 108px); 
 }
 
 .col-right .panel-card.flex-fill {
@@ -184,9 +162,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   3. HEADER & ACTION BAR
-   ───────────────────────────────────────────── */
+
 
 .header-minimal {
     flex-direction: column;
@@ -214,7 +190,7 @@
     color: var(--text);
 }
 
-/* Bara cu butoane de acțiune (Pornire / Oprire / Mentenanță) */
+
 .action-bar {
     display: flex;
     gap: 8px;
@@ -243,12 +219,12 @@
     cursor: not-allowed;
 }
 
-/* Butonul "+ Senzor nou" are border punctat pentru a-l diferenția */
+
 .btn-outline {
     border-style: dashed;
 }
 
-/* Buton text simplu (ex: "Programează →") */
+
 .btn-text {
     background: transparent;
     border: none;
@@ -263,9 +239,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   4. CARD SPECIFICAȚII TEHNICE — GRILĂ 2 coloane
-   ───────────────────────────────────────────── */
+
 
 .specs-grid {
     display: grid;
@@ -295,9 +269,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   5. BARE DE PROGRES (Eficiență / Stabilitate)
-   ───────────────────────────────────────────── */
+
 
 .specs-bars {
     display: flex;
@@ -333,7 +305,7 @@
     transition: width 0.8s ease;
 }
 
-/* Culori bare: verde ≥75%, portocaliu 40-74%, roșu <40% */
+
 .bf-green  { background: var(--green,  #22c55e); }
 .bf-amber  { background: var(--amber,  #f59e0b); }
 .bf-red    { background: var(--red,    #ef4444); }
@@ -348,9 +320,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   6. TAB-URI (Senzori activi / Istoric citiri)
-   ───────────────────────────────────────────── */
+
 
 .tab-bar {
     display: flex;
@@ -383,7 +353,7 @@
     border-bottom-color: var(--text);
 }
 
-/* Panoul de conținut — ascuns implicit, vizibil când e activ */
+
 .tab-panel {
     display: none;
     flex-direction: column;
@@ -397,9 +367,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   7. GRILA DE SENZORI
-   ───────────────────────────────────────────── */
+
 
 .sensor-grid {
     display: grid;
@@ -420,22 +388,20 @@
     border-radius: var(--radius-sm);
 }
 
-/* Avertisment: temperatură ridicată */
+
 .sensor-card.warn {
     border-color: var(--amber);
     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
 }
 
-/* Critic: depășit pragul maxim */
+
 .sensor-card.crit {
     border-color: var(--red);
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
 }
 
 
-/* ─────────────────────────────────────────────
-   8. FILTRU ȘI ISTORIC CITIRI
-   ───────────────────────────────────────────── */
+
 
 .history-filter-bar {
     display: flex;
@@ -497,9 +463,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   9. JURNAL ALERTE — coloana dreaptă
-   ───────────────────────────────────────────── */
+
 
 .alert-row {
     display: flex;
@@ -508,7 +472,7 @@
     border-bottom: 1px solid var(--border-light, #f0f0f0);
 }
 
-/* Bara colorată de severitate (stânga rândului) */
+
 .alert-sev {
     width: 3px;
     border-radius: 2px;
@@ -536,7 +500,7 @@
     color: var(--text-3);
 }
 
-/* Scroll intern pentru lista de alerte */
+
 #alert-list {
     overflow-y: auto;
     flex: 1;
@@ -548,9 +512,7 @@
 #alert-list::-webkit-scrollbar-track { background: transparent; }
 
 
-/* ─────────────────────────────────────────────
-   10. FOOTER PANEL
-   ───────────────────────────────────────────── */
+
 
 .panel-footer {
     display: flex;
@@ -567,11 +529,9 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   11. MODAL OVERLAY (popup confirmare / adăugare senzor)
-   ───────────────────────────────────────────── */
 
-/* Fundalul întunecat care acoperă tot ecranul */
+
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -587,13 +547,13 @@
     transition: opacity 0.2s ease;
 }
 
-/* Clasa .open face modalul vizibil */
+
 .modal-overlay.open {
     opacity: 1;
     pointer-events: all;
 }
 
-/* Cutia albă/card din centru */
+
 .modal {
     position: relative;
     width: 100%;
@@ -612,7 +572,7 @@
     transform: translateY(0);
 }
 
-/* Iconița mare de confirmare (emoji) */
+
 .confirm-icon {
     font-size: 32px;
     text-align: center;
@@ -620,7 +580,7 @@
     line-height: 1;
 }
 
-/* Titlul modalului */
+
 .modal-title {
     font-size: 16px;
     font-weight: 600;
@@ -629,7 +589,7 @@
     margin-bottom: 8px;
 }
 
-/* Sub-textul modalului */
+
 .modal-sub {
     font-size: 13px;
     color: var(--text-2);
@@ -637,7 +597,7 @@
     margin-bottom: 18px;
 }
 
-/* Avertisment portocaliu */
+
 .confirm-warning {
     padding: 10px 14px;
     margin-bottom: 16px;
@@ -649,7 +609,7 @@
     text-align: center;
 }
 
-/* Rândul cu butoane (Anulează / Confirmă) */
+
 .modal-actions {
     display: flex;
     gap: 10px;
@@ -657,7 +617,7 @@
     margin-top: 20px;
 }
 
-/* ── Formulare în modal ── */
+
 
 .form-group {
     margin-bottom: 14px;
@@ -693,14 +653,14 @@
     border-color: var(--text-2);
 }
 
-/* Grilă 2 coloane pentru câmpurile Min / Max */
+
 .form-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 
-/* ── Butoane standard în modal ── */
+
 
 .btn {
     padding: 8px 16px;
@@ -719,7 +679,7 @@
     color: var(--text);
 }
 
-/* Buton primar (Confirmă / Adaugă) */
+
 .btn-prim {
     background: var(--text);
     color: var(--surface);
@@ -736,9 +696,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   12. TOAST — notificare temporară (colț dreapta-jos)
-   ───────────────────────────────────────────── */
+
 
 .toast {
     position: fixed;
@@ -775,9 +733,7 @@
 }
 
 
-/* ─────────────────────────────────────────────
-   13. ECRAN DE EROARE (reactor negăsit)
-   ───────────────────────────────────────────── */
+
 
 .error-view {
     padding: 80px 20px;
@@ -790,7 +746,7 @@
     opacity: 0.8;
 }
 
-/* Scroll pentru secțiunile interne */
+
 #sensor-grid-container,
 #history-list,
 #maintenance-history-list {
@@ -808,10 +764,7 @@
 #maintenance-history-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
 
 
-/* ─────────────────────────────────────────────
-   RESPONSIVE — sub 1280px colapsat la 2 col,
-   sub 768px la 1 coloană
-   ───────────────────────────────────────────── */
+
 @media (max-width: 1280px) {
     #reactor-details-layout {
         grid-template-columns: 320px 1fr;
@@ -824,7 +777,7 @@
         min-height: 500px;
     }
 
-    /* Jurnalul de alerte trece sub tab-uri, ocuplă ambele coloane */
+    
     .col-right {
         grid-column: 1 / -1;
         height: auto;

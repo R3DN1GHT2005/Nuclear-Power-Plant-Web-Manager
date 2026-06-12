@@ -1,3 +1,9 @@
+/*
+ * backend/src/Models/Maintenance_log.php
+ * Maintenance_log domain model — represents the Maintenance_log entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
 <?php
 class Maintenance_log {
     private int $id;

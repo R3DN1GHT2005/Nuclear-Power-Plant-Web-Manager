@@ -1,3 +1,9 @@
+/*
+ * backend/src/Services/AlertService.php
+ * AlertService — implements business logic for alert
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
 <?php
 
 namespace App\Services;

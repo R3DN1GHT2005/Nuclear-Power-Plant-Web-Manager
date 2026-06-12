@@ -1,3 +1,9 @@
+/*
+ * backend/src/DTOs/response/SensorResponseDTO.php
+ * Response DTO for SensorResponseDTO — formats outgoing
+ * API response data into a consistent JSON structure for the
+ * frontend.
+ */
 <?php
 
 namespace App\DTOs\Response;

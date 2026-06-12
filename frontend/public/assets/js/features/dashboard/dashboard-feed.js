@@ -1,9 +1,9 @@
 /*
- * dashboard-feed.js — RSS feed loader for dashboard
- * Fetches RSS token, then XML feed, and renders
- * entries with severity badges in #rss-list.
+ * frontend/public/assets/js/features/dashboard/dashboard-feed.js
+ * Dashboard RSS feed — retrieves RSS token, fetches the XML feed
+ * of nuclear alerts, and renders entries with severity badges
+ * (critical, warning, info) and publication dates.
  */
-
 async function loadRssFeed() {
     var list = document.getElementById('rss-list');
     try {

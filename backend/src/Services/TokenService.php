@@ -1,3 +1,9 @@
+/*
+ * backend/src/Services/TokenService.php
+ * TokenService — implements business logic for token
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
 <?php
 namespace App\Services;
 
@@ -7,12 +13,14 @@ use Firebase\JWT\Key;
 class TokenService {
     private string $secretKey;
     private string $issuer;
-    private int $accessTokenTtl; // Time To Live în secunde
+    private int $accessTokenTtl; 
+
 
     public function __construct() {
         $this->secretKey = $_ENV['JWT_SECRET'] ?? '';
         $this->issuer = $_ENV['JWT_ISSUER'] ?? '';
-        $this->accessTokenTtl = 900; //900 sec = 15 min
+        $this->accessTokenTtl = 900; 
+
     }
 
     public function generateAccessToken(int $userId, string $role): string {

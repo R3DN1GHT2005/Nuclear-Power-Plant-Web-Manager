@@ -1,3 +1,9 @@
+/*
+ * backend/src/Models/ReactorMaintenance.php
+ * ReactorMaintenance domain model — represents the ReactorMaintenance entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
 <?php
 
 namespace App\Models;

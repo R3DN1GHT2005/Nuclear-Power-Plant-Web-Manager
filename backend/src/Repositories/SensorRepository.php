@@ -1,3 +1,9 @@
+/*
+ * backend/src/Repositories/SensorRepository.php
+ * Repository for Sensor — provides database query methods
+ * for Sensor CRUD operations via PDO. Used by the corresponding
+ * Service layer to decouple data access from business logic.
+ */
 <?php
 
 namespace App\Repositories;
@@ -177,15 +183,19 @@ class SensorRepository {
         ");
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Separăm senzorii reali de reactoarele fără senzori
+        
+
         $result = [];
         foreach ($rows as $row) {
             if ($row['id'] !== null) {
-                // Reactor cu senzori — intrare normală
+                
+
                 $result[] = \App\Models\SensorConfig::fromArray($row);
             }
-            // Reactoarele fără senzori sunt ignorate aici — 
-            // eficiența lor e trimisă prin reactor_id din senzorii existenți
+            
+
+            
+
         }
         return $result;
     }

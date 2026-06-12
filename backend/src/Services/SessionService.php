@@ -1,3 +1,9 @@
+/*
+ * backend/src/Services/SessionService.php
+ * SessionService — implements business logic for session
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
 <?php
 namespace App\Services;
 
@@ -13,7 +19,8 @@ class SessionService {
     public function __construct() {
         $this->refreshTokenRepository = new RefreshTokenRepository();
         $this->tokenService = new TokenService($_ENV['JWT_SECRET'] ?? '', $_ENV['JWT_ISSUER'] ?? '');
-        $this->refreshTokenTtl = 2592000;  //30 zile
+        $this->refreshTokenTtl = 2592000;  
+
     }
 
     public function createSession($userId, $role) {

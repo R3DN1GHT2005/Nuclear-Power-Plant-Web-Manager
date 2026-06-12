@@ -1,3 +1,9 @@
+/*
+ * backend/src/Clients/MeteostatApiClient.php
+ * MeteostatApiClient — external HTTP API client that fetches environmental
+ * data (seismic, elevation, weather) from third-party services
+ * for reactor placement and monitoring.
+ */
 <?php
 
 namespace App\Clients;

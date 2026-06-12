@@ -1,3 +1,9 @@
+/*
+ * backend/src/DTOs/request/sensor/InsertSensorDTO.php
+ * Request DTO for sensor InsertSensorDTO — validates and
+ * structures incoming API request data before passing it to
+ * the service layer.
+ */
 <?php
 
 namespace App\DTOs\Request\Sensor;

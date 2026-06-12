@@ -1,11 +1,9 @@
 /*
- * stats-efficiency.js — Efficiency bars and trend
- * SVG rendering for the reactor statistics page.
- * Draws horizontal bar charts and a polyline
- * trend chart with grid lines and labels.
- * Extracted from monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-efficiency.js
+ * Statistics efficiency charts — draws horizontal bar charts for
+ * reactor efficiency and an SVG polyline trend chart with grid lines,
+ * axis labels, and date formatting. Colour-codes bars by status.
  */
-
 function formatTrendLabel(value) {
   if (!value) return '—';
   var date = new Date(value);

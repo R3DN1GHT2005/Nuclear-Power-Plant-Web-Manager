@@ -1,9 +1,9 @@
 /*
- * reactors-list-renderer.js — Reactor card HTML generation
- * Handles rendering reactor cards in the grid and
- * attaching detail navigation links.
+ * frontend/public/assets/js/features/reactors-list/reactors-list-renderer.js
+ * Reactors list card renderer — generates HTML for individual reactor
+ * cards displaying status, efficiency bar, sensor readings, metadata,
+ * and a detail navigation link.
  */
-
 function createReactorHTML(reactor) {
     var config = {
         'activ':          { pill: 'pill-active', border: '', bar: 'bf-green', text: 'text-green' },

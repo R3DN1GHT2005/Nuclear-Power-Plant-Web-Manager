@@ -1,3 +1,9 @@
+/*
+ * backend/src/DTOs/response/alert/AlertHistoryResponseDTO.php
+ * Response DTO for alert AlertHistoryResponseDTO — formats outgoing
+ * API response data into a consistent JSON structure for the
+ * frontend.
+ */
 <?php
 namespace App\DTOs\Response\Alert;
 

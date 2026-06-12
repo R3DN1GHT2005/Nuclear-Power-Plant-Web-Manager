@@ -1,3 +1,9 @@
+/*
+ * backend/src/Repositories/RefreshTokenRepository.php
+ * Repository for RefreshToken — provides database query methods
+ * for RefreshToken CRUD operations via PDO. Used by the corresponding
+ * Service layer to decouple data access from business logic.
+ */
 <?php
 namespace App\Repositories;
 

@@ -1,3 +1,9 @@
+/*
+ * frontend/public/assets/js/login.js
+ * Login page handler — submits email/password via POST /auth/login with
+ * cookie-based credentials. On success redirects to dashboard (tehnician
+ * /manager) or index (admin). Displays error alerts on failure.
+ */
 const LOGIN_API_URL = (() => {
     if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
         return `${window.location.protocol}//${window.location.hostname}:8082/api`;
@@ -6,7 +12,8 @@ const LOGIN_API_URL = (() => {
     return 'http://127.0.0.1:8082/api';
 })();
 
-// Funcția actualizată pentru a suporta Cookie-uri
+
+
 async function postJson(url, body) {
     const res = await fetch(url, {
         method: 'POST', 

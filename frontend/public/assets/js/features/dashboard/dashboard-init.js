@@ -1,10 +1,9 @@
 /*
- * dashboard-init.js — Dashboard page bootstrap
- * Handles auth, reactor loading, and orchestrates
- * all section renderers. Wires period and maintenance
- * tab switching.
+ * frontend/public/assets/js/features/dashboard/dashboard-init.js
+ * Dashboard page bootstrap — handles auth, loads assigned reactor,
+ * and orchestrates KPI, sensor, stats, RSS, and maintenance rendering.
+ * Wires period switching and maintenance tab navigation.
  */
-
 (async function initDashboard() {
     document.documentElement.style.visibility = 'hidden';
 

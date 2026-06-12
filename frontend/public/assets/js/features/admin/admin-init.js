@@ -1,10 +1,10 @@
 /*
- * admin-init.js — Admin accounts page bootstrap
- * Global state singleton + initial data loading.
- * Provides AdminState used by admin-users.js
- * and admin-assignments.js.
+ * frontend/public/assets/js/features/admin/admin-init.js
+ * Admin accounts page bootstrap — defines AdminState singleton
+ * (users, reactors, selectedUserId), authenticates as admin,
+ * fetches users and reactors, and triggers rendering of tables,
+ * assignments, and the reactor select dropdown.
  */
-
 var AdminState = {
     users: [],
     reactors: [],

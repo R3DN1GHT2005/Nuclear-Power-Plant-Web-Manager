@@ -1,3 +1,9 @@
+/*
+ * backend/src/Services/CityDistanceService.php
+ * CityDistanceService — implements business logic for city distance
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
 <?php
 
 namespace App\Services;

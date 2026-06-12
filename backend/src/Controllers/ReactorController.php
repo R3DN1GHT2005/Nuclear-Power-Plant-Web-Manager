@@ -1,3 +1,9 @@
+/*
+ * backend/src/Controllers/ReactorController.php
+ * ReactorController — HTTP endpoint handler exposing reactor
+ * routes. Parses request data, applies middleware, delegates to
+ * the corresponding service, and returns JSON responses.
+ */
 <?php
 
 namespace App\Controllers;
@@ -18,13 +24,15 @@ class ReactorController {
         $this->reactorService = new ReactorService();
     }
 
-    // GET /api/reactors
+    
+
     public function getAllReactors(): void {
         $reactors = $this->reactorService->getAll();
         Response::json(ReactorMapper::toResponseList($reactors));
     }
 
-    // GET /api/reactors/{id}
+    
+
     public function getReactorById(int $id): void {
         $reactor = $this->reactorService->getById($id);
 
@@ -36,7 +44,8 @@ class ReactorController {
         Response::json(ReactorMapper::toResponse($reactor));
     }
 
-    // GET /api/reactors/my
+    
+
     public function getMyReactor(): void {
         $user = AuthMiddleware::getUser();
         $userId = $user->userId ?? null;
@@ -63,7 +72,8 @@ class ReactorController {
         Response::json(ReactorMapper::toResponse($reactor));
     }
 
-    // POST /api/reactors
+    
+
     public function addReactor(): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -82,7 +92,8 @@ class ReactorController {
         }
 }
 
-    // PUT /api/reactors/{id}
+    
+
     public function updateReactor(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -102,7 +113,8 @@ class ReactorController {
         Response::json(ReactorMapper::toResponse($reactor));
     }
 
-    // PATCH /api/reactors/{id}/status
+    
+
     public function updateStatus(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -142,9 +154,12 @@ class ReactorController {
                 return;
             }
 
-            // 4. Răspuns de succes. 
-            // Poți folosi ReactorMapper::toResponse($reactor) ca în funcția ta, 
-            // sau un răspuns mai simplificat și mai rapid pentru ESP32:
+            
+
+            
+
+            
+
             Response::json([
                 'success' => true, 
                 'message' => 'Status actualizat de la senzor',
@@ -152,14 +167,17 @@ class ReactorController {
             ], 200);
 
         } catch (\InvalidArgumentException $e) {
-            // Dacă statusul trimis e invalid (ex: altceva decât OPRIT/ACTIV/etc)
+            
+
             Response::json(['error' => $e->getMessage()], 400);
         } catch (\Exception $e) {
-            // Eroare generală de server
+            
+
             Response::json(['error' => 'Eroare internă: ' . $e->getMessage()], 500);
         }
     }
-    // DELETE /api/reactors/{id}
+    
+
     public function deleteReactor(int $id): void {
         $deleted = $this->reactorService->delete($id);
 
@@ -172,7 +190,8 @@ class ReactorController {
     }
 
 
-    // PATCH /api/reactors/{id}/efficiency
+    
+
     public function updateEfficiency(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -199,7 +218,8 @@ class ReactorController {
     }
 
 
-    // GET /api/reactors/{id}/personnel
+    
+
     public function getPersonnel(int $id): void {
         $personnelRepo = new ReactorPersonnelRepository();
         $personnel = $personnelRepo->findByReactorId($id);
@@ -217,7 +237,8 @@ class ReactorController {
     }
 
 
-    // GET /api/reactors/by-mac/{mac}
+    
+
     public function getReactorByMac(string $mac): void {
         $reactor = $this->reactorService->getByMac($mac);
 
@@ -229,7 +250,8 @@ class ReactorController {
         Response::json(ReactorMapper::toResponse($reactor));
     }
 
-    //GET /api/reactors/get-status
+    
+
     public function getReactorStatus(int $id): void{
         $reactor = $this-> reactorService -> getReactorStatus($id);
         if (!$reactor) {

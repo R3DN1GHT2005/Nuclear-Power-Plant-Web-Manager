@@ -1,8 +1,15 @@
+/*
+ * backend/src/Controllers/ReactorMaintenanceController.php
+ * ReactorMaintenanceController — HTTP endpoint handler exposing reactor maintenance
+ * routes. Parses request data, applies middleware, delegates to
+ * the corresponding service, and returns JSON responses.
+ */
 <?php
 
 namespace App\Controllers;
 
-// Forțăm citirea fizică a fișierului pentru a ocoli blocajul Docker/Composer
+
+
 require_once __DIR__ . '/../Mappers/ReactorMaintenanceMapper.php';
 
 use App\Core\Response;

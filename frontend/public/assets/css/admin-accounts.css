@@ -1,16 +1,11 @@
-/* =============================================
-   admin-accounts.css — NuclearWatch Admin UI
-   Split Grid Layout (Reactors 38% / Users 62%)
-============================================= */
-
-/* ══════════════════════════════════════════
-   LAYOUT FIX — GRID IMPARTIT
-══════════════════════════════════════════ */
-
-
+/*
+ * frontend/public/assets/css/admin-accounts.css
+ * Admin accounts page styles — users table, role badges, assignment
+ * modal, reactor-personnel grid, form layouts.
+ */
 main.main.admin-grid-layout {
   display: grid !important;
-  grid-template-columns: 65fr 33fr; /* Inversat: 62% Stânga (Tabel) / 38% Dreapta (Reactoare) */
+  grid-template-columns: 65fr 33fr; 
   gap: 2.5rem;
   max-width: 1450px !important;
   margin: 0 auto !important;
@@ -18,24 +13,24 @@ main.main.admin-grid-layout {
   align-items: start;
 }
 
-/* Coloana Stângă (Echipe) */
+
 .sidebar-column {
   display: flex;
   flex-direction: column;
 }
 
-/* Coloana Dreaptă (Tabel) */
+
 .main-column {
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Previne extinderea tabelului peste grid */
+  min-width: 0; 
 }
 
-/* Scroll personalizat pentru lista de reactoare */
+
 .reactor-list-scroll {
   max-height: calc(100vh - 180px);
   overflow-y: auto;
-  padding-right: 12px; /* Spațiu pentru scrollbar */
+  padding-right: 12px; 
 }
 
 .reactor-list-scroll::-webkit-scrollbar {
@@ -52,7 +47,7 @@ main.main.admin-grid-layout {
   background: rgba(0,0,0,0.3);
 }
 
-/* Page header flexibil */
+
 .page-header.header-minimal {
   display: flex !important;
   justify-content: space-between !important;
@@ -71,7 +66,7 @@ main.main.admin-grid-layout {
   overflow: hidden;
 }
 
-/* ── ADMIN TABLE ── */
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -121,7 +116,7 @@ main.main.admin-grid-layout {
   font-size: 13px;
 }
 
-/* ── BADGE ROL ── */
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -139,7 +134,7 @@ main.main.admin-grid-layout {
 .badge-user { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
 .badge-manager { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
 
-/* ── ACTION CELL ── */
+
 .action-cell {
   display: flex;
   align-items: center;
@@ -169,11 +164,11 @@ main.main.admin-grid-layout {
 .btn-sm.btn-danger { color: #DC2626; border-color: #FCA5A5; background: #FEF2F2; }
 .btn-sm.btn-danger:hover:not(:disabled) { background: #FEE2E2; border-color: #DC2626; }
 
-/* ── PAGE HEADER TEXT ── */
+
 .page-header.header-minimal .ph-title { font-size: 22px; font-weight: 700; color: #0F1923; letter-spacing: -0.02em; }
 .page-header.header-minimal .ph-sub { font-size: 13px; color: #8A96A8; margin-top: 3px; }
 
-/* ── BUTTON PRIM ── */
+
 .btn.btn-prim {
   background: #0F1923;
   color: #fff;
@@ -192,9 +187,7 @@ main.main.admin-grid-layout {
   box-shadow: 0 4px 12px rgba(15,25,35,0.2);
 }
 
-/* ══════════════════════════════════════════
-   MODAL OVERLAY & FORMS
-══════════════════════════════════════════ */
+
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
   display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -235,8 +228,8 @@ main.main.admin-grid-layout {
   background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; cursor: pointer;
 }
 
-/* Card de reactor stilizat ca cel de useri */
-/* Stiluri pentru lista de reactoare */
+
+
 .reactor-card {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.07);
@@ -275,9 +268,7 @@ main.main.admin-grid-layout {
 .modal-actions .btn-close-modal:hover { background: #F1F5F9; color: #0F1923; }
 .modal-actions .btn-prim { background: #0F1923; border: 1px solid #0F1923; color: #fff; }
 
-/* ══════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════ */
+
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
   z-index: 2000; background: #0F1923; color: #fff; padding: 12px 24px; border-radius: 10px;
@@ -287,11 +278,9 @@ main.main.admin-grid-layout {
 .toast.error { background: #DC2626; }
 .toast.success { background: #0E9F6E; }
 
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
+
 @media (max-width: 1024px) {
-  /* Pe tablete/mobile, elementele se așează unul sub altul (1 coloană) */
+  
   main.main.admin-grid-layout { grid-template-columns: 1fr !important; }
   .reactor-list-scroll { max-height: none; overflow-y: visible; }
 }

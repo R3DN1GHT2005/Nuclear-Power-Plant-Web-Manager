@@ -1,15 +1,13 @@
 /*
- * reactor-details-events.js — Event binding
- * for the reactor details page. Handles tabs,
- * modals, status changes, maintenance actions,
- * and sensor CRUD. Extracted from the
- * monolithic reactor-details.js.
+ * frontend/public/assets/js/features/reactors/reactor-details-events.js
+ * Reactor details interactivity — tab switching, sensor filtering,
+ * period button toggles, modal open/close, status change workflows,
+ * maintenance actions, and sensor CRUD operations.
  */
-
 function bindReactorEvents() {
   var state = ReactorDetailsState.getState();
 
-  /* ── Tabs ── */
+  
   document.querySelectorAll('.tab-btn').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -28,13 +26,13 @@ function bindReactorEvents() {
     });
   });
 
-  /* ── Sensor filter ── */
+  
   document.getElementById('filter-sensor')?.addEventListener('change', function(e) {
     var sensorId = e.target.value || null;
     loadSensorHistory(sensorId);
   });
 
-  /* ── Period buttons ── */
+  
   document.querySelectorAll('.period-btn').forEach(function(button) {
     button.addEventListener('click', function() {
       state.selectedPeriodDays = Number(button.dataset.days || 30);
@@ -42,7 +40,7 @@ function bindReactorEvents() {
     });
   });
 
-  /* ── Modal close ── */
+  
   document.querySelectorAll('.btn-close-modal, .modal-overlay').forEach(function(el) {
     el.addEventListener('click', function(e) {
       if (e.target.classList.contains('modal-overlay') || e.target.classList.contains('btn-close-modal')) {
@@ -51,7 +49,7 @@ function bindReactorEvents() {
     });
   });
 
-  /* ── Status change modal ── */
+  
   var openStatusModal = function(newStatus, title, icon, warning) {
     var statusSelect = document.getElementById('status-select');
     state.pendingStatus = newStatus ? normalizeStatusChoice(newStatus) : normalizeStatusChoice(state.currentReactor?.status);
@@ -92,7 +90,7 @@ function bindReactorEvents() {
     }
   });
 
-  /* ── Maintenance modal ── */
+  
   var openMaintModal = function() {
     document.getElementById('maint-date').value = '';
     document.getElementById('maint-reason').value = '';
@@ -154,7 +152,7 @@ function bindReactorEvents() {
     }
   });
 
-  /* ── Add sensor ── */
+  
   var fetchedSensorProfiles = {};
   var sensorTypeSelect = document.getElementById('sensor-type');
   var btnAddConfirm = document.getElementById('modal-add-sensor-confirm');

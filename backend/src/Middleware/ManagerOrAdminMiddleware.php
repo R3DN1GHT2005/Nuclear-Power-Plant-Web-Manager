@@ -1,3 +1,8 @@
+/*
+ * backend/src/Middleware/ManagerOrAdminMiddleware.php
+ * Manager/Admin role guard — checks that the authenticated user has
+ * either "manager" or "admin" role. Returns 403 Forbidden if not.
+ */
 <?php
 
 namespace App\Middleware;

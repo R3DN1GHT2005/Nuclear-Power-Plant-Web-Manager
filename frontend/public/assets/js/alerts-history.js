@@ -1,3 +1,9 @@
+/*
+ * frontend/public/assets/js/alerts-history.js
+ * Alerts history page — fetches and renders all alerts with severity
+ * badges, timestamps, and resolution status. Provides filtering and
+ * sorting of historical alert records.
+ */
 document.addEventListener("DOMContentLoaded", async () => {
     document.documentElement.style.visibility = 'hidden';
 
@@ -12,7 +18,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadFullHistory();
 });
 
-// O funcție frumoasă de formatare a datei pentru tabel
+
+
 function formatTableDate(dateStr) {
     if (!dateStr) return '<span class="history-dash">—</span>';
     const d = new Date(dateStr.replace(' ', 'T'));
@@ -46,27 +53,32 @@ window.loadFullHistory = async function() {
             }
 
             tbody.innerHTML = alerts.map(alert => {
-                // Generare badge Severitate
+                
+
                 const isCrit = alert.severity === 'critical';
                 const sevClass = isCrit ? 'critical' : 'warning';
                 const sevLabel = isCrit ? 'CRITICĂ' : 'AVERTIZARE';
                 const sevBadge = `<span class="badge-sev ${sevClass}">${sevLabel}</span>`;
 
-                // Generare badge Status
+                
+
                 const statusBadge = alert.is_resolved 
                     ? `<span class="badge-status resolved">✔️ Soluționat</span>`
                     : `<span class="badge-status active">⚠️ Activă</span>`;
 
-                // Date
+                
+
                 const createdAt = formatTableDate(alert.created_at);
                 const resolvedAt = formatTableDate(alert.resolved_at);
 
-                // Personal / Intervenient
+                
+
                 const resolverName = alert.resolver_name 
                     ? `<span class="history-resolver-name">${alert.resolver_name}</span>` 
                     : '<span class="history-dash">—</span>';
 
-                // Notițe
+                
+
                 const notesHtml = alert.resolution_notes 
                     ? `<div class="history-notes">"${alert.resolution_notes}"</div>` 
                     : '<span class="history-dash">—</span>';

@@ -1,11 +1,9 @@
 /*
- * stats-wear.js — Wear percentage rendering
- * for the reactor statistics page. Displays
- * horizontal wear bars with colour-coded
- * thresholds and a legend footer. Extracted
- * from monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-wear.js
+ * Statistics wear bars — renders horizontal wear-percentage bars per
+ * reactor sorted descending, with colour thresholds (green 0-30%,
+ * amber 30-40%, red >40%) and a legend footer.
  */
-
 function wearTone(value) {
   if (value > 40) return { barClass: 'bg-red', textClass: 'text-red' };
   if (value >= 30) return { barClass: 'bg-amber', textClass: 'text-amber' };

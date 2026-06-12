@@ -1,11 +1,10 @@
 /*
- * stats-state.js — State management for the
- * reactor statistics page. Initialises shared
- * state, refs, ReportsAPI, and the main data
- * load-and-render loop. Extracted from
- * monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-state.js
+ * Statistics page state manager — initialises shared state, caches
+ * DOM refs, defines ReportsAPI (fetching reactors, KPIs, comparisons,
+ * trends, risk matrices, wear data), and provides the main loadAll()
+ * fetch-and-render loop.
  */
-
 var StatsState = (function() {
   var state = {
     days: 30,

@@ -1,3 +1,9 @@
+/*
+ * backend/src/Models/User.php
+ * User domain model — represents the User entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
 <?php
 
 namespace App\Models;

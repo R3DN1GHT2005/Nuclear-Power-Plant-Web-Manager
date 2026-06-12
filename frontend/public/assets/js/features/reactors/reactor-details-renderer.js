@@ -1,11 +1,9 @@
 /*
- * reactor-details-renderer.js — Rendering for
- * the reactor details page. Handles reactor
- * info, sensor cards, history, maintenance,
- * and right-side summary. Extracted from the
- * monolithic reactor-details.js.
+ * frontend/public/assets/js/features/reactors/reactor-details-renderer.js
+ * Reactor details renderer — populates reactor info (name, status,
+ * type, power, efficiency, stability), sensor cards, history tables,
+ * and the right-side summary panel with all metrics.
  */
-
 var STATUS_OPTIONS_DETAILS = [
   { value: 'Activ', label: 'Activ' },
   { value: 'Mentenanta', label: 'Mentenanță' },

@@ -1,3 +1,9 @@
+/*
+ * backend/src/DTOs/request/alert/ResolveAlertRequestDTO.php
+ * Request DTO for alert ResolveAlertRequestDTO — validates and
+ * structures incoming API request data before passing it to
+ * the service layer.
+ */
 <?php
 namespace App\DTOs\Request\Alert;
 

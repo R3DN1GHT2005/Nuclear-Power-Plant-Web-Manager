@@ -1,10 +1,17 @@
+/*
+ * backend/src/Services/AuthService.php
+ * AuthService — implements business logic for auth
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
 <?php
 namespace App\Services;
 
 use App\Repositories\UserRepository;
 use Exception;
 
-// În App/Services/AuthService.php
+
+
 
 class AuthService {
     private UserRepository $userRepository;

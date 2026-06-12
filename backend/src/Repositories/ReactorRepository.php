@@ -1,3 +1,9 @@
+/*
+ * backend/src/Repositories/ReactorRepository.php
+ * Repository for Reactor — provides database query methods
+ * for Reactor CRUD operations via PDO. Used by the corresponding
+ * Service layer to decouple data access from business logic.
+ */
 <?php
 
 namespace App\Repositories;

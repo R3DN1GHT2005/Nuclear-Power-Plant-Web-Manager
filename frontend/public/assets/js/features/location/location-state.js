@@ -1,10 +1,9 @@
 /*
- * location-state.js — State management for the
- * location/ map page. Initializes shared state,
- * refs, polling, and the main fetch-and-render
- * loop. Extracted from the monolithic location.js.
+ * frontend/public/assets/js/features/location/location-state.js
+ * Location page state manager — holds shared state (reactors, sensors,
+ * map instances, modal refs) and provides polling, the main fetch-and-
+ * render loop (refreshReactors), toast display, and form-error helpers.
  */
-
 var LocationState = (function() {
   var pollingIntervalMs = 5000;
 

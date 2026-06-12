@@ -1,9 +1,9 @@
 /*
- * management-info.js — KPI rendering + personnel loading
- * Depends on statusMeta from utils/status.js.
- * Called by management-init.js after reactor fetch.
+ * frontend/public/assets/js/features/management/management-info.js
+ * Management info renderer — displays KPI metrics (reactor name,
+ * status, power, efficiency, location, team count) and fetches/
+ * renders assigned personnel list.
  */
-
 function renderInfo(r) {
     var st = statusMeta(r.status);
     document.getElementById('mgt-kpis').innerHTML =

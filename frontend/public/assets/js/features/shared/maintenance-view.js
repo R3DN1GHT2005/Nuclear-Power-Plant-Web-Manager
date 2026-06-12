@@ -1,10 +1,9 @@
 /*
- * maintenance-view.js — Shared maintenance history rendering
- * Used by both dashboard.js and management.js. Handles
- * tab filtering, data fetching, and HTML rendering with
- * optional stop-button column.
+ * frontend/public/assets/js/features/shared/maintenance-view.js
+ * Shared maintenance history component — fetches maintenance records,
+ * filters by active/completed status based on tab selection,
+ * and renders the list with optional stop-maintenance buttons.
  */
-
 function renderMaintenanceList(reactorId, listId, tabContainerId, options) {
     if (!options) options = {};
     var limit      = options.limit || 10;

@@ -1,10 +1,9 @@
 /*
- * admin-users.js — User table rendering + user CRUD
- * Depends on AdminState from admin-init.js.
- * Exposes openPasswordModal and deleteUser as
- * window globals for inline onclick.
+ * frontend/public/assets/js/features/admin/admin-users.js
+ * Admin user management — renders the users table with role badges
+ * and action buttons. Implements create/edit user, password change,
+ * and delete user via modal forms.
  */
-
 function renderUsersTable() {
     var tbody = document.getElementById("users-table-body");
     if (!tbody) return;

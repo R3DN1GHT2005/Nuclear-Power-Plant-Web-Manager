@@ -1,11 +1,9 @@
 /*
- * reactor-details-state.js — State management
- * for the reactor details page. Initializes
- * shared state, loads reactor data, and
- * provides auto-refresh. Extracted from the
- * monolithic reactor-details.js.
+ * frontend/public/assets/js/features/reactors/reactor-details-state.js
+ * Reactor details state manager — stores current reactor, sensor
+ * readings, alert/maintenance histories. Orchestrates initialisation,
+ * auth checks, data loading, and auto-refresh logic.
  */
-
 var ReactorDetailsState = (function() {
   var state = {
     currentReactor: null,

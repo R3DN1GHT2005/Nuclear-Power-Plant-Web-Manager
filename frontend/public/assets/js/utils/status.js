@@ -1,12 +1,9 @@
 /*
- * status.js — Reactor status helpers
- * Centralizes all status-related logic: meta
- * lookup, normalization, CSS class selection.
- * Eliminates duplicates found in dashboard.js,
- * reactor-statistics.js, management.js,
- * station-view.js, location.js, stats.js, etc.
+ * frontend/public/assets/js/utils/status.js
+ * Centralised reactor-status logic — normalises Romanian-accented
+ * status strings, maps statuses to CSS classes (statusMeta), and
+ * provides a shared STATUS_OPTIONS array for UI dropdowns.
  */
-
 function normalizeText(value) {
   return String(value || '')
     .normalize('NFD')

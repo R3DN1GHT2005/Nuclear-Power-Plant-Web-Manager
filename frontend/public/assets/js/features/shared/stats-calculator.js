@@ -1,10 +1,10 @@
 /*
- * stats-calculator.js — Period-based statistics computation
- * Shared data layer for dashboard.js and reactor-statistics.js.
- * Fetches readings/alerts/sensors, filters by period, computes
- * derived values. Callers handle their own rendering.
+ * frontend/public/assets/js/features/shared/stats-calculator.js
+ * Shared period-based statistics calculator — fetches readings, alerts,
+ * and sensors in parallel, filters by a configurable time window,
+ * computes averages, identifies critical readings/alerts, and returns
+ * a structured result object for callers to render.
  */
-
 async function fetchPeriodStats(reactorId, days) {
     var sub = document.getElementById('stats-sub');
     var grid = document.getElementById('stats-grid');

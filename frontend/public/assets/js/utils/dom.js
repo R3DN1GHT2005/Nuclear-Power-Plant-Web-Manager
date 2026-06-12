@@ -1,11 +1,10 @@
 /*
- * dom.js — Shared DOM manipulation helpers
- * Provides safe, reusable functions for common
- * DOM operations used across all pages. Eliminates
- * repeated inline patterns for modals, toasts,
- * event binding, and text setting.
+ * frontend/public/assets/js/utils/dom.js
+ * Shared DOM helpers — safe text setters (setElText), guarded event
+ * binders (safeBindClick, safeBindSubmit), modal open/close utilities,
+ * timed toast messages, and a function to wire up modal close buttons
+ * across the page. Used by all feature modules.
  */
-
 function setElText(id, text) {
   var el = document.getElementById(id);
   if (el) el.textContent = text;

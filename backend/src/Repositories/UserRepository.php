@@ -1,3 +1,9 @@
+/*
+ * backend/src/Repositories/UserRepository.php
+ * Repository for User — provides database query methods
+ * for User CRUD operations via PDO. Used by the corresponding
+ * Service layer to decouple data access from business logic.
+ */
 <?php
 namespace App\Repositories;
 
@@ -14,9 +20,7 @@ class UserRepository {
         $this->db = Database::getInstance()->getConnection();
     }
 
-    /**
-     * Aduce toți utilizatorii, inclusiv datele de asignare la reactor (prin LEFT JOIN)
-     */
+    
     public function getAllUsers(): array {
         $sql = "
             SELECT u.*, 
@@ -40,9 +44,7 @@ class UserRepository {
         return $users;
     }
 
-    /**
-     * Caută un utilizator după ID, incluzând asignarea
-     */
+    
     public function findById(int $id): ?User {
         $sql = "
             SELECT u.*, 
@@ -63,9 +65,7 @@ class UserRepository {
         return $row ? $this->mapRowToUser($row) : null;
     }
 
-    /**
-     * Caută un utilizator după Email (folosit mai ales la login/înregistrare)
-     */
+    
     public function findByRole(string $role): array {
         $sql = "
             SELECT u.*, 
@@ -109,9 +109,7 @@ class UserRepository {
         return $row ? $this->mapRowToUser($row) : null;
     }
 
-    /**
-     * Inserează un utilizator nou folosind modelul User asamblat de Service/Mapper
-     */
+    
     public function create(User $user): User {
         $sql = "INSERT INTO users (email, password_hash, first_name, last_name, role) 
                 VALUES (:email, :password_hash, :first_name, :last_name, :role) 
@@ -119,12 +117,14 @@ class UserRepository {
         
         $stmt = $this->db->prepare($sql);
         
-        // Extragem datele din modelul trimis
+        
+
         $email = $user->getEmail();
         $passwordHash = $user->getPasswordHash();
         $firstName = $user->getFirstName();
         $lastName = $user->getLastName();
-        $role = $user->getRole()->value; // Returnează string-ul din Enum
+        $role = $user->getRole()->value; 
+
 
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password_hash', $passwordHash);
@@ -135,7 +135,8 @@ class UserRepository {
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        // Re-instanțiem modelul cu noul ID și data de creare generate de DB
+        
+
         return new User(
             $result['id'],
             $email,
@@ -147,9 +148,7 @@ class UserRepository {
         );
     }
 
-    /**
-     * Actualizează parola unui utilizator
-     */
+    
     public function updatePassword(int $id, string $newPasswordHash): bool {
         $sql = "UPDATE users SET password_hash = :password_hash WHERE id = :id";
         $stmt = $this->db->prepare($sql);
@@ -159,9 +158,7 @@ class UserRepository {
         return $stmt->execute() && $stmt->rowCount() > 0;
     }
 
-    /**
-     * Șterge un utilizator
-     */
+    
     public function deleteUser(int $id): bool {
         $sql = "DELETE FROM users WHERE id = :id";
         $stmt = $this->db->prepare($sql);
@@ -170,9 +167,7 @@ class UserRepository {
         return $stmt->execute() && $stmt->rowCount() > 0;
     }
 
-    /**
-     * Funcție helper pentru a construi curat obiectul User + ReactorPersonnel din rândul extras din DB
-     */
+    
     private function mapRowToUser(array $row): User {
         $user = new User(
             $row['id'],
@@ -185,7 +180,8 @@ class UserRepository {
             $row['rss_token'] ?? null
         );
 
-        // Dacă avem date despre asignare (reactor_id nu e null), atașăm modelul ReactorPersonnel
+        
+
         if (!empty($row['reactor_id'])) {
             $assignment = ReactorPersonnel::fromArray($row);
             $user->setAssignment($assignment);

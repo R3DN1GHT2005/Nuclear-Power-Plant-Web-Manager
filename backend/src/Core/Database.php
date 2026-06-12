@@ -1,3 +1,9 @@
+/*
+ * backend/src/Core/Database.php
+ * Database connection singleton — initialises a PDO connection using
+ * environment variables (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS)
+ * and provides getInstance/getConnection for all repository classes.
+ */
 <?php
 
 namespace App\Core;
@@ -10,15 +16,18 @@ class Database {
     private PDO $connection;
 
     private function __construct() {
-        // Preluăm variabilele de mediu din Docker (.env)
+        
+
         $host = getenv('DB_HOST') ?: 'db';
         $db   = getenv('DB_NAME') ?: 'nuclear_watch';
         $user = getenv('DB_USER') ?: 'admin';
         $pass = getenv('DB_PASSWORD') ?: 'secretpassword';
         $port = getenv('DB_PORT') ?: '5432';
 
-        // --- AICI ESTE MODIFICAREA CRITICĂ PENTRU NEON ---
-        // Am adăugat sslmode=require și channel_binding=require
+        
+
+        
+
         $dsn = "pgsql:host=$host;port=$port;dbname=$db;sslmode=require;channel_binding=require";
 
         try {

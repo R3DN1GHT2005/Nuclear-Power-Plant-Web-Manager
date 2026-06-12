@@ -1,3 +1,8 @@
+/*
+ * backend/src/Middleware/SensorMiddleware.php
+ * Sensor MAC validation middleware — validates MAC address format
+ * in request parameters for sensor-related endpoints.
+ */
 <?php
 
 namespace App\Middleware;
@@ -14,7 +19,8 @@ class SensorMiddleware {
             return false;
         }
 
-        // Varianta "blindată" pentru Docker: caută cheia peste tot
+        
+
         $validKey = getenv('SENSOR_API_KEY') ?: ($_SERVER['SENSOR_API_KEY'] ?? ($_ENV['SENSOR_API_KEY'] ?? null)); 
 
         if (!$validKey) {

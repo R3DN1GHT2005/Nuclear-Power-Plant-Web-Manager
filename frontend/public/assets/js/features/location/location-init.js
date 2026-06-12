@@ -1,9 +1,9 @@
 /*
- * location-init.js — Location page auth guard.
- * Runs before Leaflet CDN loads so unauthorized
- * users are redirected immediately.
+ * frontend/public/assets/js/features/location/location-init.js
+ * Location page bootstrap — authenticates as admin, redirects to
+ * login if unauthorized, then reveals the page. Entry point for
+ * the map-based reactor location management interface.
  */
-
 (async function initLocation() {
     document.documentElement.style.visibility = 'hidden';
     try {

@@ -1,9 +1,10 @@
 /*
- * stats-init.js — Reactor statistics page bootstrap
- * Handles auth, reactor loading, period switching,
- * and orchestrates all renderers.
+ * frontend/public/assets/js/features/statistics/stats-init.js
+ * Per-reactor statistics bootstrap (reactor-statistics page) —
+ * authenticates, loads assigned reactor, renders KPIs, stats grid,
+ * efficiency comparison, specs, and alert history. Wires period button
+ * switching.
  */
-
 (async function initStats() {
     document.documentElement.style.visibility = 'hidden';
 

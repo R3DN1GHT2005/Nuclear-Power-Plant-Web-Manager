@@ -1,9 +1,9 @@
 /*
- * admin-assignments.js — Reactor assignments overview + assign modal
- * Depends on AdminState from admin-init.js.
- * Exposes openAssignModal as a window global for inline onclick.
+ * frontend/public/assets/js/features/admin/admin-assignments.js
+ * Admin reactor assignments — renders the assignment overview and
+ * assignment modal. Displays each reactor with its personnel and
+ * provides UI for assigning/removing users from reactors.
  */
-
 function renderReactorAssignments() {
     var container = document.getElementById("reactor-assignments-container");
     if (!container) return;
@@ -51,7 +51,7 @@ function populateReactorSelect() {
     });
 }
 
-/* ── Assign reactor modal ── */
+
 window.openAssignModal = function(userId) {
     AdminState.selectedUserId = userId;
     var user = AdminState.users.find(function(u) { return u.id === userId; });
@@ -84,7 +84,7 @@ document.getElementById("confirm-assign-reactor")?.addEventListener("click", asy
     }
 });
 
-/* ── Modal stop propagation ── */
+
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll('.modal').forEach(function(modal) {
         modal.addEventListener('click', function(e) { e.stopPropagation(); });

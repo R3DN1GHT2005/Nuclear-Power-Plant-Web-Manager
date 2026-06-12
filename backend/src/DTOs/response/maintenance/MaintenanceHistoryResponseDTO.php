@@ -1,3 +1,9 @@
+/*
+ * backend/src/DTOs/response/maintenance/MaintenanceHistoryResponseDTO.php
+ * Response DTO for maintenance MaintenanceHistoryResponseDTO — formats outgoing
+ * API response data into a consistent JSON structure for the
+ * frontend.
+ */
 <?php
 
 namespace App\DTOs\Response\Maintenance;

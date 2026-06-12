@@ -1,11 +1,9 @@
 /*
- * location-sensors.js — Sensor CRUD operations
- * for the location page. Handles sensor listing,
- * inline editing, creation, and deletion within
- * the sensor management modal. Extracted from
- * monolithic location.js.
+ * frontend/public/assets/js/features/location/location-sensors.js
+ * Sensor CRUD within location page — lists sensors for a reactor,
+ * builds sensor-type dropdowns, handles inline save/cancel editing,
+ * and performs create/delete operations via the API.
  */
-
 function getSensorValue(sensor, field) {
   if (!sensor) return '';
   var value = sensor[field] !== null && sensor[field] !== undefined ? sensor[field] : sensor[field.replace(/_([a-z])/g, function(_, letter) { return letter.toUpperCase(); })];

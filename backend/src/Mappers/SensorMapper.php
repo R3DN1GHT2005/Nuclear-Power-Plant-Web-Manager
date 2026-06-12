@@ -1,3 +1,9 @@
+/*
+ * backend/src/Mappers/SensorMapper.php
+ * Sensor data mapper — converts between domain models and
+ * DTOs/arrays for API request/response serialisation. Ensures
+ * clean separation between internal and external data formats.
+ */
 <?php
 
 namespace App\Mappers;
