@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/DTOs/response/SensorReadingResponseDTO.php
  * Response DTO for SensorReadingResponseDTO — formats outgoing
  * API response data into a consistent JSON structure for the
  * frontend.
  */
-<?php
+
 
 namespace App\DTOs\Response;
 

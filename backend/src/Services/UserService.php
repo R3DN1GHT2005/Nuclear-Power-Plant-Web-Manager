@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Services/UserService.php
  * UserService — implements business logic for user
  * operations. Called by controllers, delegates data access to
  * repositories, and integrates with external clients and other services.
  */
-<?php
+
 
 namespace App\Services;
 

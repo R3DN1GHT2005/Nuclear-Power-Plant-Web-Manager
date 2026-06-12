@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Controllers/RssController.php
  * RssController — HTTP endpoint handler exposing rss
  * routes. Parses request data, applies middleware, delegates to
  * the corresponding service, and returns JSON responses.
  */
-<?php
+
 
 namespace App\Controllers;
 

@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Repositories/Maintenance_logRepository.php
  * Repository for Maintenance_log — provides database query methods
  * for Maintenance_log CRUD operations via PDO. Used by the corresponding
  * Service layer to decouple data access from business logic.
  */
-<?php
+
 namespace App\Repositories;
 
 use App\Core\Database;

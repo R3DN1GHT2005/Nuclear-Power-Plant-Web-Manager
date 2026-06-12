@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Controllers/ReportController.php
  * ReportController — HTTP endpoint handler exposing report
  * routes. Parses request data, applies middleware, delegates to
  * the corresponding service, and returns JSON responses.
  */
-<?php
+
 
 namespace App\Controllers;
 use App\Core\Response;

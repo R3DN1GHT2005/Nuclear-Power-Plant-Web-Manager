@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Core/Router.php
  * HTTP router — registers GET/POST/PUT/PATCH/DELETE routes with
  * path parameters ({id}, {mac}) and middleware chains. Dispatches
  * requests to controller actions with parameter injection.
  */
-<?php
+
 
 namespace App\Core;
 

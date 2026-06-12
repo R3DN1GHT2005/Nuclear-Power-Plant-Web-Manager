@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Controllers/SensorController.php
  * SensorController — HTTP endpoint handler exposing sensor
  * routes. Parses request data, applies middleware, delegates to
  * the corresponding service, and returns JSON responses.
  */
-<?php
+
 
 namespace App\Controllers;
 

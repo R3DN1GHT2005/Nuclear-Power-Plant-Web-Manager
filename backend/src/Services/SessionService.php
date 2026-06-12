@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Services/SessionService.php
  * SessionService — implements business logic for session
  * operations. Called by controllers, delegates data access to
  * repositories, and integrates with external clients and other services.
  */
-<?php
+
 namespace App\Services;
 
 use App\Repositories\RefreshTokenRepository;

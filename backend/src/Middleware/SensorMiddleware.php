@@ -1,9 +1,11 @@
+<?php
+
 /*
  * backend/src/Middleware/SensorMiddleware.php
  * Sensor MAC validation middleware — validates MAC address format
  * in request parameters for sensor-related endpoints.
  */
-<?php
+
 
 namespace App\Middleware;
 

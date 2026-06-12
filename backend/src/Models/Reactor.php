@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Models/Reactor.php
  * Reactor domain model — represents the Reactor entity with
  * properties matching the database schema. Used across Services,
  * Repositories, and Mappers for data transfer within the backend.
  */
-<?php
+
 
 namespace App\Models;
 

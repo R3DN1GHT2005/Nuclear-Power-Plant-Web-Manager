@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Repositories/UserRepository.php
  * Repository for User — provides database query methods
  * for User CRUD operations via PDO. Used by the corresponding
  * Service layer to decouple data access from business logic.
  */
-<?php
+
 namespace App\Repositories;
 
 use App\Core\Database;

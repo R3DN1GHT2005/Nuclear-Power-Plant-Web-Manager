@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Core/Database.php
  * Database connection singleton — initialises a PDO connection using
  * environment variables (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS)
  * and provides getInstance/getConnection for all repository classes.
  */
-<?php
+
 
 namespace App\Core;
 

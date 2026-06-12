@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/DTOs/request/reactor/UpdateReactorDTO.php
  * Request DTO for reactor UpdateReactorDTO — validates and
  * structures incoming API request data before passing it to
  * the service layer.
  */
-<?php
+
 
 namespace App\DTOs\Request\reactor;
 

@@ -1,9 +1,11 @@
+<?php
+
 /*
  * backend/src/Core/Response.php
  * HTTP response helper — sends JSON responses with status codes,
  * CORS headers, and utility methods for 200/201/400/401/403/404/500.
  */
-<?php
+
 
 namespace App\Core;
 

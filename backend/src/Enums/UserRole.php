@@ -1,9 +1,11 @@
+<?php
+
 /*
  * backend/src/Enums/UserRole.php
  * UserRole enum — defines the allowed values for user role
  * used across the application for type-safe comparisons.
  */
-<?php
+
 
 namespace App\Enums;
 

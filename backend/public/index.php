@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/public/index.php
  * Application entry point — loads autoloader, sets CORS/error
  * reporting headers, registers all API routes with the Router,
  * initialises the database, and dispatches the incoming request.
  */
-<?php
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);

@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/DTOs/request/sensor/UpdateSensorRequestDTO.php
  * Request DTO for sensor UpdateSensorRequestDTO — validates and
  * structures incoming API request data before passing it to
  * the service layer.
  */
-<?php
+
 
 namespace App\DTOs\Request\Sensor;
 

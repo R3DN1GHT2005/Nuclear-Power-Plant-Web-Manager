@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Services/ReactorService.php
  * ReactorService — implements business logic for reactor
  * operations. Called by controllers, delegates data access to
  * repositories, and integrates with external clients and other services.
  */
-<?php
+
 
 namespace App\Services;
 

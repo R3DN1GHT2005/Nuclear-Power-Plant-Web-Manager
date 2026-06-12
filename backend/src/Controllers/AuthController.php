@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Controllers/AuthController.php
  * AuthController — HTTP endpoint handler exposing auth
  * routes. Parses request data, applies middleware, delegates to
  * the corresponding service, and returns JSON responses.
  */
-<?php
+
 namespace App\Controllers;
 
 use App\Repositories\UserRepository;

@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Controllers/AlertController.php
  * AlertController — HTTP endpoint handler exposing alert
  * routes. Parses request data, applies middleware, delegates to
  * the corresponding service, and returns JSON responses.
  */
-<?php
+
 
 namespace App\Controllers;
 

@@ -1,3 +1,9 @@
+/*
+ * frontend/build.js
+ * Build script for Vercel deployment — reads FRONTEND_API_URL from
+ * environment and generates public/env-config.js with the value.
+ * Called by "npm run build" during Vercel's deploy step.
+ */
 const fs = require('fs');
 const path = require('path');
 

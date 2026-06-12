@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Controllers/ReactorMaintenanceController.php
  * ReactorMaintenanceController — HTTP endpoint handler exposing reactor maintenance
  * routes. Parses request data, applies middleware, delegates to
  * the corresponding service, and returns JSON responses.
  */
-<?php
+
 
 namespace App\Controllers;
 

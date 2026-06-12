@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/DTOs/request/user/CreateUserRequestDTO.php
  * Request DTO for user CreateUserRequestDTO — validates and
  * structures incoming API request data before passing it to
  * the service layer.
  */
-<?php
+
 
 namespace App\DTOs\Request\User;
 

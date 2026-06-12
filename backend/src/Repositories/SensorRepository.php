@@ -1,10 +1,12 @@
+<?php
+
 /*
  * backend/src/Repositories/SensorRepository.php
  * Repository for Sensor — provides database query methods
  * for Sensor CRUD operations via PDO. Used by the corresponding
  * Service layer to decouple data access from business logic.
  */
-<?php
+
 
 namespace App\Repositories;
 
