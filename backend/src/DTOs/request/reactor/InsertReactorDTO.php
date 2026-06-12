@@ -16,6 +16,7 @@ class InsertReactorDTO {
         public readonly string $cooling_water_source,
         public readonly float $distance_to_nearest_city_km,
         public readonly float $elevation_meters,
-        public readonly string $webhook_url
+        public readonly string $webhook_url,
+        public readonly ?string $mac_address = null 
     ) {}
 }

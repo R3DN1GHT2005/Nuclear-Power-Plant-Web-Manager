@@ -27,8 +27,17 @@ class Router {
     }
 
     private function addRoute(string $method, string $path, string $controller, string $action, array $middlewares): void {
-        // Am lăsat logica ta de regex exact la fel
-        $regexPath = preg_replace('/\{[a-zA-Z0-9_]+\}/', '(\d+)', $path);
+        // În loc să transformăm totul în (\d+), folosim un regex mai permisiv
+        // {mac} va fi transformat în ([a-zA-Z0-9:]+)
+        // {id} va fi transformat în (\d+)
+        
+        $regexPath = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($matches) {
+            if ($matches[1] === 'mac') {
+                return '([a-zA-Z0-9:]+)'; // Permitem litere, cifre și ':' pentru MAC
+            }
+            return '(\d+)'; // Pentru orice altceva ({id}), rămânem la numere
+        }, $path);
+
         $regexPath = '#^' . $regexPath . '$#';
 
         $this->routes[] = [
@@ -39,7 +48,6 @@ class Router {
             'middlewares' => $middlewares 
         ];
     }
-
     // Execută cererea primită
     public function dispatch(string $uri, string $method): void {
         foreach ($this->routes as $route) {

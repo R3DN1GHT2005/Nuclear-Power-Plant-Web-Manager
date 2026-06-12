@@ -59,11 +59,11 @@ class ReactorRepository {
             INSERT INTO reactors 
                  (name, location_name, latitude, longitude, status,
                   installed_power, soil_stability, seismic_risk,
-                  reactor_type, cooling_water_source, distance_to_nearest_city_km, elevation_meters, webhook_discord)
+                  reactor_type, cooling_water_source, distance_to_nearest_city_km, elevation_meters, webhook_discord, mac_address) -- NOU: am adăugat mac_address
             VALUES 
                  (:name, :location_name, :latitude, :longitude, :status,
                   :installed_power, :soil_stability, :seismic_risk,
-                  :reactor_type, :cooling_water_source, :distance_to_nearest_city_km, :elevation_meters, :webhook_url)
+                  :reactor_type, :cooling_water_source, :distance_to_nearest_city_km, :elevation_meters, :webhook_url, :mac_address) -- NOU: am adăugat :mac_address
             RETURNING *
         ");
 
@@ -81,6 +81,7 @@ class ReactorRepository {
               'distance_to_nearest_city_km' => $dto->distance_to_nearest_city_km,
               'elevation_meters' => $dto->elevation_meters,
               'webhook_url' => $dto->webhook_url,
+              'mac_address' => $dto->mac_address, 
         ]);
 
         return Reactor::fromArray($stmt->fetch(PDO::FETCH_ASSOC));
@@ -208,6 +209,25 @@ class ReactorRepository {
         ");
         $stmt->execute();
         return array_map(fn($row) => Reactor::fromArray($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+
+    public function findByMac(string $mac): ?Reactor {
+        $stmt = $this->db->prepare("SELECT * FROM reactors WHERE mac_address = :mac LIMIT 1");
+        $stmt->bindParam(':mac', $mac, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? Reactor::fromArray($row) : null;
+    }
+
+    public function getReactorStatus(int $id): ?string {
+        $stmt = $this->db->prepare("SELECT status FROM reactors WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['status'] : null;
     }
 
 }

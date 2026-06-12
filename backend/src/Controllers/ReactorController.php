@@ -127,6 +127,42 @@ class ReactorController {
         }
     }
 
+    public function updateStatusESP(int $id): void {
+        // 1. Preluăm JSON-ul trimis de ESP32
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        // 2. Validare de bază
+        if (!$data || !isset($data['status'])) {
+            Response::json(['error' => 'Status lipsă din cererea ESP32'], 400);
+            return;
+        }
+
+        try {
+            // 3. Apelăm aceeași logică de business (Service-ul tău face toată treaba grea)
+            $reactor = $this->reactorService->changeStatus($id, (string) $data['status']);
+
+            if (!$reactor) {
+                Response::json(['error' => 'Reactor negăsit în baza de date'], 404);
+                return;
+            }
+
+            // 4. Răspuns de succes. 
+            // Poți folosi ReactorMapper::toResponse($reactor) ca în funcția ta, 
+            // sau un răspuns mai simplificat și mai rapid pentru ESP32:
+            Response::json([
+                'success' => true, 
+                'message' => 'Status actualizat de la senzor',
+                'status' => $data['status']
+            ], 200);
+
+        } catch (\InvalidArgumentException $e) {
+            // Dacă statusul trimis e invalid (ex: altceva decât OPRIT/ACTIV/etc)
+            Response::json(['error' => $e->getMessage()], 400);
+        } catch (\Exception $e) {
+            // Eroare generală de server
+            Response::json(['error' => 'Eroare internă: ' . $e->getMessage()], 500);
+        }
+    }
     // DELETE /api/reactors/{id}
     public function deleteReactor(int $id): void {
         $deleted = $this->reactorService->delete($id);
@@ -181,5 +217,28 @@ class ReactorController {
             'reactor_status' => $r->getStatus(),
             'reactor_efficiency' => $r->getCurrentEfficiency()
         ], $reactors));
+    }
+
+
+    // GET /api/reactors/by-mac/{mac}
+    public function getReactorByMac(string $mac): void {
+        $reactor = $this->reactorService->getByMac($mac);
+
+        if (!$reactor) {
+            Response::json(['error' => 'Niciun reactor asociat cu acest MAC'], 404);
+            return;
+        }
+
+        Response::json(ReactorMapper::toResponse($reactor));
+    }
+
+    //GET /api/reactors/get-status
+    public function getReactorStatus(int $id): void{
+        $reactor = $this-> reactorService -> getReactorStatus($id);
+        if (!$reactor) {
+            Response::json(['error' => 'Reactor negăsit'], 404);
+            return;
+        }
+        Response::json(['status' => $reactor]);
     }
 }
