@@ -31,10 +31,6 @@ class AlertRepository {
         return array_map(fn($row) => AlertMapper::toModel($row), $rows);
     }
 
-    /**
-     * Extrage toate alertele rezolvate, ordonate cronologic (cele mai recente primele).
-     * @return Alert[]
-     */
     public function getAllResolved(): array {
         $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a
@@ -51,9 +47,6 @@ class AlertRepository {
         return array_map(fn($row) => AlertMapper::toModel($row), $rows);
     }
 
-    /**
-     * Găsește o alertă specifică după ID.
-     */
     public function findById(int $id): ?Alert {
         $sql = "SELECT a.*, r.name as reactor_name, CONCAT(u.first_name, ' ', u.last_name) as resolver_name 
                 FROM alerts a

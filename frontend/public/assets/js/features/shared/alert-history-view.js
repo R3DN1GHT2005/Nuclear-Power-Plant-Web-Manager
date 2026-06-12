@@ -23,7 +23,7 @@ function renderAlertHistory(reactorId, containerId, options) {
 
             if (!alerts.length) { body.innerHTML = '<p class="empty-msg">Nicio alertă anterioară.</p>'; return; }
 
-            var items = alerts.slice(-limit).reverse().map(function(a) {
+            var items = alerts.slice(0, limit).map(function(a) {
                 var resolvedHtml = '';
                 if (showResolved && a.resolved_at) {
                     resolvedHtml = '<span class="alert-time" style="color:var(--green)">Rezolvată: ' + new Date(a.resolved_at).toLocaleString('ro-RO') + '</span>';
