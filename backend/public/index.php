@@ -91,13 +91,17 @@ try {
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
     
     // -- Rute dinamice ({id}) --
+    $router->get('/api/reactors/status/{id}', ReactorController::class, 'getReactorStatus', [SensorMiddleware::class]);
+    $router->get('/api/reactors/by-mac/{mac}', ReactorController::class, 'getReactorByMac', [SensorMiddleware::class]);
     $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById', [AuthMiddleware::class]); 
     $router->put('/api/reactors/{id}', ReactorController::class, 'updateReactor', [AdminMiddleware::class]); 
     $router->delete('/api/reactors/{id}', ReactorController::class, 'deleteReactor', [AdminMiddleware::class]); 
+    $router->patch('/api/reactors/{id}/statusESP', ReactorController::class, 'updateStatusESP', [SensorMiddleware::class]);
     $router->patch('/api/reactors/{id}/status', ReactorController::class, 'updateStatus', [AuthMiddleware::class]);
     $router->patch('/api/reactors/{id}/efficiency', ReactorController::class, 'updateEfficiency', [SensorMiddleware::class]);
     
     // -- Rute dependente de reactor (Mentenanță / Senzori asociați) --
+    
     $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [ManagerOrAdminMiddleware::class]);
     $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [ManagerOrAdminMiddleware::class]);
     $router->get('/api/reactors/{id}/personnel', ReactorController::class, 'getPersonnel', [ManagerOrAdminMiddleware::class]);
@@ -146,9 +150,11 @@ try {
     // ==========================================
     $router->get('/api/rss/alerts', RssController::class, 'getFeed');
     $router->get('/api/rss/token', RssController::class, 'getToken', [AuthMiddleware::class]);
-
+    
     // START ROUTING
     $router->dispatch($uri, $method);
+
+    
 
 } catch (Exception $e) {
     http_response_code(500);

@@ -11,9 +11,11 @@ class CreateReactorRequestDTO {
         public readonly float $latitude,
         public readonly float $longitude,
         public readonly string $webhook_url,
+        public readonly ?string $mac_address = null, 
     ) {}
 
     public static function fromArray(array $data): self {
+       
         $requiredFields = ['name', 'location_name', 'reactor_type', 'installed_power', 'latitude', 'longitude', 'webhook_url'];
 
         foreach ($requiredFields as $field) {
@@ -30,6 +32,7 @@ class CreateReactorRequestDTO {
             latitude: (float) $data['latitude'],
             longitude: (float) $data['longitude'],
             webhook_url: $data['webhook_url'],
+            mac_address: $data['mac_address'] ?? null, 
         );
     }
 }
