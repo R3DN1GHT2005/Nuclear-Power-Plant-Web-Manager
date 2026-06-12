@@ -77,8 +77,8 @@ function createStatusPillHTML(status) {
 function statusBadgeClass(status) {
   var s = (status || '').toLowerCase();
   if (s === 'activ') return 'pill-active';
-  if (s === 'alertă' || s === 'alerta') return 'pill-alert';
-  if (s === 'mentenanță' || s === 'mentenanta') return 'pill-maint';
+  if (s === 'alerta') return 'pill-alert';
+  if (s === 'mentenanta') return 'pill-maint';
   if (s === 'oprit') return 'pill-off';
   if (s === 'in constructie') return 'pill-blue';
   return 'pill-off';

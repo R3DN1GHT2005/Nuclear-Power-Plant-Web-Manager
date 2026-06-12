@@ -7,8 +7,8 @@
 function createReactorHTML(reactor) {
     var config = {
         'activ':          { pill: 'pill-active', border: '', bar: 'bf-green', text: 'text-green' },
-        'alertă':         { pill: 'pill-alert', border: 'border-crit', bar: 'bf-red', text: 'text-red' },
-        'mentenanță':     { pill: 'pill-maint', border: 'border-maint', bar: 'bf-amber', text: 'text-amber' },
+        'alerta':         { pill: 'pill-alert', border: 'border-crit', bar: 'bf-red', text: 'text-red' },
+        'mentenanta':     { pill: 'pill-maint', border: 'border-maint', bar: 'bf-amber', text: 'text-amber' },
         'oprit':          { pill: 'pill-off', border: 'opacity-75', bar: 'bf-gray', text: 'text-muted' }
     };
 
