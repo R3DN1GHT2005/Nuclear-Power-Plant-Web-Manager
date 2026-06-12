@@ -37,12 +37,12 @@ function renderKpis() {
 
   setText('trend-title', 'Trend eficiență medie — ' + formatDays(state.days));
   setText('trend-subtitle', 'Centrala în ansamblu · ' + formatDays(state.days));
-  setText('efficiency-bars-subtitle', formatDays(state.days) + ' · comparativ cu ținta de 90%');
-  setText('comparison-subtitle', 'Principali indicatori de performanță · ' + formatDays(state.days));
-  setText('risk-subtitle', 'Probabilitate × Impact · ' + formatDays(state.days));
-  setText('environment-subtitle', 'Date live din senzori · ' + formatDays(state.days));
-  setText('wear-subtitle', 'Estimare bazată pe ore funcționare și mentenanță · ' + formatDays(state.days));
-  setText('stats-page-subtitle', 'Performanță, eficiență, risc și uzură · ' + formatDays(state.days));
+  setText('efficiency-bars-subtitle', 'Performanța reactoarelor · comparativ cu ținta de 90%');
+  setText('comparison-subtitle', 'Principali indicatori de performanță');
+  setText('risk-subtitle', 'Probabilitate × Impact · reactoare active');
+  setText('environment-subtitle', 'Date live din senzori · amplasamentele reactoarelor');
+  setText('wear-subtitle', 'Estimare bazată pe ore funcționare și mentenanță');
+  setText('stats-page-subtitle', 'Performanță, eficiență, risc și uzură');
 }
 
 function renderAll() {
