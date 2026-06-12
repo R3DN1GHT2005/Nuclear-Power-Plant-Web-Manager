@@ -128,17 +128,13 @@ class ReactorController {
     }
 
     public function updateStatusESP(int $id): void {
-        // 1. Preluăm JSON-ul trimis de ESP32
         $data = json_decode(file_get_contents('php://input'), true);
-
-        // 2. Validare de bază
         if (!$data || !isset($data['status'])) {
             Response::json(['error' => 'Status lipsă din cererea ESP32'], 400);
             return;
         }
 
         try {
-            // 3. Apelăm aceeași logică de business (Service-ul tău face toată treaba grea)
             $reactor = $this->reactorService->changeStatus($id, (string) $data['status']);
 
             if (!$reactor) {
@@ -210,6 +206,7 @@ class ReactorController {
         Response::json($personnel);
     }
 
+    
     public function getActiveReactors(): void {
         $reactors = $this->reactorService->getAllActive();
         Response::json(array_map(fn($r) => [

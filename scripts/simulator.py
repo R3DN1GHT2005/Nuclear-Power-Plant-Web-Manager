@@ -174,11 +174,9 @@ def run_simulator():
                 except requests.exceptions.RequestException as e:
                     print(f"[EROARE] Senzor #{sensor['sensor_id']}: {e}")
 
-            # ── Trimitem eficiența pentru toate reactoarele active ──
             for reactor in active_reactors:
                 eff = next_efficiency(reactor)
                 update_efficiency(reactor["reactor_id"], eff)
-                # Actualizăm local ca să nu pierdem trendul la refresh
                 reactor["reactor_efficiency"] = eff
 
             print(f"------ Ciclu #{cycle} complet. Următor în 10s ------\n")

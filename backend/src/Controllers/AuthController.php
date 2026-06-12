@@ -31,30 +31,24 @@ class AuthController {
         $user = $this->authService->login($email, $password);
         
         if ($user) {
-            // Creăm sesiunea (Access Token scurt + Refresh Token lung)
             $session = $this->sessionService->createSession($user['id'], $user['role'] ?? 'viewer');
+            setcookie('access_token', $session['access_token'], [
+            'expires'  => time() + 900,
+            'path'     => '/',
+            'domain'   => '127.0.0.1',   
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
 
-            // Setăm Access Token-ul într-un cookie
-            // Expiră în mod normal în 15 minute (900 secunde). Aici poți ajusta dacă Service-ul tău dă un alt timp.
-            // 1. Setăm Access Token-ul (valabil 15 minute)
-            // Setăm Access Token-ul (valabil 15 minute)
-           setcookie('access_token', $session['access_token'], [
-    'expires'  => time() + 900,
-    'path'     => '/',
-    'domain'   => '127.0.0.1',   // ← adaugă asta
-    'secure'   => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-setcookie('refresh_token', $session['refresh_token'], [
-    'expires'  => time() + 604800,
-    'path'     => '/',
-    'domain'   => '127.0.0.1',   // ← adaugă asta
-    'secure'   => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
+        setcookie('refresh_token', $session['refresh_token'], [
+            'expires'  => time() + 604800,
+            'path'     => '/',
+            'domain'   => '127.0.0.1',   
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
 
             http_response_code(200);
             echo json_encode([
@@ -173,69 +167,5 @@ setcookie('refresh_token', $session['refresh_token'], [
             "role" => $userModel->getRole()->value,
             "reactor_id" => $reactorId
         ]);
-    }
-
-    // ==========================================
-    // RUTE PROTEJATE DE ADMIN MIDDLEWARE
-    // ==========================================
-
-    public function register() {
-        $data = json_decode(file_get_contents("php://input"), true) ?? [];
-
-        $email = $data['email'] ?? null;
-        $password = $data['password'] ?? null;
-        $firstName = $data['first_name'] ?? null;
-        $lastName = $data['last_name'] ?? null;
-        $role = $data['role'] ?? 'viewer';
-
-        // Logica pentru cazul în care front-end-ul trimite "full_name" în loc de nume separat
-        if ((!$firstName || !$lastName) && !empty($data['full_name'])) {
-            $parts = preg_split('/\s+/', trim($data['full_name']), 2);
-            $firstName = $firstName ?: ($parts[0] ?? null);
-            $lastName = $lastName ?: ($parts[1] ?? null);
-        }
-
-        if (empty($email) || empty($password) || empty($firstName) || empty($lastName)) {
-            http_response_code(400);
-            echo json_encode(["error" => "Email, password, first_name și last_name sunt obligatorii!"]);
-            return;
-        }
-
-        try {
-            $newUserId = $this->authService->register($email, $password, $firstName, $lastName, $role);
-            
-            http_response_code(201);
-            echo json_encode([
-                "message" => "Cont creat cu succes!",
-                "user_id" => $newUserId
-            ]);
-
-        } catch (Exception $e) {
-            http_response_code(409); // Conflict (ex: email-ul există deja)
-            echo json_encode(["error" => $e->getMessage()]);
-        }
-    }
-
-    public function updatePassword() {
-        $data = json_decode(file_get_contents("php://input"), true) ?? [];
-        
-        $targetUserId = $data['user_id'] ?? null; 
-        $newPassword = $data['new_password'] ?? null;
-
-        if (!$targetUserId || !$newPassword) {
-            http_response_code(400);
-            echo json_encode(["error" => "Câmpurile user_id și new_password sunt obligatorii!"]);
-            return;
-        }
-
-        try {
-            $this->authService->adminUpdatePassword($targetUserId, $newPassword);
-            
-            http_response_code(200);
-            echo json_encode(["message" => "Parola utilizatorului a fost actualizată cu succes!"]);
-        } catch (Exception $e) {
-            http_response_code(404); // Not Found (dacă user_id nu există)
-            echo json_encode(["error" => $e->getMessage()]);
-        }
     }
 }

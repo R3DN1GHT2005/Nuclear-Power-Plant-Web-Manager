@@ -46,7 +46,7 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
-// Gestionarea cererilor de tip preflight (OPTIONS)
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -62,14 +62,12 @@ if (empty($uri)) {
 try {
     $router = new Router();
 
-    // ==========================================
-    // 1. RUTE AUTH & USERI
-    // ==========================================
+
     $router->post('/api/auth/login', AuthController::class, 'login');
     $router->post('/api/auth/refresh', AuthController::class, 'refresh');
     $router->post('/api/auth/logout', AuthController::class, 'logout');
     $router->get('/api/auth/me', AuthController::class, 'me', [AuthMiddleware::class]);
-    $router->put('/api/auth/password', AuthController::class, 'updatePassword', [AdminMiddleware::class]); 
+    
 
     $router->post('/api/users', UserController::class, 'createUser', [AdminMiddleware::class]);
     $router->get('/api/users', UserController::class, 'getAllUsers', [AdminMiddleware::class]);
@@ -81,16 +79,13 @@ try {
     
     $router->post('/api/user/rss-token/regenerate', UserController::class, 'regenerateRssToken', [AuthMiddleware::class]);
 
-    // ==========================================
-    // 2. RUTE REACTOARE (Statice primele, dinamice ultimele)
-    // ==========================================
-    // -- Rute statice --
+
     $router->get('/api/reactors/active', ReactorController::class, 'getActiveReactors', [SensorMiddleware::class]);
     $router->get('/api/reactors', ReactorController::class, 'getAllReactors', [AuthMiddleware::class]); 
     $router->get('/api/reactors/my', ReactorController::class, 'getMyReactor', [AuthMiddleware::class]);
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
     
-    // -- Rute dinamice ({id}) --
+ 
     $router->get('/api/reactors/status/{id}', ReactorController::class, 'getReactorStatus', [SensorMiddleware::class]);
     $router->get('/api/reactors/by-mac/{mac}', ReactorController::class, 'getReactorByMac', [SensorMiddleware::class]);
     $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById', [AuthMiddleware::class]); 
@@ -100,7 +95,7 @@ try {
     $router->patch('/api/reactors/{id}/status', ReactorController::class, 'updateStatus', [AuthMiddleware::class]);
     $router->patch('/api/reactors/{id}/efficiency', ReactorController::class, 'updateEfficiency', [SensorMiddleware::class]);
     
-    // -- Rute dependente de reactor (Mentenanță / Senzori asociați) --
+  
     
     $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [ManagerOrAdminMiddleware::class]);
     $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [ManagerOrAdminMiddleware::class]);
@@ -109,10 +104,6 @@ try {
     $router->get('/api/reactors/{id}/sensors', SensorController::class, 'getSensorsByReactor', [AuthMiddleware::class]); 
     $router->post('/api/reactors/{id}/sensors', SensorController::class, 'addSensorToReactor', [AdminMiddleware::class]); 
 
-    // ==========================================
-    // 3. RUTE SENZORI (Statice primele, dinamice ultimele)
-    // ==========================================
-    // -- Rute statice --
     $router->get('/api/sensors/config', SensorController::class, 'getConfig', [SensorMiddleware::class]);
     $router->post('/api/sensors/readings', SensorController::class, 'recordReading', [SensorMiddleware::class]);
     $router->get('/api/sensors/readings/all', SensorController::class, 'getLatestReadingsAllSensors', [AuthMiddleware::class]);
@@ -120,24 +111,18 @@ try {
     $router->get('/api/sensors', SensorController::class, 'getAllSensors', [AuthMiddleware::class]); 
     $router->post('/api/sensors', SensorController::class, 'addSensor', [AdminMiddleware::class]); 
     
-    // -- Rute dinamice ({id}) --
     $router->get('/api/sensors/{id}', SensorController::class, 'getSensorById', [AuthMiddleware::class]); 
     $router->get('/api/sensors/{id}/readings', SensorController::class, 'getLatestReadingsBySensor', [AuthMiddleware::class]);
     $router->patch('/api/sensors/{id}', SensorController::class, 'patchSensor', [AdminMiddleware::class]); 
     $router->put('/api/sensors/{id}/data', SensorController::class, 'recordValue', [AuthMiddleware::class]); 
     $router->delete('/api/sensors/{id}', SensorController::class, 'deleteSensor', [AdminMiddleware::class]); 
 
-    // ==========================================
-    // 4. RUTE ALERTE
-    // ==========================================
     $router->get('/api/alerts/active', AlertController::class, 'getActiveAlerts', [AuthMiddleware::class]);
     $router->get('/api/alerts/history', AlertController::class, 'getAlertHistory', [AdminMiddleware::class]);
     $router->get('/api/alerts/history/reactor/{id}', AlertController::class, 'getAlertHistoryByReactor', [AuthMiddleware::class]);
     $router->post('/api/alerts/{id}/resolve', AlertController::class, 'resolveAlert', [AuthMiddleware::class]);
 
-    // ==========================================
-    // 5. RUTE RAPOARTE
-    // ==========================================
+ 
     $router->get('/api/reports/kpi', ReportController::class, 'getKpi', [AuthMiddleware::class]);
     $router->get('/api/reports/efficiency', ReportController::class, 'getEfficiency', [AuthMiddleware::class]);
     $router->get('/api/reports/efficiency/trend', ReportController::class, 'getEfficiencyTrend', [AuthMiddleware::class]);
@@ -145,13 +130,11 @@ try {
     $router->get('/api/reports/risk-matrix', ReportController::class, 'getRiskMatrix', [AuthMiddleware::class]);
     $router->get('/api/reports/wear', ReportController::class, 'getWear', [AuthMiddleware::class]);
 
-    // ==========================================
-    // 6. RUTE RSS
-    // ==========================================
+ 
     $router->get('/api/rss/alerts', RssController::class, 'getFeed');
     $router->get('/api/rss/token', RssController::class, 'getToken', [AuthMiddleware::class]);
     
-    // START ROUTING
+ 
     $router->dispatch($uri, $method);
 
     

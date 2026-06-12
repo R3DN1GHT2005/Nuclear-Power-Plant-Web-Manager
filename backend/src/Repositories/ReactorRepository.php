@@ -204,7 +204,7 @@ class ReactorRepository {
     public function findAllActive(): array {
         $stmt = $this->db->prepare("
             SELECT * FROM reactors 
-            WHERE status = 'Activ'
+            WHERE status = 'Activ' and mac_address IS NULL
             ORDER BY created_at DESC
         ");
         $stmt->execute();

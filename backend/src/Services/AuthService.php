@@ -24,5 +24,4 @@ class AuthService {
         }
         return false;
     }
-    // METODA REGISTER A FOST ȘTEARSĂ DE AICI
 }
