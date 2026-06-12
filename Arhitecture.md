@@ -1,122 +1,144 @@
-# Arhitectura Proiectului - Nuclear-Power-Plant-Web-Manager
+# Architecture — Nuclear Power Plant Web Manager
 
 ```
 /Nuclear-Power-Plant-Web-Manager
 │
-├── /frontend/public              # Interfața Utilizator (servite de Nginx)
-│   ├── index.html                       # Dashboard admin (grilă reactoare, metrici, alerte, RSS)
-│   ├── dashboard.html                   # Dashboard manager/tehnician (reactor asignat, KPI, mentenanță)
-│   ├── login.html                       # Autentificare
-│   ├── reactors.html                    # Listă reactoare (filtrabilă, căutare)
-│   ├── reactor.html                     # Detalii reactor (senzori, istoric, mentenanță)
-│   ├── stats.html                       # Analytics admin (KPI, eficiență, risc, wear)
-│   ├── reactor-statistics.html          # Statistici manager (reactor propriu)
-│   ├── location.html                    # Hartă interactivă (Leaflet, polling 5s)
-│   ├── management.html                  # Management mentenanță (manager)
-│   ├── alerts-history.html              # Istoric alerte rezolvate (admin)
-│   ├── admin-accounts.html              # Admin: gestionare utilizatori
+├── /frontend/public              # Static files (served by Nginx locally, Vercel in prod)
+│   ├── index.html                       # Admin dashboard — reactor grid, KPIs, alerts, RSS
+│   ├── dashboard.html                   # Manager/tech dashboard — assigned reactor, KPI, maint.
+│   ├── login.html                       # Login page
+│   ├── reactors.html                    # Reactor list (filterable, searchable)
+│   ├── reactor.html                     # Reactor detail — sensors, readings, alerts, maintenance
+│   ├── stats.html                       # Admin analytics — KPI, efficiency, risk, wear
+│   ├── reactor-statistics.html          # Manager stats — own reactor
+│   ├── location.html                    # Interactive map (Leaflet, polling 5s)
+│   ├── management.html                  # Maintenance management (manager)
+│   ├── alerts-history.html              # Resolved alerts history (admin)
+│   ├── admin-accounts.html              # Admin: user management
 │   │
 │   └── /assets
 │       ├── /css
-│       │   ├── style.css                # Stiluri globale (dark theme, layout, navbar, carduri, formulare)
-│       │   ├── alerts.css               # Stiluri alertă modal
-│       │   ├── reactor.css              # Stiluri pagină reactor
-│       │   ├── location.css             # Stiluri hartă Leaflet
-│       │   ├── dashboard.css            # Stiluri dashboard
-│       │   ├── admin-accounts.css       # Stiluri admin utilizatori
-│       │   ├── station-view.css         # Stiluri stație
-│       │   └── alerts-history.css       # Stiluri istoric alerte
+│       │   ├── style.css                # Global styles — dark theme, layout, navbar, cards, forms
+│       │   ├── alerts.css               # Alert modal styles
+│       │   ├── reactor.css              # Reactor page styles
+│       │   ├── location.css             # Leaflet map styles
+│       │   ├── dashboard.css            # Dashboard styles
+│       │   ├── admin-accounts.css       # Admin users styles
+│       │   ├── station-view.css         # Station view styles
+│       │   └── alerts-history.css       # Alert history styles
 │       │
 │       ├── /js
-│       │   ├── api.js                   # Client API (authFetch, NuclearAPI)
-│       │   ├── login.js                 # Handler login + redirect după rol
-│       │   ├── navbar.js                # Navbar dinamic (linkuri după rol)
-│       │   ├── alerts.js                # Alertă overlay global (polling 30s)
-│       │   ├── rss.js                   # Fetch RSS feed + token
+│       │   ├── api.js                   # API client — authFetch (auto 401→refresh), NuclearAPI
+│       │   ├── login.js                 # Login handler + role-based redirect
+│       │   ├── navbar.js                # Dynamic navbar — links depend on user role
+│       │   ├── alerts.js                # Global alert overlay (polls every 30s)
+│       │   ├── rss.js                   # RSS feed fetch + token display
+│       │   ├── alerts-history.js        # Alert history page logic
 │       │   │
 │       │   ├── /utils
 │       │   │   ├── helpers.js           # formatTime, statusClass, severityIcon, sensorIcon, etc.
-│       │   │   └── dom.js               # setElText, safeBindClick, modal helpers, toast
+│       │   │   ├── dom.js               # setElText, safeBindClick, modal helpers, toast
+│       │   │   └── status.js            # Status display utilities
 │       │   │
-│       │   ├── /features
-│       │   │   ├── /dashboard
-│       │   │   │   ├── dashboard-init.js        # Bootstrap dashboard manager
-│       │   │   │   ├── dashboard-kpis.js         # Gauge carduri KPI
-│       │   │   │   ├── dashboard-stats.js        # Grafic eficiență
-│       │   │   │   ├── dashboard-feed.js         # Feed RSS
-│       │   │   │   └── dashboard-index-init.js   # Bootstrap dashboard admin
-│       │   │   │
-│       │   │   ├── /reactors-list
-│       │   │   │   ├── reactors-list.js          # Listă reactoare + filtre
-│       │   │   │   └── reactors-list-renderer.js # Carduri reactor DOM
-│       │   │   │
-│       │   │   ├── /reactor
-│       │   │   │   ├── reactor-init.js           # Bootstrap pagină reactor
-│       │   │   │   ├── reactor-sensors.js        # Carduri senzori
-│       │   │   │   └── reactor-readings.js       # Istoric citiri
-│       │   │   │
-│       │   │   ├── /statistics
-│       │   │   │   ├── stats-init.js             # Bootstrap statistici admin
-│       │   │   │   └── stats-renderer.js         # Chart.js charts
-│       │   │   │
-│       │   │   ├── /location
-│       │   │   │   ├── location-init.js          # Bootstrap hartă
-│       │   │   │   └── location-state.js         # Leaflet markers, polling, popup
-│       │   │   │
-│       │   │   ├── /admin
-│       │   │   │   ├── admin-init.js             # Bootstrap admin (AdminState singleton)
-│       │   │   │   ├── admin-users.js            # Tabel utilizatori + CRUD modal
-│       │   │   │   └── admin-assignments.js      # Asignare reactoare
-│       │   │   │
-│       │   │   └── /management
-│       │   │       ├── management-init.js        # Bootstrap management
-│       │   │       └── management-info.js        # Info mentenanță
-│       │   │
-│       │   └── /img                     # Imagini, iconițe
+│       │   └── /features
+│       │       ├── /dashboard
+│       │       │   ├── dashboard-init.js        # Manager dashboard bootstrap
+│       │       │   ├── dashboard-index-init.js   # Admin dashboard bootstrap
+│       │       │   ├── dashboard-kpis.js         # KPI gauge cards
+│       │       │   ├── dashboard-stats.js        # Efficiency chart
+│       │       │   └── dashboard-feed.js         # RSS feed
+│       │       │
+│       │       ├── /reactors-list
+│       │       │   ├── reactors-list.js          # Reactor list + filters
+│       │       │   └── reactors-list-renderer.js # Reactor card DOM rendering
+│       │       │
+│       │       ├── /reactor
+│       │       │   ├── reactor-details-init.js   # Reactor page bootstrap
+│       │       │   ├── reactor-details-state.js  # Reactor page state management
+│       │       │   ├── reactor-details-renderer.js # Reactor detail rendering
+│       │       │   └── reactor-details-events.js # Reactor page events
+│       │       │
+│       │       ├── /statistics
+│       │       │   ├── stats-init.js             # Admin statistics bootstrap
+│       │       │   └── stats-renderer.js         # Chart.js rendering
+│       │       │
+│       │       ├── /stats
+│       │       │   ├── stats-init.js             # Stats initialization
+│       │       │   ├── stats-state.js            # Stats state management
+│       │       │   ├── stats-kpi.js              # KPI charts
+│       │       │   ├── stats-efficiency.js       # Efficiency charts
+│       │       │   ├── stats-comparison.js       # Reactor comparison charts
+│       │       │   ├── stats-risk.js             # Risk matrix charts
+│       │       │   ├── stats-wear.js             # Wear analysis charts
+│       │       │   └── stats-environment.js      # Environmental charts
+│       │       │
+│       │       ├── /location
+│       │       │   ├── location-init.js          # Map bootstrap
+│       │       │   ├── location-state.js         # Leaflet markers, polling, popup state
+│       │       │   ├── location-map.js           # Map setup
+│       │       │   ├── location-renderer.js      # Map rendering
+│       │       │   ├── location-events.js        # Map events
+│       │       │   ├── location-sensors.js       # Sensor overlay on map
+│       │       │   └── location-reactor-form.js  # Reactor form on map
+│       │       │
+│       │       ├── /admin
+│       │       │   ├── admin-init.js             # Admin bootstrap (AdminState singleton)
+│       │       │   ├── admin-users.js            # Users table + CRUD modal
+│       │       │   └── admin-assignments.js      # Reactor assignment
+│       │       │
+│       │       ├── /management
+│       │       │   ├── management-init.js        # Management bootstrap
+│       │       │   └── management-info.js        # Maintenance info
+│       │       │
+│       │       └── /shared
+│       │           ├── alert-history-view.js     # Alert history component
+│       │           ├── maintenance-view.js       # Maintenance view component
+│       │           └── stats-calculator.js       # Stats calculator
+│       │
+│       └── alert_sound.mp3              # Sound played on new critical alert
 │
-├── /backend                    # API PHP (servit de Apache pe portul 8082)
+├── /backend                    # PHP API (Apache, port 8082 locally, Render in prod)
 │   ├── /public                 # Document Root
-│   │   ├── index.php                  # Front Controller (CORS, rute, autoload)
-│   │   ├── .htaccess                  # Apache URL rewriting
-│   │   └── test_discord.php           # Script test Discord webhook
+│   │   ├── index.php                  # Front Controller — CORS, routes, autoload
+│   │   └── .htaccess                  # Apache URL rewriting (all → index.php)
 │   │
 │   ├── /src
-│   │   ├── /Core               # Infrastructură framework
-│   │   │   ├── Router.php             # Router custom (GET, POST, PUT, PATCH, DELETE) + middleware chain
-│   │   │   ├── Database.php           # Singleton PDO (PostgreSQL/Neon, sslmode=require)
-│   │   │   └── Response.php           # Helper JSON response
+│   │   ├── /Core               # Framework infrastructure
+│   │   │   ├── Router.php             # Custom router — GET/POST/PUT/PATCH/DELETE + middleware chain
+│   │   │   ├── Database.php           # PDO singleton (PostgreSQL/Neon, sslmode=require)
+│   │   │   └── Response.php           # JSON response helper
 │   │   │
-│   │   ├── /Middleware         # Lanț de securitate
-│   │   │   ├── AuthMiddleware.php     # Validare JWT din HttpOnly cookie
-│   │   │   ├── AdminMiddleware.php    # Verificare rol admin
-│   │   │   ├── ManagerOrAdminMiddleware.php # Verificare rol admin sau manager
-│   │   │   └── SensorMiddleware.php   # Validare X-API-KEY (simulator)
+│   │   ├── /Middleware         # Security chain
+│   │   │   ├── AuthMiddleware.php     # JWT validation from HttpOnly cookie
+│   │   │   ├── AdminMiddleware.php    # Admin role check
+│   │   │   ├── ManagerOrAdminMiddleware.php # Manager or admin check
+│   │   │   └── SensorMiddleware.php   # X-API-KEY validation (simulator)
 │   │   │
-│   │   ├── /Controllers       # Preiau request-ul și returnează JSON
+│   │   ├── /Controllers       # Receive request → return JSON
 │   │   │   ├── AuthController.php     # Login, refresh, logout, me
-│   │   │   ├── ReactorController.php  # Listare reactoare (toate, my, active, by ID)
-│   │   │   ├── SensorController.php   # CRUD senzori + config + citiri
-│   │   │   ├── AlertController.php    # Alerte active, istoric, rezolvare
-│   │   │   ├── UserController.php     # Gestionare utilizatori (admin/manager)
-│   │   │   ├── ReportController.php   # KPI, eficiență, trend, comparație, risc, wear
-│   │   │   ├── ReactorMaintenanceController.php # Start/stop mentenanță + istoric
-│   │   │   └── RssController.php      # Token RSS + feed XML alerte
+│   │   │   ├── ReactorController.php  # Reactor CRUD + status
+│   │   │   ├── SensorController.php   # Sensor CRUD + config + readings
+│   │   │   ├── AlertController.php    # Active alerts, history, resolve
+│   │   │   ├── UserController.php     # User management (admin/manager)
+│   │   │   ├── ReportController.php   # KPI, efficiency, trend, comparison, risk, wear
+│   │   │   ├── ReactorMaintenanceController.php # Start/stop maintenance + history
+│   │   │   │   └── RssController.php      # RSS token + XML feed
 │   │   │
 │   │   ├── /Services          # Business logic
-│   │   │   ├── AuthService.php        # Verificare parole
+│   │   │   ├── AuthService.php        # Password verification
 │   │   │   ├── TokenService.php       # JWT access token (15min) + refresh token
-│   │   │   ├── SessionService.php     # Gestionare sesiuni refresh token
-│   │   │   ├── UserService.php        # Business logic utilizatori
-│   │   │   ├── ReactorService.php     # Validare și CRUD reactoare + status
-│   │   │   ├── SensorService.php      # Senzori + generare alerte la depășire
-│   │   │   ├── AlertService.php       # Alerte cu filtrare după rol
-│   │   │   ├── ReactorMaintenanceService.php # Ciclu mentenanță (tranzacțional)
-│   │   │   ├── AnalyticsService.php   # Calcule KPI, eficiență, risc, wear
-│   │   │   ├── CityDistanceService.php # Distanță reactoare->orașe (haversine)
-│   │   │   ├── DiscordNotificationService.php # Notificări Discord webhook
+│   │   │   ├── SessionService.php     # Refresh token session management
+│   │   │   ├── UserService.php        # User business logic
+│   │   │   ├── ReactorService.php     # Reactor CRUD + status validation
+│   │   │   ├── SensorService.php      # Sensors + alert generation on threshold breach
+│   │   │   ├── AlertService.php       # Alert filtering by role
+│   │   │   ├── ReactorMaintenanceService.php # Maintenance cycle (transactional)
+│   │   │   ├── AnalyticsService.php   # KPI, efficiency, risk, wear calculations
+│   │   │   ├── CityDistanceService.php # Haversine distance reactor→cities
+│   │   │   ├── DiscordNotificationService.php # Discord webhook notifications
 │   │   │   └── RssService.php         # Token generation + RSS XML feed
 │   │   │
-│   │   ├── /Repositories     # Singurele clase care știu SQL
+│   │   ├── /Repositories     # Only classes that know SQL
 │   │   │   ├── UserRepository.php
 │   │   │   ├── ReactorRepository.php
 │   │   │   ├── SensorRepository.php
@@ -126,27 +148,36 @@
 │   │   │   ├── RefreshTokenRepository.php
 │   │   │   └── Maintenance_logRepository.php
 │   │   │
-│   │   ├── /Models           # Entități (mapare rânduri din baza de date)
-│   │   │   ├── User.php                # id, email, password_hash, first_name, last_name, role, rss_token
-│   │   │   ├── Reactor.php             # id, name, locație, status, parametri tehnici, webhook_url
-│   │   │   ├── Sensor.php              # id, reactor_id, sensor_type, unit, valori sigure, current_value
-│   │   │   ├── SensorReading.php       # id, sensor_id, recorded_value, recorded_at
-│   │   │   ├── SensorConfig.php        # id, sensor_type, valori sigure, reactor_status, reactor_id
-│   │   │   ├── Alert.php               # id, reactorId, severity, message, isResolved, resolver
-│   │   │   ├── ReactorMaintenance.php  # id, reactor_id, dates, reason, is_completed
-│   │   │   ├── ReactorPersonnel.php    # id, user_id, reactor_id, intervention_role
-│   │   │   └── Maintenance_log.php     # id, reactor_id, task_name, technician, prioritate, status
+│   │   ├── /Models           # Entities (row mapping from DB)
+│   │   │   ├── User.php               # id, email, password_hash, first_name, last_name, role, rss_token
+│   │   │   ├── Reactor.php            # id, name, location, status, technical params, webhook_url
+│   │   │   ├── Sensor.php             # id, reactor_id, sensor_type, unit, safe values, current_value
+│   │   │   ├── SensorReading.php      # id, sensor_id, recorded_value, recorded_at
+│   │   │   ├── SensorConfig.php       # id, sensor_type, safe values, reactor_status, reactor_id
+│   │   │   ├── Alert.php              # id, reactorId, severity, message, isResolved, resolver
+│   │   │   ├── ReactorMaintenance.php # id, reactor_id, dates, reason, is_completed
+│   │   │   ├── ReactorPersonnel.php   # id, user_id, reactor_id, intervention_role
+│   │   │   └── Maintenance_log.php    # id, reactor_id, task_name, technician, priority, status
 │   │   │
 │   │   ├── /DTOs             # Data Transfer Objects
-│   │   │   ├── /request
-│   │   │   │   ├── /alert        # CreateAlertDTO, UpdateAlertDTO, ResolveAlertRequestDTO
-│   │   │   │   ├── /maintenance  # StartMaintenanceRequestDTO
-│   │   │   │   ├── /reactor      # CreateReactorRequestDTO, UpdateReactorDTO, InsertReactorDTO
-│   │   │   │   ├── /sensor       # CreateSensorRequestDTO, UpdateSensorDTO, StoreMeasurementDTO, InsertSensorDTO
-│   │   │   │   └── /user         # CreateUserRequestDTO, UpdateUserPasswordDTO, AssignReactorRequestDTO
-│   │   │   └── /response     # ReactorResponseDTO, SensorResponseDTO, SensorConfigDTO, AlertResponseDTO
+│   │   │   ├── /Request
+│   │   │   │   ├── /Alert        # CreateAlertDTO, UpdateAlertDTO, ResolveAlertRequestDTO
+│   │   │   │   ├── /Maintenance  # StartMaintenanceRequestDTO
+│   │   │   │   ├── /Reactor      # CreateReactorRequestDTO, UpdateReactorDTO, InsertReactorDTO
+│   │   │   │   ├── /Sensor       # CreateSensorRequestDTO, UpdateSensorDTO, UpdateSensorRequestDTO,
+│   │   │   │   │                 # StoreMeasurementDTO, InsertSensorDTO
+│   │   │   │   └── /User         # CreateUserRequestDTO, UpdateUserPasswordDTO, AssignReactorRequestDTO
+│   │   │   └── /Response
+│   │   │       ├── /Alert        # AlertResponseDTO, AlertHistoryResponseDTO
+│   │   │       ├── /Maintenance  # MaintenanceHistoryResponseDTO
+│   │   │       ├── AlertResponseDTO.php
+│   │   │       ├── ReactorResponseDTO.php
+│   │   │       ├── SensorResponseDTO.php
+│   │   │       ├── SensorConfigDTO.php
+│   │   │       ├── SensorReadingResponseDTO.php
+│   │   │       └── /User         # UserResponseDTO
 │   │   │
-│   │   ├── /Mappers         # Convertor între Modeluri și DTO-uri
+│   │   ├── /Mappers         # Model ↔ DTO converters
 │   │   │   ├── ReactorMapper.php
 │   │   │   ├── SensorMapper.php
 │   │   │   ├── SensorConfigMapper.php
@@ -156,159 +187,185 @@
 │   │   │   ├── MeasurementMapper.php
 │   │   │   └── ReactorMaintenanceMapper.php
 │   │   │
-│   │   ├── /Enums           # Enum-uri PHP
-│   │   │   ├── UserRole.php         # admin, manager, tehnician
-│   │   │   ├── SensorType.php       # TEMPERATURA, PRESIUNE, VIBRATII, EFICIENTA (cu profiluri)
-│   │   │   ├── AlertSeverity.php    # warning, critical
-│   │   │   └── CoolingWaterSource.php # RÂURI, LACURI, MARE, CICLU_ÎNCHIS, RACIRE_CU_AER
+│   │   ├── /Enums           # PHP enums
+│   │   │   ├── UserRole.php        # admin, manager, tehnician
+│   │   │   ├── SensorType.php      # TEMPERATURA, PRESIUNE, VIBRATII, EFICIENTA (with profiles)
+│   │   │   └── AlertSeverity.php   # warning, critical
 │   │   │
-│   │   ├── /Validators      # Validare parametri specifici tip reactor
+│   │   ├── /Validators      # Reactor type-specific parameter validation
 │   │   │   ├── ReactorValidatorInterface.php
 │   │   │   ├── CanduValidator.php       # Min 400MW, city<5km reject, elev>1000m reject, seismic>6.5 reject
 │   │   │   ├── PwrValidator.php         # City<5km reject, elev>1500m reject, seismic>7.0 reject
 │   │   │   ├── SmrValidator.php         # Max 300MW, city<5km reject, elev>2500m reject, seismic>7.5 reject
-│   │   │   └── ValidatorFactory.php     # Mapare tip→validator
+│   │   │   └── ValidatorFactory.php     # Maps reactor type → validator
 │   │   │
-│   │   ├── /Clients         # Integrări API externe
-│   │   │   ├── ElevationApiClient.php   # api.open-meteo.com/v1/elevation — altitudine locație
-│   │   │   ├── MeteostatApiClient.php   # archive-api.open-meteo.com/v1/archive — vânt maxim
-│   │   │   └── SeismicApiClient.php     # seismicportal.eu — risc seismic
+│   │   ├── /Clients         # External API integrations
+│   │   │   ├── ElevationApiClient.php   # api.open-meteo.com/v1/elevation
+│   │   │   ├── MeteostatApiClient.php   # archive-api.open-meteo.com/v1/archive — wind data
+│   │   │   └── SeismicApiClient.php     # seismicportal.eu — seismic risk data
 │   │   │
 │   │   └── /Exceptions
 │   │       └── ValidationException.php
 │   │
 │   ├── /data
-│   │   └── worldcities.csv           # Date orașe 20k+ populație pentru distanțe
-│   └── composer.json                 # Autoload PSR-4 App\ → src/
+│   │   └── worldcities.csv             # 20k+ population cities for distance validation
+│   ├── composer.json                   # PSR-4 autoload App\ → src/
+│   └── Dockerfile                      # php:8.2-apache + pdo_pgsql + mod_rewrite
+│
+├── /frontend                   # Build config + deploy
+│   ├── vercel.json                    # Vercel: proxy /api/* → Render, SPA fallback
+│   ├── build.js                       # Build script (generates env-config.js from env vars)
+│   └── package.json                   # npm: "build" runs build.js
 │
 ├── /init-db
-│   └── schema.sql                    # Schema completă PostgreSQL (10 tabele)
+│   └── schema.sql                     # Full PostgreSQL schema — 10 tables + triggers + indexes
 │
 ├── /scripts
-│   ├── simulator.py                  # Generator date senzori (Brownian motion, drift, sine, anomalii)
-│   └── detect_watermark.py           # Detectare caractere zero-width în RSS
+│   ├── simulator.py                  # Sensor data generator — Brownian motion, drift, sine, anomalies
+│   └── detect_watermark.py           # Zero-width character detection in RSS text
 │
-├── docker-compose.yml               # Servicii: web (8082), frontend (4000), composer, simulator
-├── Dockerfile                        # php:8.2-apache + pdo_pgsql + mod_rewrite
-├── apache.conf                       # VirtualHost config Apache
+├── docker-compose.yml               # Services: web (8082), frontend (4000), composer, simulator
+├── Dockerfile                        # php:8.2-apache + pdo_pgsql + mod_rewrite (root app)
+├── apache.conf                       # Apache VirtualHost config
 ├── composer.json                     # firebase/php-jwt ^7.0, vlucas/phpdotenv ^5.6
-├── .env                             # DB Neon, JWT_SECRET, JWT_ISSUER, SENSOR_API_KEY
+├── .env                             # DB Neon, JWT_SECRET, JWT_ISSUER, SENSOR_API_KEY, FRONTEND_API_URL
 ├── .gitignore
-├── Arhitecture.md                   # Acest document
-├── comentat.md                      # Middleware comentat în index.php
-└── fixStatistics.md                 # Propunere eficiență: tabel efficiency_log
+├── README.md                         # IEEE SRS in B2 English
+├── Arhitecture.md                   # This document
+└── comentat.md                      # Notes on commented-out middleware in index.php
 ```
 
 ---
 
-## Fluxul unei cereri
+## Request Flow
 
 ```
-Browser → Nginx (frontend:4000) → fișiere HTML/JS/CSS statice
-       ↓ (fetch API cu credentials:include)
-       Apache (backend:8082) → index.php (Front Controller)
+Browser → Nginx (frontend:4000 / Vercel) → static HTML/JS/CSS files
+       ↓ (fetch API with credentials:include)
+       Apache (backend:8082 / Render) → index.php (Front Controller)
          → Router::dispatch()
-           → Middleware chain (Auth/Admin/ManagerOrAdmin/Sensor)
+           → Middleware chain (Auth / Admin / ManagerOrAdmin / Sensor)
              → Controller
                → Service (business logic)
                  → Repository (SQL)
-                   → Database (PostgreSQL/Neon)
+                   → Database (PostgreSQL / Neon)
 ```
 
-## Fluxul de autentificare
+## Auth Flow
 
 ```
 1. POST /api/auth/login → AuthController::login
-   → AuthService verifică parola (password_verify)
-   → TokenService generează JWT access token (HS256, 15min, HttpOnly cookie, scope /api)
-   → SessionService creează refresh token (random 64 hex, 30 zile, DB + HttpOnly cookie, scope /api/auth)
-   → Răspuns JSON cu date utilizator (redirect conform rol)
+   → AuthService verifies password (password_verify)
+   → TokenService generates JWT access token (HS256, 15min, HttpOnly cookie)
+   → SessionService creates refresh token (random 64 hex, 30 days, DB + HttpOnly cookie)
+   → JSON response with user data (redirect based on role)
 
-2. La 401: frontendul face POST /api/auth/refresh (automat în authFetch wrapper)
-   → TokenService decodează refresh token
-   → SessionService reînnoiește sesiunea
-   → Cookie-uri noi setate
-   → Request-ul original se reîncearcă
+2. On 401: frontend auto-calls POST /api/auth/refresh (inside authFetch wrapper)
+   → TokenService decodes refresh token
+   → SessionService renews session
+   → New cookies set
+   → Original request retried
 
-3. Logout: POST /api/auth/logout → șterge cookie-urile + token-ul din DB
+3. Logout: POST /api/auth/logout → clears cookies + removes token from DB
 ```
 
-## Fluxul de alerte
+## Alert Flow
 
 ```
-Simulator → POST /api/sensors/readings (X-API-KEY)
+Simulator → POST /api/sensors/readings (X-API-KEY header)
   → SensorController::storeMeasurement
-    → SensorService verifică valoarea față de min_safe_value / max_safe_value
-    → Dacă depășit → AlertService creează alertă (warning/critical)
-    → DiscordNotificationService trimite notificare pe webhook-ul reactorului
-    → Frontend: alerts.js pollingează GET /api/alerts/active la 30s
-      → Afișează overlay + redă sunet
-      → Rezolvare: POST /api/alerts/{id}/resolve
+    → SensorService compares value against min_safe_value / max_safe_value
+    → If exceeded → AlertService creates alert (warning / critical)
+    → DiscordNotificationService sends webhook for reactor
+    → Frontend: alerts.js polls GET /api/alerts/active every 30s
+      → Shows overlay + plays sound
+      → Resolve: POST /api/alerts/{id}/resolve
 ```
 
-## Stack tehnologic
+## Tech Stack
 
-| Componentă        | Tehnologie                            |
-|-------------------|---------------------------------------|
-| Frontend          | HTML5, CSS3, JavaScript vanilla       |
-| Hartă             | Leaflet.js + OpenStreetMap            |
-| Grafice           | Chart.js (stats admin)                |
-| Backend           | PHP 8.2+ (vanilla, fără framework)    |
-| Baza date         | PostgreSQL 16 (Neon cloud, SSL)       |
-| Autentificare     | JWT (firebase/php-jwt ^7.0)          |
-| Server web        | Apache 2.4 (backend) + Nginx (frontend) |
-| Containerizare    | Docker + Docker Compose               |
-| Simulator         | Python 3.11 (Brownian motion, anomalii) |
-| Notificări        | Discord Webhooks (per reactor)        |
-| API Client        | fetch() vanilla cu retry logic + refresh auto |
+| Component        | Technology                            |
+|------------------|---------------------------------------|
+| Frontend         | HTML5, CSS3, vanilla JavaScript       |
+| Map              | Leaflet.js + OpenStreetMap            |
+| Charts           | Chart.js (admin stats)                |
+| Backend          | PHP 8.2+ (vanilla, no framework)      |
+| Database         | PostgreSQL 16 (Neon cloud, SSL)       |
+| Auth             | JWT (firebase/php-jwt ^7.0)          |
+| Web server       | Apache 2.4 (backend) + Nginx (frontend local) |
+| Containerization | Docker + Docker Compose               |
+| Simulator        | Python 3.11 (Brownian motion, anomalies) |
+| Notifications    | Discord Webhooks (per reactor)        |
+| API Client       | vanilla fetch() with retry + auto refresh |
 
-## Baza de date (10 tabele)
+## Deployment
 
-| Tabelă                      | Rol                                |
-|-----------------------------|------------------------------------|
-| users                       | Conturi utilizatori (3 roluri)     |
-| refresh_tokens              | Tokeni de reîmprospătare sesiune   |
-| reactors                    | Reactoare nucleare (date tehnice + locație + webhook) |
-| reactor_personnel           | Asignare utilizatori la reactoare  |
-| sensors                     | Configurație senzori + valori      |
-| sensor_readings             | Istoric măsurători (time-series)   |
-| alerts                      | Alerte (warning/critical)          |
-| reactor_maintenance         | Istoric mentenanță reactoare       |
-| maintenance_logs            | Task-uri de mentenanță (cu prioritate) |
-| reactor_maintenance_history | Istoric complet mentenanță         |
+| Environment | Frontend | Backend | Database |
+|---|---|---|---|
+| **Local** | Nginx :4000 | Apache :8082 | Neon cloud |
+| **Production** | Vercel (static) | Render (Apache+PHP) | Neon cloud |
 
-## Roluri utilizator
+### Vercel Proxy (production)
 
-| Rol        | Acces                                  |
-|------------|----------------------------------------|
-| admin      | Toate reactoarele, toate datele, gestionare utilizatori |
-| manager    | Reactoare asignate, management mentenanță |
-| tehnician  | Reactor asignat, doar alerte critice  |
+In production, the frontend runs on Vercel and the backend on Render. To avoid CORS issues and hide the Render URL, Vercel proxies `/api/*` requests to `https://backend-nuclear.onrender.com/api/*` via `vercel.json` rewrites. The frontend always calls `/api/...` (same origin).
+
+### API URL Resolution (frontend JS)
+
+All JS files resolve the API base URL automatically:
+
+```js
+let baseUrl = '/api';
+if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    baseUrl = 'http://127.0.0.1:8082/api';
+}
+```
+
+## Database (10 tables)
+
+| Table                      | Purpose                             |
+|----------------------------|-------------------------------------|
+| users                      | User accounts (3 roles)             |
+| refresh_tokens             | Session refresh tokens              |
+| reactors                   | Nuclear reactors (tech data + location + webhook) |
+| reactor_personnel          | User-to-reactor assignments         |
+| sensors                    | Sensor config + current values      |
+| sensor_readings            | Measurement history (time-series)   |
+| alerts                     | Alerts (warning / critical)         |
+| efficiency_log             | Efficiency snapshots (trigger-based)|
+| reactor_maintenance        | Maintenance history per reactor     |
+| maintenance_logs           | Maintenance tasks with priority     |
+
+## User Roles
+
+| Role       | Access                                  |
+|------------|------------------------------------------|
+| admin      | All reactors, all data, user management  |
+| manager    | Assigned reactors, maintenance management|
+| tehnician  | Assigned reactor, critical alerts only   |
 
 ## API Endpoints (40+)
 
-- **Autentificare** (`/api/auth/*`): login, refresh, logout, me
-- **Reactoare** (`/api/reactors*`): listă, by ID, my, active (simulator)
-- **Senzori** (`/api/sensors*`): types, listă, by reactor, by ID, config (simulator), readings (simulator)
-- **Alerte** (`/api/alerts*`): active, history, resolve
-- **Mentenanță** (`/api/reactors/{id}/maintenance*`): start, stop, history
-- **Rapoarte** (`/api/reports*`): kpi, efficiency, trend, comparison, risk-matrix, wear
-- **Utilizatori** (`/api/users*`): listă, by ID, technicians, password, role, assign-reactor
+- **Auth** (`/api/auth/*`): login, refresh, logout, me
+- **Reactors** (`/api/reactors*`): list, by ID, my, active, by-mac, status, CRUD, statusESP, efficiency
+- **Sensors** (`/api/sensors*`): types, list, config, readings (simulator), by reactor, by ID, CRUD
+- **Alerts** (`/api/alerts*`): active, history, history/reactor/{id}, resolve
+- **Maintenance** (`/api/reactors/{id}/maintenance*`): start, stop, personnel, history
+- **Reports** (`/api/reports*`): kpi, efficiency, efficiency/trend, comparison, risk-matrix, wear
+- **Users** (`/api/users*`): list, by ID, technicians, password, role, assign-reactor, rss-token/regenerate
 - **RSS** (`/api/rss/*`): token, alerts feed (token auth)
-- **Rute comentate** (dezactivate temporar): register, password reset, CRUD reactoare/senzori
 
-## Patterns
+## Architecture Patterns
 
-- **Arhitectură:** MVC custom cu layer de Service-Repository
-- **DTO-uri pentru request/response:** separă datele externe de entități
-- **Middleware chain:** rutare prin Auth → Admin/ManagerOrAdmin/Sensor (unde e cazul)
-- **Validator per tip reactor:** CANDU, PWR, SMR au parametri diferiți (putere, seismic, altitudine, distanță oraș)
-- **Polling:** alerte la 30s, hartă la 5s, simulator la 2-3s
-- **Modularizare frontend:** `/assets/js/features/` — cod separat pe module funcționale
-- **Utilitare frontend:** `/assets/js/utils/` — helpers formatare + manipulare DOM
-- **Navbar dinamic:** linkuri afișate conform rol (admin vede tot, manager/tehnician limitat)
-- **Auth wrapper:** `authFetch()` interceptează 401 și reîmprospătează automat token-ul
-- **Simulator inteligent:** mișcare Browniană + drift + variație sinusoidală + injecție anomalii
-- **API externi:** Open-Meteo (elevație, vânt), EMSC (seismic) — validați la creare reactor
-- **Notificări Discord:** webhook configurat per reactor, trimite la creare alertă
-- **RSS feed:** bazat pe token unic per utilizator, expune alerte + istoric
+- **Custom MVC** with Service-Repository layer separation
+- **DTOs for request/response** — decouples external data from entities
+- **Middleware chain** — routes pass through Auth → Admin/ManagerOrAdmin/Sensor where applicable
+- **Per-type reactor validators** — CANDU, PWR, SMR have different rules (power, seismic, elevation, city distance)
+- **Polling:** alerts every 30s, map every 5s, simulator every 2-3s
+- **Modular frontend:** `/assets/js/features/` — code split by feature
+- **Frontend utilities:** `/assets/js/utils/` — formatting helpers + DOM manipulation
+- **Dynamic navbar:** links shown based on role (admin sees everything, manager/tech limited)
+- **Auth wrapper:** `authFetch()` intercepts 401 and auto-refreshes the token
+- **Smart simulator:** Brownian motion + drift + sine wave + anomaly injection
+- **External APIs:** Open-Meteo (elevation, wind), EMSC (seismic) — validated at reactor creation
+- **Discord notifications:** webhook per reactor, fired on alert creation
+- **RSS feed:** per-user token, exposes alerts + history
