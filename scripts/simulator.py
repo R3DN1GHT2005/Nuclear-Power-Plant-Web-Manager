@@ -4,24 +4,33 @@ import time
 import os
 import math
 
-def run_simulator():
-    base_url = "http://web/api"
-    config_url = f"{base_url}/sensors/config"
-    measurements_url = f"{base_url}/sensors/readings"
-    reactors_url = f"{base_url}/reactors/active"
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ModuleNotFoundError:
+    pass
 
-    api_key = os.getenv("SENSOR_API_KEY", "cheie_secreta_super_lunga_12345")
+def run_simulator():
+    base_url = os.getenv("BACKEND_URL")
+    
+    config_url = f"{base_url}/api/sensors/config"
+    measurements_url = f"{base_url}/api/sensors/readings"
+    reactors_url = f"{base_url}/api/reactors/active"
+
+    api_key = os.getenv("SENSOR_API_KEY")
+
+    if not api_key:
+        print("[CRITIC] SENSOR_API_KEY lipsește din fișierul .env! Scriptul se va opri.")
+        return
 
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
         "X-API-KEY": api_key
     }
-
-    # ── State local pentru valori curente ──
-    # Păstrăm ultima valoare per senzor ca să simulăm variații mici, nu salturi
-    sensor_state = {}   # { sensor_id: current_value }
-    reactor_state = {}  # { reactor_id: current_efficiency }
+    
+    sensor_state = {}
+    reactor_state = {}
 
     print("=== Simulatorul a pornit. Se conectează la server... ===")
 
@@ -47,7 +56,6 @@ def run_simulator():
                 time.sleep(5)
 
     def fetch_active_reactors():
-        """Preia toate reactoarele active indiferent de senzori."""
         try:
             response = requests.get(url=reactors_url, headers=headers, timeout=5)
             response.raise_for_status()
@@ -59,34 +67,24 @@ def run_simulator():
             return []
 
     def next_sensor_value(sensor: dict) -> float:
-        """
-        Generează o valoare realistă pentru senzor.
-        - Pornește din mijlocul intervalului safe la prima citire
-        - Variații mici față de ultima valoare (max 2% din interval per ciclu)
-        - Ocazional (5% șansă) o deviație mai mare care poate declanșa alertă
-        """
         sid = sensor["sensor_id"]
         min_val = sensor["min_val"]
         max_val = sensor["max_val"]
         interval = max_val - min_val
 
         if sid not in sensor_state:
-            # Prima citire — pornim din zona normală (40-60% din interval)
             sensor_state[sid] = round(min_val + interval * random.uniform(0.4, 0.6), 2)
 
         current = sensor_state[sid]
 
-        # Variație normală: ±1% din interval
         normal_delta = interval * 0.01
         delta = random.uniform(-normal_delta, normal_delta)
 
-        # 5% șansă de spike care poate depăși limitele
         if random.random() < 0.05:
             delta = random.choice([-1, 1]) * interval * random.uniform(0.10, 0.20)
 
         new_value = round(current + delta, 2)
 
-        # Clampăm la ±20% în afara limitelor ca să nu iasă absurd
         hard_min = min_val - interval * 0.20
         hard_max = max_val + interval * 0.20
         new_value = max(hard_min, min(hard_max, new_value))
@@ -95,25 +93,15 @@ def run_simulator():
         return new_value
 
     def next_efficiency(reactor: dict) -> float:
-        """
-        Eficiența fluctuează realist:
-        - Variație normală ±0.5% per ciclu
-        - Trend ușor descendent în timp (uzură)
-        - Nu scade sub 60% și nu depășește 98%
-        """
         rid = reactor["reactor_id"]
 
         if rid not in reactor_state:
-            # Pornim de la valoarea din DB dacă există, altfel 85%
             current_eff = reactor.get("reactor_efficiency", 0)
             reactor_state[rid] = current_eff if current_eff > 0 else 85.0
 
         current = reactor_state[rid]
 
-        # Trend descendent mic (simulăm uzură)
         trend = -0.05
-
-        # Variație aleatorie ±0.5%
         noise = random.uniform(-0.5, 0.5)
 
         new_eff = round(current + trend + noise, 1)
@@ -123,7 +111,7 @@ def run_simulator():
         return new_eff
 
     def update_efficiency(reactor_id: int, efficiency: float):
-        url = f"{base_url}/reactors/{reactor_id}/efficiency"
+        url = f"{base_url}/api/reactors/{reactor_id}/efficiency"
         try:
             res = requests.patch(url=url, json={"efficiency": efficiency}, headers=headers, timeout=5)
             res.raise_for_status()
@@ -131,7 +119,6 @@ def run_simulator():
         except requests.exceptions.RequestException as e:
             print(f"[EROARE] Eficiență reactor #{reactor_id}: {e}")
 
-    # ── Încărcare inițială ──
     active_sensors = fetch_active_sensors()
     active_reactors = fetch_active_reactors()
 
@@ -146,7 +133,6 @@ def run_simulator():
         while True:
             cycle += 1
 
-            # Reîncărcăm configurația la fiecare 60 secunde (6 cicluri x 10s)
             if cycle % 6 == 0:
                 print("[REFRESH] Reîncarc configurația...")
                 active_sensors = fetch_active_sensors()
@@ -157,7 +143,6 @@ def run_simulator():
                 time.sleep(10)
                 continue
 
-            # ── Trimitem citiri senzori ──
             for sensor in active_sensors:
                 value = next_sensor_value(sensor)
 

@@ -34,17 +34,17 @@ class AuthController {
         if ($user) {
             $session = $this->sessionService->createSession($user['id'], $user['role'] ?? 'viewer');
             
-            // Cookie-uri configurate pentru HTTPS și Cross-Origin (Vercel -> Render)
+          
             setcookie('access_token', $session['access_token'], [
-                'expires'  => time() + 900,
+                'expires'  => time() + 900, // 15 minutes
                 'path'     => '/',
-                'secure'   => true,         // OBLIGATORIU pt HTTPS
+                'secure'   => true,        
                 'httponly' => true,
-                'samesite' => 'None'        // OBLIGATORIU pt Vercel <-> Render
+                'samesite' => 'None'        
             ]);
 
             setcookie('refresh_token', $session['refresh_token'], [
-                'expires'  => time() + 604800,
+                'expires'  => time() + 604800, // 7 days
                 'path'     => '/',
                 'secure'   => true,
                 'httponly' => true,
