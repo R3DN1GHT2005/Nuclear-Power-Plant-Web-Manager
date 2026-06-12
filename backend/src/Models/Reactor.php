@@ -20,6 +20,7 @@ class Reactor {
     private \DateTime $created_at;
     private ?\DateTime $last_maintenance;
     private string $webhook_url;
+    private ?string $mac_address; // NOU: Proprietate opțională
     private array $sensors = [];
 
     public function __construct(
@@ -39,7 +40,8 @@ class Reactor {
         float $elevation_meters,
         \DateTime $created_at,
         ?\DateTime $last_maintenance,
-        ?string $webhook_url = null
+        ?string $webhook_url = null,
+        ?string $mac_address = null // NOU: Parametru opțional în constructor
     ) {
         $this->id                          = $id;
         $this->name                        = $name;
@@ -58,6 +60,7 @@ class Reactor {
         $this->created_at                  = $created_at;
         $this->last_maintenance            = $last_maintenance;
         $this->webhook_url                 = $webhook_url ?? '';
+        $this->mac_address                 = $mac_address; // NOU: Atribuirea valorii
     }
 
     public static function fromArray(array $data): self {
@@ -82,6 +85,7 @@ class Reactor {
             created_at:              $createdAt,
             last_maintenance:        $lastMaintenance,
             webhook_url:                   $data['webhook_discord'] ?? null,
+            mac_address:                   $data['mac_address'] ?? null // NOU: Preluarea din array-ul bazei de date
         );
     }
 
@@ -128,5 +132,14 @@ class Reactor {
 
     public function setWebhookUrl(string $webhook_url): void {
         $this->webhook_url = $webhook_url;
+    }
+
+    // NOU: Getter și Setter pentru MAC Address
+    public function getMacAddress(): ?string { 
+        return $this->mac_address; 
+    }
+
+    public function setMacAddress(?string $mac_address): void {
+        $this->mac_address = $mac_address;
     }
 }

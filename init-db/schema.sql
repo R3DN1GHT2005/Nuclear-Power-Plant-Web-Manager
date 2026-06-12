@@ -185,3 +185,6 @@ CREATE TABLE alerts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     resolved_at TIMESTAMP
 );
+
+ALTER TABLE reactors 
+ADD COLUMN mac_address VARCHAR(17) UNIQUE;

@@ -29,7 +29,7 @@ async function loadRssFeed() {
         const rssToken = await getCurrentUserRssToken();
         
         if (!rssToken) {
-            rssContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: var(--red);">Eroare: Nu s-a putut obține accesul la fluxul RSS.</p>';
+            rssContainer.innerHTML = '<p class="rss-error-msg">Eroare: Nu s-a putut obține accesul la fluxul RSS.</p>';
             return;
         }
 
@@ -47,7 +47,7 @@ async function loadRssFeed() {
         const items = xmlDoc.querySelectorAll("item");
 
         if (items.length === 0) {
-            rssContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Nu există evenimente recente în jurnal.</p>';
+            rssContainer.innerHTML = '<p class="rss-empty-msg">Nu există evenimente recente în jurnal.</p>';
             return;
         }
 
@@ -83,17 +83,17 @@ async function loadRssFeed() {
             const cleanTitle = title.replace(/\[.*?\]\s*/, '');
 
             const feedItemHTML = `
-                <div style="padding: 10px 15px; border-bottom: 1px solid #f1f5f9;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-                        <div style="font-weight: 500; font-size: 0.85em; display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 7px; height: 7px; border-radius: 50%; background-color: ${dotColor}; flex-shrink: 0;"></div>
+                <div class="rss-feed-item">
+                    <div class="rss-feed-row">
+                        <div class="rss-feed-title">
+                            <div class="rss-feed-dot" style="background-color:${dotColor};"></div>
                             ${cleanTitle}
                         </div>
-                        <div style="font-size: 0.7em; color: #94a3b8; white-space: nowrap; flex-shrink: 0;">
+                        <div class="rss-feed-date">
                             ${dateFormatted}
                         </div>
                     </div>
-                    <div style="font-size: 0.8em; color: #64748b; padding-left: 15px; line-height: 1.3;">
+                    <div class="rss-feed-desc">
                         ${description}
                     </div>
                 </div>
@@ -130,8 +130,8 @@ async function loadRssFeed() {
             });
 
             const statsHtml = `
-                <div style="border-bottom: 1px solid #f1f5f9;">
-                    <div style="padding: 10px 15px 6px; font-weight: 600; font-size: 0.85em; color: var(--text); display: flex; align-items: center; gap: 8px;">
+                <div class="rss-stats-section">
+                    <div class="rss-stats-title">
                         <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         ${cleanStatsTitle}
                     </div>
@@ -145,12 +145,12 @@ async function loadRssFeed() {
         }
 
         if (itemsArray.length === 0 || (!statsItem && otherItems.length === 0)) {
-            rssContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Nu există evenimente recente în jurnal.</p>';
+            rssContainer.innerHTML = '<p class="rss-empty-msg">Nu există evenimente recente în jurnal.</p>';
         }
 
     } catch (error) {
         console.error("Eroare RSS:", error);
-        rssContainer.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--red);">Eroare la procesarea jurnalului RSS.</p>`;
+        rssContainer.innerHTML = '<p class="rss-error-msg">Eroare la procesarea jurnalului RSS.</p>';
     }
 }
 

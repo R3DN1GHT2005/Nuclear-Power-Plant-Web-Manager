@@ -82,7 +82,8 @@ class ReactorService {
             cooling_water_source: $coolingWaterSource,
             distance_to_nearest_city_km: $distanceToNearestCityKm,
             elevation_meters: $elevationMeters,
-            webhook_url: $dto->webhook_url
+            webhook_url: $dto->webhook_url,
+            mac_address: $dto->mac_address 
         );
 
         return $this->reactorsRepository->create($insertDto);
@@ -189,6 +190,14 @@ class ReactorService {
 
     public function getAllActive(): array {
         return $this->reactorsRepository->findAllActive();
+    }
+
+    public function getByMac(string $mac): ?Reactor {
+        return $this->reactorsRepository->findByMac($mac);
+    }
+
+    public function getReactorStatus(int $id): ?string {
+        return $this->reactorsRepository->getReactorStatus($id);
     }
     
 }

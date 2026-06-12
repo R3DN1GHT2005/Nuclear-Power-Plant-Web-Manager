@@ -17,7 +17,6 @@
         <a class="logo" href="index.html">
             <div class="logo-icon">⭕</div> NuclearWatch
         </a>
-
     </div>
     <div class="nav-right">
         <a class="logout-btn" id="btn-logout" href="login.html">Deconectare</a>
@@ -50,8 +49,17 @@
 
             <div class="scroll-area">
                 <table class="reactor-table">
+                    <thead>
+                        <tr>
+                            <th>Reactor</th>
+                            <th>Eficiență</th>
+                            <th>Temp. (°C)</th>
+                            <th>Stare</th>
+                            <th>Actualizat</th>
+                        </tr>
+                    </thead>
                     <tbody id="dashboard-reactor-table">
-                        <tr><td colspan="6" style="text-align:center;">Se încarcă lista reactoarelor...</td></tr>
+                        <tr><td colspan="5" style="text-align:center;">Se încarcă lista reactoarelor...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -100,9 +108,13 @@
 
     </div>
 </div>
+
 <script src="assets/js/api.js"></script>
 <script src="assets/js/navbar.js"></script>
-<script src="assets/js/dashboard.js"></script>
+<script src="assets/js/utils/helpers.js"></script>
+<script src="assets/js/utils/status.js"></script>
+<script src="assets/js/utils/dom.js"></script>
+<script src="assets/js/features/dashboard/dashboard-index-init.js"></script>
 <script src="assets/js/alerts.js"></script>
 <script src="assets/js/rss.js"></script>
 </body>
