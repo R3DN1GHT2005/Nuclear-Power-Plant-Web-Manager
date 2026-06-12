@@ -380,7 +380,7 @@
 
 /* ─── SENSOR CARDS ─────────────────────────────────────────────────────────── */
 
-.sensor-card {
+.sensor-state {
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -394,7 +394,7 @@
 }
 
 /* linie colorată sus — indică starea senzorului */
-.sensor-card::before {
+.sensor-state::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -403,23 +403,23 @@
     border-radius: 2px 2px 0 0;
 }
 
-.sensor-card.warn {
+.sensor-state.warn {
     background: #fffbeb;
     border-color: rgba(217, 119, 6, 0.25);
 }
-.sensor-card.warn::before {
+.sensor-state.warn::before {
     background: var(--amber);
 }
 
-.sensor-card.crit {
+.sensor-state.crit {
     background: #fef2f2;
     border-color: rgba(220, 38, 38, 0.25);
 }
-.sensor-card.crit::before {
+.sensor-state.crit::before {
     background: var(--red);
 }
 
-.sensor-card .sensor-name {
+.sensor-state .sensor-name {
     font-size: 10px;
     font-weight: 600;
     color: var(--text-3);
@@ -427,15 +427,15 @@
     letter-spacing: 0.06em;
 }
 
-.sensor-card .sensor-value {
+.sensor-state .sensor-value {
     font-size: 22px;
     font-weight: 600;
     font-family: 'DM Mono', monospace;
     line-height: 1;
     color: var(--text);
 }
-.sensor-card.warn .sensor-value { color: var(--amber); }
-.sensor-card.crit .sensor-value { color: var(--red);   }
+.sensor-state.warn .sensor-value { color: var(--amber); }
+.sensor-state.crit .sensor-value { color: var(--red);   }
 
 /* badge de stare cu punct animat */
 .sensor-status-badge {
