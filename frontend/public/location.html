@@ -1,11 +1,3 @@
-<!--
-  frontend/public/location.html
-  Map-based reactor location page (admin) — Leaflet map with markers,
-  reactor list sidebar, sensor management, and CRUD forms.
--->
-
-
-
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -51,13 +43,13 @@
             <article class="panel-card location-map-card">
                 <header class="panel-header">
                     <div>
-                        <h3 class="panel-title">Harta reactoare</h3>
+                        <h2 class="panel-title">Harta reactoare</h2>
                         <p class="panel-sub">Click pe pin pentru detalii complete</p>
                     </div>
                 </header>
                 <div class="location-map-wrap">
-                    <div id="reactors-map" aria-label="Harta reactoarelor"></div>
-                    <div class="map-overlay-legend" aria-label="Legenda statusuri">
+                    <div id="reactors-map" role="region" aria-label="Harta reactoarelor"></div>
+                    <div class="map-overlay-legend" role="region" aria-label="Legenda statusuri">
                         <div class="legend-item"><span class="legend-dot dot-gray"></span>Oprit</div>
                         <div class="legend-item"><span class="legend-dot dot-green"></span>Activ</div>
                         <div class="legend-item"><span class="legend-dot dot-yellow"></span>Mentenanta</div>
@@ -72,7 +64,7 @@
             <article class="panel-card status-summary-card" aria-label="Rezumat status reactoare">
                 <header class="panel-header">
                     <div>
-                        <h3 class="panel-title">Rezumat operațional</h3>
+                        <h2 class="panel-title">Rezumat operațional</h2>
                         <p class="panel-sub">Indicatori rapizi calculați din datele live</p>
                     </div>
                 </header>
@@ -82,7 +74,7 @@
             <article class="panel-card flex-fill">
                 <header class="panel-header">
                     <div>
-                        <h3 class="panel-title">Reactoare monitorizate</h3>
+                        <h2 class="panel-title">Reactoare monitorizate</h2>
                         <p class="panel-sub">Lista se actualizează automat</p>
                     </div>
                 </header>
@@ -92,7 +84,7 @@
             <article class="panel-card location-stats-flyout" aria-label="Statistici reactoare">
                 <header class="panel-header stats-panel-header">
                     <div>
-                        <h3 class="panel-title">Statistici live</h3>
+                        <h2 class="panel-title">Statistici live</h2>
                         <p class="panel-sub">Recalculate la fiecare refresh al datelor</p>
                     </div>
                 </header>
@@ -110,7 +102,7 @@
 
                     <section class="stats-section">
                         <div class="stats-section-head">
-                            <h4>Distribuție pe tip</h4>
+                            <h3>Distribuție pe tip</h3>
                             <span id="stat-type-total">0/0</span>
                         </div>
                         <div class="stats-list" id="stats-type-list"></div>
@@ -118,7 +110,7 @@
 
                     <section class="stats-section">
                         <div class="stats-section-head">
-                            <h4>Stare operațională</h4>
+                            <h3>Stare operațională</h3>
                             <span id="stat-status-total">0/0</span>
                         </div>
                         <div class="stats-list" id="stats-status-list"></div>
@@ -257,7 +249,7 @@
 
             <section class="sensor-section">
                 <div class="section-head">
-                    <h3 class="section-title">Lista senzorilor activi</h3>
+                    <h2 class="section-title">Lista senzorilor activi</h2>
                     <span class="pill pill-blue" id="sensor-count-pill">0 senzori</span>
                 </div>
                 <div class="sensor-table-wrap">
@@ -278,7 +270,7 @@
 
             <section class="sensor-section">
                 <div class="section-head">
-                    <h3 class="section-title">Adaugă senzor</h3>
+                    <h2 class="section-title">Adaugă senzor</h2>
                 </div>
                 <form id="sensor-form" class="sensor-form" novalidate>
                     <div class="form-grid sensor-grid">
