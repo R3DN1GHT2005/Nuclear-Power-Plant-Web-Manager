@@ -41,8 +41,7 @@ $allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:4000',
     'http://localhost:8082',
-    // IMPORTANT: Când hostezi frontend-ul, adaugă link-ul lui aici! 
-    // Exemplu: 'https://frontend-nuclear.onrender.com'
+   
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
