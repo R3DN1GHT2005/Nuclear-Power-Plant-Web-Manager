@@ -241,11 +241,12 @@ async function submitSensor(event) {
   if (!state.activeSensorReactorId) { LocationState.showSensorError('Nu este selectat niciun reactor.'); return; }
   if (!refs.sensorForm.checkValidity()) { refs.sensorForm.reportValidity(); return; }
 
+  var selectedType = refs.sensorTypeInput.value.trim();
+  var profile = state.sensorTypeProfiles[selectedType];
   var payload = {
-    sensor_type: refs.sensorTypeInput.value.trim(),
-    unit: refs.sensorUnitInput.value.trim(),
-    min_safe_value: Number(refs.sensorMinInput.value),
-    max_safe_value: Number(refs.sensorMaxInput.value)
+    sensor_type: selectedType,
+    min_safe_value: refs.sensorMinInput.value ? Number(refs.sensorMinInput.value) : (profile ? profile.defaultMin : 0),
+    max_safe_value: refs.sensorMaxInput.value ? Number(refs.sensorMaxInput.value) : (profile ? profile.defaultMax : 0)
   };
 
   refs.submitSensorButton.disabled = true;

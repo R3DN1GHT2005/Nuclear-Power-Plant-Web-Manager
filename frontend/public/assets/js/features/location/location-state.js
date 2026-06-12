@@ -63,7 +63,7 @@ var LocationState = (function() {
       sensorListBody: document.getElementById('sensor-list-body'),
       sensorForm: document.getElementById('sensor-form'),
       sensorTypeInput: document.getElementById('sensor_type'),
-      sensorUnitInput: document.getElementById('sensor_unit'),
+
       sensorMinInput: document.getElementById('min_safe_value'),
       sensorMaxInput: document.getElementById('max_safe_value'),
       submitSensorButton: document.getElementById('submit-sensor-btn'),
