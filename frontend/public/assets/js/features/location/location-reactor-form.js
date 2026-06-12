@@ -14,7 +14,8 @@ function buildCreatePayload() {
     installed_power: Number(refs.installedPowerInput.value),
     latitude: Number(refs.latitudeInput.value),
     longitude: Number(refs.longitudeInput.value),
-    webhook_url: refs.webhookUrlInput ? refs.webhookUrlInput.value.trim() : ''
+    webhook_url: refs.webhookUrlInput ? refs.webhookUrlInput.value.trim() : '',
+    mac_address: refs.macAddressInput ? refs.macAddressInput.value.trim() : ''
   };
 }
 

@@ -52,6 +52,7 @@ var LocationState = (function() {
       reactorTypeInput: document.getElementById('reactor_type'),
       installedPowerInput: document.getElementById('installed_power'),
       webhookUrlInput: document.getElementById('webhook_url'),
+      macAddressInput: document.getElementById('mac_address'),
       toast: document.getElementById('toast-success'),
       mapContainer: document.getElementById('reactors-map'),
       sensorModal: document.getElementById('sensor-modal'),
