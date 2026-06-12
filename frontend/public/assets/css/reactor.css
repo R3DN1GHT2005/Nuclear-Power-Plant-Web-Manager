@@ -451,9 +451,9 @@
     text-transform: uppercase;
     margin-top: 2px;
 }
-.sensor-status-badge.norm { background: #f0fdf4; color: #15803d; }
-.sensor-status-badge.warn { background: rgba(217, 119, 6, 0.1); color: var(--amber); }
-.sensor-status-badge.crit { background: rgba(220, 38, 38, 0.1); color: var(--red); }
+.sensor-state-badge.norm { background: #f0fdf4; color: #15803d; }
+.sensor-state-badge.warn { background: rgba(217, 119, 6, 0.1); color: var(--amber); }
+.sensor-state-badge.crit { background: rgba(220, 38, 38, 0.1); color: var(--red); }
 
 .sensor-status-dot {
     width: 5px;
