@@ -4,11 +4,18 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$autoloadPath = __DIR__ . '/../../vendor/autoload.php';
-if (!file_exists($autoloadPath)) {
-    die("Eroare CRITICĂ: Fișierul autoload.php nu a fost găsit la calea: " . $autoloadPath . " . Te rog să rulezi 'composer install'.");
+// --- REZOLVAREA EROARII DE AUTOLOAD ---
+// Verificăm pe rând unde se află folderul vendor (pe Render sau pe Local)
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    // Calea pe serverul Render (vendor este fix lângă public)
+    require_once __DIR__ . '/../vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+    // Calea pentru mediul tău de dezvoltare local
+    require_once __DIR__ . '/../../vendor/autoload.php';
+} else {
+    die("Eroare CRITICĂ: Fișierul autoload.php nu a fost găsit nicăieri. Te rog să rulezi 'composer install'.");
 }
-require_once $autoloadPath;
+// ---------------------------------------
 
 use App\Controllers\ReactorController;
 use App\Controllers\SensorController;
@@ -34,6 +41,8 @@ $allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:4000',
     'http://localhost:8082',
+    // IMPORTANT: Când hostezi frontend-ul, adaugă link-ul lui aici! 
+    // Exemplu: 'https://frontend-nuclear.onrender.com'
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -45,7 +54,6 @@ header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -62,13 +70,11 @@ if (empty($uri)) {
 try {
     $router = new Router();
 
-
     $router->post('/api/auth/login', AuthController::class, 'login');
     $router->post('/api/auth/refresh', AuthController::class, 'refresh');
     $router->post('/api/auth/logout', AuthController::class, 'logout');
     $router->get('/api/auth/me', AuthController::class, 'me', [AuthMiddleware::class]);
     
-
     $router->post('/api/users', UserController::class, 'createUser', [AdminMiddleware::class]);
     $router->get('/api/users', UserController::class, 'getAllUsers', [AdminMiddleware::class]);
     $router->get('/api/users/{id}', UserController::class, 'getUserById', [AdminMiddleware::class]);
@@ -79,13 +85,11 @@ try {
     
     $router->post('/api/user/rss-token/regenerate', UserController::class, 'regenerateRssToken', [AuthMiddleware::class]);
 
-
     $router->get('/api/reactors/active', ReactorController::class, 'getActiveReactors', [SensorMiddleware::class]);
     $router->get('/api/reactors', ReactorController::class, 'getAllReactors', [AuthMiddleware::class]); 
     $router->get('/api/reactors/my', ReactorController::class, 'getMyReactor', [AuthMiddleware::class]);
     $router->post('/api/reactors', ReactorController::class, 'addReactor', [AdminMiddleware::class]); 
     
- 
     $router->get('/api/reactors/status/{id}', ReactorController::class, 'getReactorStatus', [SensorMiddleware::class]);
     $router->get('/api/reactors/by-mac/{mac}', ReactorController::class, 'getReactorByMac', [SensorMiddleware::class]);
     $router->get('/api/reactors/{id}', ReactorController::class, 'getReactorById', [AuthMiddleware::class]); 
@@ -94,8 +98,6 @@ try {
     $router->patch('/api/reactors/{id}/statusESP', ReactorController::class, 'updateStatusESP', [SensorMiddleware::class]);
     $router->patch('/api/reactors/{id}/status', ReactorController::class, 'updateStatus', [AuthMiddleware::class]);
     $router->patch('/api/reactors/{id}/efficiency', ReactorController::class, 'updateEfficiency', [SensorMiddleware::class]);
-    
-  
     
     $router->post('/api/reactors/{id}/maintenance/start', ReactorMaintenanceController::class, 'startMaintenance', [ManagerOrAdminMiddleware::class]);
     $router->post('/api/reactors/{id}/maintenance/stop', ReactorMaintenanceController::class, 'stopMaintenance', [ManagerOrAdminMiddleware::class]);
@@ -122,7 +124,6 @@ try {
     $router->get('/api/alerts/history/reactor/{id}', AlertController::class, 'getAlertHistoryByReactor', [AuthMiddleware::class]);
     $router->post('/api/alerts/{id}/resolve', AlertController::class, 'resolveAlert', [AuthMiddleware::class]);
 
- 
     $router->get('/api/reports/kpi', ReportController::class, 'getKpi', [AuthMiddleware::class]);
     $router->get('/api/reports/efficiency', ReportController::class, 'getEfficiency', [AuthMiddleware::class]);
     $router->get('/api/reports/efficiency/trend', ReportController::class, 'getEfficiencyTrend', [AuthMiddleware::class]);
@@ -130,14 +131,10 @@ try {
     $router->get('/api/reports/risk-matrix', ReportController::class, 'getRiskMatrix', [AuthMiddleware::class]);
     $router->get('/api/reports/wear', ReportController::class, 'getWear', [AuthMiddleware::class]);
 
- 
     $router->get('/api/rss/alerts', RssController::class, 'getFeed');
     $router->get('/api/rss/token', RssController::class, 'getToken', [AuthMiddleware::class]);
     
- 
     $router->dispatch($uri, $method);
-
-    
 
 } catch (Exception $e) {
     http_response_code(500);

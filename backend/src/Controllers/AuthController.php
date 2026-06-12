@@ -30,31 +30,30 @@ class AuthController {
 
         $user = $this->authService->login($email, $password);
         
+        // Dacă autentificarea a reușit, generăm sesiunea și setăm cookie-urile
         if ($user) {
             $session = $this->sessionService->createSession($user['id'], $user['role'] ?? 'viewer');
-            setcookie('access_token', $session['access_token'], [
-            'expires'  => time() + 900,
-            'path'     => '/',
-            'domain'   => '127.0.0.1',   
-            'secure'   => false,
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
 
-        setcookie('refresh_token', $session['refresh_token'], [
-            'expires'  => time() + 604800,
-            'path'     => '/',
-            'domain'   => '127.0.0.1',   
-            'secure'   => false,
-            'httponly' => true,
-            'samesite' => 'Lax'
-        ]);
+            setcookie('access_token', $session['access_token'], [
+                'expires'  => time() + 900, // 15 minute
+                'path'     => '/',
+                'secure'   => true,         // Modificat pentru HTTPS
+                'httponly' => true, 
+                'samesite' => 'None'        // Modificat pentru Cross-Origin
+            ]);
+
+            setcookie('refresh_token', $session['refresh_token'], [
+                'expires'  => time() + 604800, // 7 zile
+                'path'     => '/',
+                'secure'   => true,         // Modificat pentru HTTPS
+                'httponly' => true,
+                'samesite' => 'None'        // Modificat pentru Cross-Origin
+            ]);
 
             http_response_code(200);
             echo json_encode([
                 "message" => "Logare cu succes!",
                 "user" => $user
-                // Am eliminat "access_token" de aici pentru securitate, acum stă ascuns în cookie!
             ]);
         } else {
             http_response_code(401);
@@ -92,9 +91,9 @@ class AuthController {
         setcookie('access_token', $tokenString, [
             'expires'  => time() + 900, 
             'path'     => '/',
-            'secure'   => false,
+            'secure'   => true,         // Modificat pentru HTTPS
             'httponly' => true,
-            'samesite' => 'Lax'
+            'samesite' => 'None'        // Modificat pentru Cross-Origin
         ]);
 
         http_response_code(200);
@@ -116,17 +115,17 @@ class AuthController {
         setcookie('access_token', '', [
             'expires'  => time() - 3600,
             'path'     => '/',
-            'secure'   => false,
+            'secure'   => true,         // Modificat pentru HTTPS
             'httponly' => true,
-            'samesite' => 'Lax'
+            'samesite' => 'None'        // Modificat pentru Cross-Origin
         ]);
 
         setcookie('refresh_token', '', [
             'expires'  => time() - 3600,
             'path'     => '/',
-            'secure'   => false,
+            'secure'   => true,         // Modificat pentru HTTPS
             'httponly' => true,
-            'samesite' => 'Lax'
+            'samesite' => 'None'        // Modificat pentru Cross-Origin
         ]);
 
         http_response_code(200);
