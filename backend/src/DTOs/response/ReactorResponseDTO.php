@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/DTOs/response/ReactorResponseDTO.php
+ * Response DTO for ReactorResponseDTO — formats outgoing
+ * API response data into a consistent JSON structure for the
+ * frontend.
+ */
+
+
 namespace App\DTOs\Response;
 
 class ReactorResponseDTO implements \JsonSerializable {

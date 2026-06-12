@@ -1,12 +1,9 @@
 /*
- * helpers.js — Shared pure utility functions
- * Used across all pages: number formatting, date
- * formatting, HTML escaping, array unwrapping.
- * Eliminates duplicate implementations found in
- * dashboard.js, reactor-statistics.js, stats.js,
- * location.js, and others.
+ * frontend/public/assets/js/utils/helpers.js
+ * Pure formatting utilities — date/time formatters (Romanian locale),
+ * relative timestamps (timeAgo), HTML escaping, safe number coercion,
+ * and API error extraction. Shared across all pages.
  */
-
 function formatTime(d) {
   return d.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
 }

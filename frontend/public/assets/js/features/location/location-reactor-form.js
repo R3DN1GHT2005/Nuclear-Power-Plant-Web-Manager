@@ -1,10 +1,10 @@
 /*
- * location-reactor-form.js — Create reactor form
- * handling for the location page. Builds the
- * payload from form fields and submits to the
- * API. Extracted from monolithic location.js.
+ * frontend/public/assets/js/features/location/location-reactor-form.js
+ * Create-reactor form handler — builds the payload from form fields
+ * (name, location, type, power, coordinates, webhook, MAC address)
+ * and submits via authFetch. Validates input, manages button loading
+ * state, and displays errors on failure.
  */
-
 function buildCreatePayload() {
   var refs = LocationState.getRefs();
   return {

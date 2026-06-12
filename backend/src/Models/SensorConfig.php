@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Models/SensorConfig.php
+ * SensorConfig domain model — represents the SensorConfig entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
+
+
 namespace App\Models;
 
 class SensorConfig {

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Controllers/ReportController.php
+ * ReportController — HTTP endpoint handler exposing report
+ * routes. Parses request data, applies middleware, delegates to
+ * the corresponding service, and returns JSON responses.
+ */
+
+
 namespace App\Controllers;
 use App\Core\Response;
 use App\Services\AnalyticsService;
@@ -11,26 +19,30 @@ class ReportController {
         $this->analyticsService = new AnalyticsService();
     }
 
-    //get api/reports/kpi
+    
+
     public function getKpi(): void{
         $kpi=$this->analyticsService->getKpi();
         Response::json($kpi);
     }
 
-    //get api/reports/efficieny
+    
+
     public function getEfficiency(): void{
         $data=$this->analyticsService->getEfficiencyPerReactor();
         Response::json($data);
     }
 
-    //Get /api/reports/efficienty/trend?days=30
+    
+
     public function getEfficiencyTrend(): void{
         $days=isset($_GET['days']) ? (int) $_GET['days'] :30;
         $data=$this->analyticsService->getEfficiencyTrend($days);
         Response::json($data);
     }
 
-    //get /api/reports/comparison
+    
+
     public function getComparison(): void{
         $data=$this->analyticsService->getComparison();
         Response::json($data);

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Services/DiscordNotificationService.php
+ * DiscordNotificationService — implements business logic for discord notification
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
+
+
 namespace App\Services;
 
 use App\Repositories\ReactorRepository;
@@ -33,7 +41,8 @@ class DiscordNotificationService {
 
         $payload = json_encode([
             "content" => $discordMessage,
-            "username" => "Sistem Monitorizare " . $reactor->getName() // Numele botului care va apărea în chat
+            "username" => "Sistem Monitorizare " . $reactor->getName() 
+
         ]);
 
         $options = [

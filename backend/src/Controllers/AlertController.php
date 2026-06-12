@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Controllers/AlertController.php
+ * AlertController — HTTP endpoint handler exposing alert
+ * routes. Parses request data, applies middleware, delegates to
+ * the corresponding service, and returns JSON responses.
+ */
+
+
 namespace App\Controllers;
 
 use App\Core\Response;
@@ -17,7 +25,8 @@ class AlertController {
         $this->alertService = new AlertService();
     }
 
-    // GET /api/alerts/active
+    
+
     public function getActiveAlerts(): void {
         try {
             $user = AuthMiddleware::getUser();
@@ -43,7 +52,8 @@ class AlertController {
         }
     }
 
-    // POST /api/alerts/{id}/resolve
+    
+
     public function resolveAlert(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -89,7 +99,8 @@ class AlertController {
         }
     }
 
-    // GET /api/alerts/history
+    
+
     public function getAlertHistory(): void {
         try {
             $historyAlerts = $this->alertService->getFullAlertHistory();
@@ -104,7 +115,8 @@ class AlertController {
     }
 
     
-    // GET /api/alerts/history/reactor/{reactorId}
+    
+
     public function getAlertHistoryByReactor(int $reactorId): void {
         try {
             $reactorHistory = $this->alertService->getAlertHistoryByReactorId($reactorId);

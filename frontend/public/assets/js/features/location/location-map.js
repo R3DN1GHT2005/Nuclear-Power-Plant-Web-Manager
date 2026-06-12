@@ -1,12 +1,10 @@
 /*
- * location-map.js — Map initialisation, markers,
- * and popups for the location page. Handles the
- * main Leaflet map, the coordinate-picker map,
- * marker rendering with custom sizing, and popup
- * content building. Extracted from monolithic
- * location.js.
+ * frontend/public/assets/js/features/location/location-map.js
+ * Leaflet map initialiser — creates the main reactor map and a
+ * coordinate-picker sub-map, both centred on Central/Eastern Europe.
+ * Handles tile loading, marker rendering with dynamic sizing,
+ * map resize on window load, and click-to-pick coordinates.
  */
-
 function initMainMap() {
   var state = LocationState.getState();
   var refs = LocationState.getRefs();

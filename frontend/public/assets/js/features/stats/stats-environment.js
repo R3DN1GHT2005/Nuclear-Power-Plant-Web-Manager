@@ -1,11 +1,9 @@
 /*
- * stats-environment.js — Environmental conditions
- * rendering for the reactor statistics page.
- * Displays soil stability, seismic risk,
- * elevation, and distance to nearest city as
- * metric boxes. Extracted from monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-environment.js
+ * Statistics environmental panel — displays soil stability, seismic
+ * risk, average elevation, and mean city distance as four metric boxes
+ * with colour-coded impact badges.
  */
-
 function operationalBadge(score, okThreshold, warnThreshold) {
   if (score >= okThreshold) return 'Impact: minim';
   if (score >= warnThreshold) return 'Atenție';

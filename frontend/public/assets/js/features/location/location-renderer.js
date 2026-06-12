@@ -1,11 +1,10 @@
 /*
- * location-renderer.js — Rendering functions for
- * the location page. Handles the reactor list,
- * status summary cards, and the live stats panel
- * (type/status distribution bars). Extracted from
- * monolithic location.js.
+ * frontend/public/assets/js/features/location/location-renderer.js
+ * Location page renderer — builds the reactor list, status-summary
+ * cards, and live statistics panels (type/status distribution bars).
+ * Normalises reactor types and calculates aggregated stats like
+ * total power and count by type and status.
  */
-
 function normalizeReactorType(type) {
   return String(type || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
 }

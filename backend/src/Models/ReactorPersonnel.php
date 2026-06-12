@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Models/ReactorPersonnel.php
+ * ReactorPersonnel domain model — represents the ReactorPersonnel entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
+
+
 namespace App\Models;
 
 class ReactorPersonnel {
@@ -41,7 +49,8 @@ class ReactorPersonnel {
         return $this->intervention_role; 
     }
 
-    // Setteri
+    
+
     public function setUserId(int $user_id): void {
         $this->user_id = $user_id;
     }

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Controllers/UserController.php
+ * UserController — HTTP endpoint handler exposing user
+ * routes. Parses request data, applies middleware, delegates to
+ * the corresponding service, and returns JSON responses.
+ */
+
+
 namespace App\Controllers;
 
 use App\Core\Response;
@@ -15,7 +23,8 @@ class UserController {
         $this->userService = new UserService();
     }
 
-    // GET /api/users/technicians
+    
+
     public function getTechnicians(): void {
         try {
             $technicians = $this->userService->getTechnicians();
@@ -35,13 +44,15 @@ class UserController {
         }
     }
 
-    // GET /api/users
+    
+
    public function getAllUsers(): void {
         try {
             $users = $this->userService->getAll();
             Response::json(UserMapper::toResponseList($users));
         } catch (Exception $e) {
-            // AICI AM ADĂUGAT 'details'
+            
+
             Response::json([
                 'error' => 'Eroare la aducerea utilizatorilor.', 
                 'details' => $e->getMessage(),
@@ -51,7 +62,8 @@ class UserController {
         }
     }
 
-    // GET /api/users/{id}
+    
+
     public function getUserById(int $id): void {
         try {
             $user = $this->userService->getById($id);
@@ -67,7 +79,8 @@ class UserController {
         }
     }
 
-    // PUT /api/users/{id}/password
+    
+
     public function updatePassword(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -77,10 +90,12 @@ class UserController {
         }
 
         try {
-            // Folosim Mapper-ul pentru a obține DTO-ul curat și validat
+            
+
             $dto = UserMapper::toUpdatePasswordDTO($data);
             
-            // Trimitem DTO-ul validat către stratul de Service
+            
+
             $this->userService->updatePassword($id, $dto);
 
             Response::json(['message' => 'Parolă actualizată cu succes']);
@@ -91,15 +106,18 @@ class UserController {
         }
     }
 
-    // PUT /api/users/{id}/reactor
+    
+
     public function assignToReactor(int $id): void {
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
 
         try {
-            // Mapper-ul se asigură că primim un AssignReactorRequestDTO corect (cu un int valid sau null)
+            
+
             $dto = UserMapper::toAssignReactorDTO($data);
             
-            // Trimitem ID-ul reactorului către Service (poate fi null pentru de-asignare)
+            
+
             $this->userService->assignReactor($id, $dto->reactor_id);
             
             Response::json(['message' => 'Asignare actualizată cu succes']);
@@ -110,7 +128,8 @@ class UserController {
         }
     }
 
-    // DELETE /api/users/{id}
+    
+
     public function deleteUser(int $id): void {
         try {
             $deleted = $this->userService->delete($id);
@@ -126,12 +145,14 @@ class UserController {
         }
     }
 
-	// POST /api/users
+	
+
     public function createUser(): void {
         $data = json_decode(file_get_contents('php://input'), true);
 
         try {
-            // 1. Folosim UserService (metoda creată anterior pentru a înlocui vechiul register)
+            
+
             $this->userService->createUser(
                 $data['email'],
                 $data['password'],

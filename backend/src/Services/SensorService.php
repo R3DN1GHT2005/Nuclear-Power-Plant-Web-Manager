@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Services/SensorService.php
+ * SensorService — implements business logic for sensor
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
+
+
 namespace App\Services;
 
 use App\DTOs\Request\Sensor\CreateSensorRequestDTO;
@@ -8,16 +16,19 @@ use App\DTOs\Request\Sensor\UpdateSensorRequestDTO;
 use App\Models\Sensor;
 use App\Repositories\SensorRepository;
 use App\DTOs\Request\Sensor\StoreMeasurementDTO;
-use App\Enums\AlertSeverity; // Adăugat
+use App\Enums\AlertSeverity; 
+
 use Exception;
 
 class SensorService {
     private SensorRepository $sensorRepository;
-    private AlertService $alertService; // Am injectat AlertService
+    private AlertService $alertService; 
+
 
     public function __construct() {
         $this->sensorRepository = new SensorRepository();
-        $this->alertService = new AlertService(); // Inițializare
+        $this->alertService = new AlertService(); 
+
     }
 
     public function getAll(): array {
@@ -54,14 +65,16 @@ class SensorService {
     }
 
     public function recordValue(StoreMeasurementDTO $dto): bool {
-        // 1. Salvăm noua valoare în baza de date
+        
+
         $updated = $this->sensorRepository->updateValue($dto->sensor_id, $dto->value);
 
         if (!$updated) {
             return false;
         }
 
-        // 2. Aducem detaliile senzorului pentru a verifica limitele de siguranță
+        
+
         $sensor = $this->getById($dto->sensor_id);
         if (!$sensor) {
             return true; 
@@ -73,15 +86,18 @@ class SensorService {
         $reactorId = $sensor->getReactorId();
         $sensorType = strtoupper($sensor->getSensorType());
 
-        // 3. Calculăm limitele CRITICE (15% deviație față de max/min)
-        // Folosim abs() pentru a ne asigura că funcționează corect și cu numere negative
+        
+
+        
+
         $criticalMax = $maxSafe + abs($maxSafe * 0.15);
         $criticalMin = $minSafe - abs($minSafe * 0.15);
 
         $severity = null;
         $message = "";
 
-        // 4. Evaluăm logica de alertare (începem cu cel mai grav scenariu)
+        
+
         if ($value >= $criticalMax) {
             $severity = AlertSeverity::CRITICAL;
             $message = "CRITIC: $sensorType a atins $value! (Peste limita de $criticalMax). Pericol de avarie!";
@@ -96,7 +112,8 @@ class SensorService {
             $message = "Avertisment: $sensorType este sub limita normală ($value < $minSafe). Necesită atenție.";
         }
 
-        // 5. Dacă s-a declanșat o alertă, o trimitem către AlertService
+        
+
         if ($severity) {
             try {
                 $this->alertService->triggerAlert($reactorId, $severity, $message);

@@ -1,11 +1,9 @@
 /*
- * stats-comparison.js — Comparison table
- * rendering for the reactor statistics page.
- * Displays efficiency, availability, risk,
- * wear, and trend delta per reactor. Extracted
- * from monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-comparison.js
+ * Statistics comparison table — renders efficiency, availability,
+ * risk, wear, and trend delta per reactor. Sorts alphabetically,
+ * computes trend delta vs average, and colour-codes rows by status.
  */
-
 function renderComparison() {
   var refs = StatsState.getRefs();
   if (!refs.comparisonBody) return;

@@ -23,3 +23,6 @@ Thumbs.db
 
 /backend/logs/
 /backend/tmp/
+
+# Generated at build time by Vercel
+/frontend/public/env-config.js

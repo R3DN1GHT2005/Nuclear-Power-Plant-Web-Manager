@@ -1,11 +1,9 @@
 /*
- * location-events.js — Event binding for the
- * location page. Wires modal controls, sensor
- * CRUD delegation, map popups, form submissions,
- * and keyboard shortcuts. Extracted from
- * monolithic location.js.
+ * frontend/public/assets/js/features/location/location-events.js
+ * Location page event wiring — modal open/close, sensor CRUD delegation,
+ * map popup actions, status-change confirmations, form submissions,
+ * and keyboard shortcuts (Escape to close modals).
  */
-
 function openStatusModal(reactor) {
   var refs = LocationState.getRefs();
   if (!reactor || !refs.statusModal || !refs.statusSelect) return;

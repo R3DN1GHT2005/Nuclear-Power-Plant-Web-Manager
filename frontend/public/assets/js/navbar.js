@@ -1,9 +1,11 @@
-const NAV_API_URL = (() => {
-    if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
-        return `${window.location.protocol}//${window.location.hostname}:8082/api`;
-    }
-    return 'http://127.0.0.1:8082/api';
-})();
+/*
+ * frontend/public/assets/js/navbar.js
+ * Navigation bar builder — fetches the current user role via /auth/me
+ * and dynamically renders role-appropriate nav links. Admin sees full
+ * menu (panou, reactoare, statistici, amplasare, alerte, conturi).
+ * Manager sees station-specific links. Tehnician sees only logo + logout.
+ */
+const NAV_API_URL = window.FRONTEND_API_URL;
 
 (async function initNavbar() {
     let role = 'viewer';
@@ -35,7 +37,8 @@ const NAV_API_URL = (() => {
         links.push({ href: 'reactor.html', label: 'Vezi reactorul' });
     }
 
-    // tehnician — no nav links, only logo + logout
+    
+
 
     const left = nav.querySelector('.nav-left');
     if (!left) return;

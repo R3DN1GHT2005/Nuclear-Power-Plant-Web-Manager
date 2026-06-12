@@ -1,13 +1,24 @@
 <?php
 
+/*
+ * backend/src/DTOs/request/sensor/UpdateSensorDTO.php
+ * Request DTO for sensor UpdateSensorDTO — validates and
+ * structures incoming API request data before passing it to
+ * the service layer.
+ */
+
+
 namespace App\DTOs\Request\Sensor;
 
 class UpdateSensorDTO {
     public function __construct(
         public readonly int    $reactor_id,
-        public readonly string $type,     //temperatura, presiune, etc.
-        public readonly float  $value,    //valoarea curentă a senzorului
-        public readonly ?string $unit,         // '°C', 'bar', etc. Poate fi null dacă nu are unitate specifică
+        public readonly string $type,     
+
+        public readonly float  $value,    
+
+        public readonly ?string $unit,         
+
         public readonly string  $last_update
     ) {}
 

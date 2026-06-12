@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Services/AnalyticsService.php
+ * AnalyticsService — implements business logic for analytics
+ * operations. Called by controllers, delegates data access to
+ * repositories, and integrates with external clients and other services.
+ */
+
+
 namespace App\Services;
 
 use App\Core\Database;
@@ -57,7 +65,8 @@ class AnalyticsService {
                 return $this->buildContinuousTrendFromLogs($days, $rows);
             }
         } catch (\Throwable $throwable) {
-            // Dacă tabela nu există sau apar întreruperi, folosim fallback fără a rupe pagina.
+            
+
         }
 
         return $this->buildFallbackTrendFromCurrentState($days);
@@ -96,11 +105,13 @@ class AnalyticsService {
 
         $result = [];
         foreach ($reactors as $r) {
-            // Normalize inputs: seismic_risk is 0-10 scale, soil_stability is percentage (0-100) or 0-1
+            
+
             $seismic = (float) $r['seismic_risk'];
             $soil = (float) $r['soil_stability'];
 
-            // seismic_risk is expressed in 0-100 scale in DB; normalize to 0-1
+            
+
             $probNorm = min(1.0, max(0.0, $seismic / 100.0));
             $probIndex = min(4, (int) floor($probNorm * 5));
 

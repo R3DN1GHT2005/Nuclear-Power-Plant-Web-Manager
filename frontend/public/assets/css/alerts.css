@@ -1,8 +1,9 @@
-/* =============================================
-   ALERTS GLOBAL UI (alerts.css)
-============================================= */
-
-/* Overlay care întunecă ecranul */
+/*
+ * frontend/public/assets/css/alerts.css
+ * Alert overlay styles — popup modal for real-time alerts, severity-
+ * based colouring (critical red, warning amber, info blue), alarm
+ * indicator badge, and intervention form styling.
+ */
 .nw-alert-overlay {
     position: fixed;
     inset: 0;
@@ -14,7 +15,7 @@
     justify-content: center;
     padding: 20px;
     
-    /* Ascuns by default, animație la apariție */
+    
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -25,7 +26,7 @@
     visibility: visible;
 }
 
-/* Cutia alarmei */
+
 .nw-alert-box {
     background: #fff;
     width: 100%;
@@ -41,7 +42,7 @@
     transform: scale(1) translateY(0);
 }
 
-/* Header-ul (își schimbă culoarea din JS) */
+
 .nw-alert-header {
     padding: 18px 24px;
     color: #fff;
@@ -54,10 +55,10 @@
     gap: 10px;
 }
 
-.nw-severity-critical { background: #DC2626; } /* Roșu */
-.nw-severity-warning { background: #D97706; }  /* Portocaliu */
+.nw-severity-critical { background: #DC2626; } 
+.nw-severity-warning { background: #D97706; }  
 
-/* Conținutul (Nume Reactor și Mesaj) */
+
 .nw-alert-body {
     padding: 30px 24px;
     text-align: center;
@@ -77,14 +78,14 @@
     line-height: 1.5;
 }
 
-/* Zona de Acțiune (Formular) */
+
 .nw-alert-footer {
     padding: 24px;
     background: #F8FAFC;
     border-top: 1px solid #E2E8F0;
 }
 
-/* Butoane */
+
 .nw-btn {
     width: 100%;
     padding: 14px;
@@ -110,9 +111,9 @@
 .nw-btn-submit { background: #0E9F6E; margin-top: 12px; }
 .nw-btn-submit:hover:not(:disabled) { background: #057A55; }
 
-/* Formular Intervenție */
+
 .nw-resolve-form {
-    display: none; /* Ascuns inițial */
+    display: none; 
     text-align: left;
     animation: nw-fade-in 0.3s ease;
 }

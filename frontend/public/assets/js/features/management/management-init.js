@@ -1,10 +1,10 @@
 /*
- * management-init.js — Management page bootstrap
- * Handles auth, reactor loading, maintenance modal
- * wiring, and exposes startMaint/stopMaint as
- * window globals for inline onclick.
+ * frontend/public/assets/js/features/management/management-init.js
+ * Management page bootstrap — authenticates, loads assigned reactor,
+ * renders info, personnel, maintenance, and alert-history sections.
+ * Wires the maintenance-start modal and exposes startMaint/stopMaint
+ * globally.
  */
-
 (function() {
     var reactorId;
 
@@ -44,7 +44,7 @@
             modal.addEventListener('click', function(e) { e.stopPropagation(); });
         });
 
-        /* ── Maintenance start modal ── */
+        
         document.getElementById('modal-maint-confirm').addEventListener('click', async function() {
             var dateInput = document.getElementById('maint-date');
             var reasonInput = document.getElementById('maint-reason');

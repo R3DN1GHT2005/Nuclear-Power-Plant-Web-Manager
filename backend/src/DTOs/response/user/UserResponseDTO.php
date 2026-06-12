@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/DTOs/response/user/UserResponseDTO.php
+ * Response DTO for user UserResponseDTO — formats outgoing
+ * API response data into a consistent JSON structure for the
+ * frontend.
+ */
+
+
 namespace App\DTOs\Response\User;
 
 class UserResponseDTO {

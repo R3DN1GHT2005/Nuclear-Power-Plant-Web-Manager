@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * backend/src/Enums/AlertSeverity.php
+ * AlertSeverity enum — defines the allowed values for alert severity
+ * used across the application for type-safe comparisons.
+ */
+
+
 namespace App\Enums;
 
 enum AlertSeverity: string {

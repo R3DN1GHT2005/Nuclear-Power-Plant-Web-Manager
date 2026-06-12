@@ -1,11 +1,10 @@
 /*
- * stats-kpi.js — KPI card rendering for the
- * reactor statistics page. Computes and
- * displays average efficiency, estimated
- * energy, risk index, and availability.
- * Extracted from monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-kpi.js
+ * Statistics KPI orchestrator — computes and renders KPI cards (avg
+ * efficiency, estimated energy output, avg risk, availability), then
+ * calls all sub-renderers: efficiency bars, trend, comparison, risk
+ * matrix, environment, and wear.
  */
-
 function setText(id, value) {
   var el = document.getElementById(id);
   if (el) el.textContent = value;

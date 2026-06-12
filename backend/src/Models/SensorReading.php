@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Models/SensorReading.php
+ * SensorReading domain model — represents the SensorReading entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
+
+
 namespace App\Models;
 
 class SensorReading {

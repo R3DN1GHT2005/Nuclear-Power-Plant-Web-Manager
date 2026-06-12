@@ -1,4 +1,12 @@
 <?php
+
+/*
+ * backend/src/Mappers/AlertMapper.php
+ * Alert data mapper — converts between domain models and
+ * DTOs/arrays for API request/response serialisation. Ensures
+ * clean separation between internal and external data formats.
+ */
+
 namespace App\Mappers;
 
 use App\Models\Alert;
@@ -14,7 +22,8 @@ class AlertMapper {
         return new Alert(
             id: (int) $data['id'],
             reactorId: (int) $data['reactor_id'],
-            severity: AlertSeverity::from($data['severity']), // Convertim string-ul în Enum
+            severity: AlertSeverity::from($data['severity']), 
+
             message: $data['message'],
             isResolved: (bool) $data['is_resolved'],
             resolvedBy: isset($data['resolved_by']) ? (int) $data['resolved_by'] : null,
@@ -32,7 +41,8 @@ class AlertMapper {
             id: $alert->getId(),
             reactor_id: $alert->getReactorId(),
             reactor_name: $alert->getReactorName() ?? 'Reactor',
-            severity: $alert->getSeverity()->value, // Extragem string-ul din Enum ('warning' / 'critical')
+            severity: $alert->getSeverity()->value, 
+
             message: $alert->getMessage(),
             created_at: $alert->getCreatedAt()->format('Y-m-d H:i:s')
         );
@@ -48,7 +58,8 @@ class AlertMapper {
     }
 
 
-    //history
+    
+
 
     public static function toHistoryResponseDTO(Alert $alert): AlertHistoryResponseDTO {
         return new AlertHistoryResponseDTO(

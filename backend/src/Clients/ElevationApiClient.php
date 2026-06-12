@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Clients/ElevationApiClient.php
+ * ElevationApiClient — external HTTP API client that fetches environmental
+ * data (seismic, elevation, weather) from third-party services
+ * for reactor placement and monitoring.
+ */
+
+
 namespace App\Clients;
 
 class ElevationApiClient {

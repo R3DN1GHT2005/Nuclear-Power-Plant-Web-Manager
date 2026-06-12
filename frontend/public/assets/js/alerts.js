@@ -1,8 +1,14 @@
+/*
+ * frontend/public/assets/js/alerts.js
+ * Global real-time alert overlay — listens for new alerts via the API,
+ * displays a modal popup with severity styling and alarm sound, and
+ * provides an intervention form to submit resolution notes. Supports
+ * ignoring/dismissing alerts with a client-side suppressed set.
+ */
 (function() {
     
-// =====================================================================
-// 1. LOGICA PENTRU POP-UP GLOBAL (ALARMĂ SONORĂ)
-// =====================================================================
+
+
 const sunetAlarma = new Audio('./assets/alert_sound.mp3');
 sunetAlarma.loop = true; 
 
@@ -111,9 +117,12 @@ const ignoredAlertIds = new Set();
         }
     });
 
-    // =====================================================================
-    // 2. LOGICA PENTRU LISTA DE ALERTE ACTIVE (COLOANA DREAPTĂ)
-    // =====================================================================
+    
+
+    
+
+    
+
     const listContainer = document.getElementById('alerts-container');
     
     if (listContainer) {
@@ -245,9 +254,12 @@ const ignoredAlertIds = new Set();
         });
     }
 
-    // =====================================================================
-    // 3. LOGICĂ ISTORIC (CÂND NU SUNT ALERTE ACTIVE SAU SUNTEM PE PAGINA REACTORULUI)
-    // =====================================================================
+    
+
+    
+
+    
+
     async function fetchAndRenderHistory() {
         if (!listContainer) return;
 
@@ -289,7 +301,8 @@ const ignoredAlertIds = new Set();
         const recentHistory = historyAlerts.slice(0, 15);
         listContainer.style.padding = "0";
 
-        // === MODIFICAREA E AICI: Adăugăm un container grid cu 3 coloane auto-responsive ===
+        
+
         listContainer.innerHTML = `
             <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-secondary); letter-spacing: 0.5px; padding: 10px 14px; text-align: center; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.06);">
                 Ultimele ${recentHistory.length} intervenții soluționate
@@ -304,7 +317,8 @@ const ignoredAlertIds = new Set();
             const badgeBorder   = isCritical ? '#F09595'  : '#FAC775';
             const severityText  = isCritical ? 'CRITICĂ'  : 'AVERTIZARE';
 
-            // Fiecare alertă devine un "card" independent cu bordură
+            
+
             return `
             <div style="padding: 14px; display: flex; flex-direction: column; gap: 8px; background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
                 
@@ -333,9 +347,12 @@ const ignoredAlertIds = new Set();
             </div>`;
     }
 
-    // =====================================================================
-    // 4. FETCH CENTRAL
-    // =====================================================================
+    
+
+    
+
+    
+
     async function fetchAndRenderList() {
         try {
             const res = await window.authFetch('/alerts/active');
@@ -372,9 +389,12 @@ const ignoredAlertIds = new Set();
         }
     }
 
-    // =====================================================================
-    // 5. FUNCȚII ATAȘATE PE WINDOW PENTRU HTML DINAMIC
-    // =====================================================================
+    
+
+    
+
+    
+
     window.toggleResolveFormList = function(btn, alertId) {
         const form = document.getElementById(`list-resolve-form-${alertId}`);
         if (!form) return;

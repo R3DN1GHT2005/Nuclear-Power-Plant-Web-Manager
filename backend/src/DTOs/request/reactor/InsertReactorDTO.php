@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/DTOs/request/reactor/InsertReactorDTO.php
+ * Request DTO for reactor InsertReactorDTO — validates and
+ * structures incoming API request data before passing it to
+ * the service layer.
+ */
+
+
 namespace App\DTOs\Request\reactor;
 
 class InsertReactorDTO {

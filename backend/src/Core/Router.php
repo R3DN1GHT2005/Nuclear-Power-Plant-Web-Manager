@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Core/Router.php
+ * HTTP router — registers GET/POST/PUT/PATCH/DELETE routes with
+ * path parameters ({id}, {mac}) and middleware chains. Dispatches
+ * requests to controller actions with parameter injection.
+ */
+
+
 namespace App\Core;
 
 class Router {
@@ -27,15 +35,20 @@ class Router {
     }
 
     private function addRoute(string $method, string $path, string $controller, string $action, array $middlewares): void {
-        // În loc să transformăm totul în (\d+), folosim un regex mai permisiv
-        // {mac} va fi transformat în ([a-zA-Z0-9:]+)
-        // {id} va fi transformat în (\d+)
+        
+
+        
+
+        
+
         
         $regexPath = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function($matches) {
             if ($matches[1] === 'mac') {
-                return '([a-zA-Z0-9:]+)'; // Permitem litere, cifre și ':' pentru MAC
+                return '([a-zA-Z0-9:]+)'; 
+
             }
-            return '(\d+)'; // Pentru orice altceva ({id}), rămânem la numere
+            return '(\d+)'; 
+
         }, $path);
 
         $regexPath = '#^' . $regexPath . '$#';
@@ -48,7 +61,8 @@ class Router {
             'middlewares' => $middlewares 
         ];
     }
-    // Execută cererea primită
+    
+
     public function dispatch(string $uri, string $method): void {
         foreach ($this->routes as $route) {
             if ($route['method'] === $method && preg_match($route['path'], $uri, $matches)) {
@@ -66,7 +80,8 @@ class Router {
                 $controllerInstance = new $route['controller']();
                 
                 call_user_func_array([$controllerInstance, $route['action']], $matches);
-                return; // Oprim execuția
+                return; 
+
             }
         }
 

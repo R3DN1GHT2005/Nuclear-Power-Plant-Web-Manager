@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Models/Reactor.php
+ * Reactor domain model — represents the Reactor entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
+
+
 namespace App\Models;
 
 class Reactor {
@@ -20,7 +28,8 @@ class Reactor {
     private \DateTime $created_at;
     private ?\DateTime $last_maintenance;
     private string $webhook_url;
-    private ?string $mac_address; // NOU: Proprietate opțională
+    private ?string $mac_address; 
+
     private array $sensors = [];
 
     public function __construct(
@@ -41,7 +50,8 @@ class Reactor {
         \DateTime $created_at,
         ?\DateTime $last_maintenance,
         ?string $webhook_url = null,
-        ?string $mac_address = null // NOU: Parametru opțional în constructor
+        ?string $mac_address = null 
+
     ) {
         $this->id                          = $id;
         $this->name                        = $name;
@@ -60,7 +70,8 @@ class Reactor {
         $this->created_at                  = $created_at;
         $this->last_maintenance            = $last_maintenance;
         $this->webhook_url                 = $webhook_url ?? '';
-        $this->mac_address                 = $mac_address; // NOU: Atribuirea valorii
+        $this->mac_address                 = $mac_address; 
+
     }
 
     public static function fromArray(array $data): self {
@@ -85,7 +96,8 @@ class Reactor {
             created_at:              $createdAt,
             last_maintenance:        $lastMaintenance,
             webhook_url:                   $data['webhook_discord'] ?? null,
-            mac_address:                   $data['mac_address'] ?? null // NOU: Preluarea din array-ul bazei de date
+            mac_address:                   $data['mac_address'] ?? null 
+
         );
     }
 
@@ -94,7 +106,8 @@ class Reactor {
             try {
                 return new \DateTime($dateValue);
             } catch (\Throwable $throwable) {
-                // Fall through to fallback handling below.
+                
+
             }
         }
 
@@ -134,7 +147,8 @@ class Reactor {
         $this->webhook_url = $webhook_url;
     }
 
-    // NOU: Getter și Setter pentru MAC Address
+    
+
     public function getMacAddress(): ?string { 
         return $this->mac_address; 
     }

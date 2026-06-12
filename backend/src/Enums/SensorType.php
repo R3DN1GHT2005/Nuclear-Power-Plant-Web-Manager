@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * backend/src/Enums/SensorType.php
+ * SensorType enum — defines the allowed values for sensor type
+ * used across the application for type-safe comparisons.
+ */
+
+
 namespace App\Enums;
 
 enum SensorType: string {

@@ -1,4 +1,12 @@
 <?php
+
+/*
+ * backend/src/Validators/Reactors/CanduValidator.php
+ * CanduValidator — reactor-type-specific validation logic for sensor
+ * configurations and operational parameters. Used by SensorService
+ * when creating or updating sensors.
+ */
+
 namespace App\Validators\Reactors;
 
 use App\DTOs\Request\reactor\CreateReactorRequestDTO;
@@ -11,7 +19,8 @@ class CanduValidator implements ReactorValidatorInterface {
     public function validate(CreateReactorRequestDTO $dto): void {
         $cityDistanceService = new CityDistanceService();
 
-        // Validate installed power first (simple, comes from request)
+        
+
         if ($dto->installed_power < 400) {
             throw new ValidationException("CANDU: Reglementări AIEA - Nu se avizează unități sub 400MW din motive de rentabilitate.");
         }

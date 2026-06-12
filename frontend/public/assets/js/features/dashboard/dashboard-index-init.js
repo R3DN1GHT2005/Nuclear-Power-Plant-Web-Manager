@@ -1,9 +1,9 @@
 /*
- * dashboard-index-init.js — Index (admin landing) page bootstrap
- * Fetches all reactors, computes global metrics, renders the
- * reactor table sorted by urgency.
+ * frontend/public/assets/js/features/dashboard/dashboard-index-init.js
+ * Admin landing page bootstrap — authenticates, fetches all reactors,
+ * computes global metrics (active, alert, maintenance counts, avg
+ * efficiency), renders metric cards, and builds a sorted reactor table.
  */
-
 (async function initDashboardIndex() {
     document.documentElement.style.visibility = 'hidden';
 
@@ -21,7 +21,7 @@
         return;
     }
 
-    /* ── Compute global metrics ─────────── */
+    
     var total = reactors.length;
     var active = reactors.filter(function(r) { return /^activ$/i.test(r.status); }).length;
     var alertCount = reactors.filter(function(r) { return /^alerta$/i.test(r.status); }).length;
@@ -29,7 +29,7 @@
     var offCount = reactors.filter(function(r) { return /^oprit$/i.test(r.status); }).length;
     var avgEff = reactors.reduce(function(s, r) { return s + (parseFloat(r.current_efficiency) || 0); }, 0) / total;
 
-    /* ── Render metric cards ────────────── */
+    
     var effColor = avgEff >= 80 ? 'green' : avgEff >= 60 ? 'amber' : 'red';
     document.getElementById('dashboard-metrics').innerHTML =
         '<div class="metric-card green">' +
@@ -53,7 +53,7 @@
             '<div class="metric-sub">' + (maintCount ? maintCount + ' reactor' + (maintCount > 1 ? 'e' : '') + ' în mentenanță' : 'Nicio operațiune activă') + '</div>' +
         '</div>';
 
-    /* ── Sort reactors by priority ──────── */
+    
     var priority = { 'alerta': 0, 'mentenanta': 1, 'oprit': 2, 'in constructie': 3 };
     reactors.sort(function(a, b) {
         var pa = priority[a.status.toLowerCase()] !== undefined ? priority[a.status.toLowerCase()] : 4;
@@ -61,7 +61,7 @@
         return pa - pb || (a.name || '').localeCompare(b.name || '');
     });
 
-    /* ── Render reactor table ───────────── */
+    
     var tbody = document.getElementById('dashboard-reactor-table');
     tbody.innerHTML = reactors.map(function(r) {
         var st = statusMeta(r.status);

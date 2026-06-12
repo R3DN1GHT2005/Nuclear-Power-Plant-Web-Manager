@@ -1,11 +1,9 @@
 /*
- * stats-renderer.js — Statistics page rendering functions
- * Handles KPI grid, period stats grid (9 cards),
- * efficiency comparison, and reactor specs.
- * Depends on statusMeta from utils/status.js and
- * fetchPeriodStats from features/shared/stats-calculator.js.
+ * frontend/public/assets/js/features/statistics/stats-renderer.js
+ * Per-reactor statistics renderer — provides renderReactorInfo
+ * (name, status, power, efficiency, soil stability, location, type)
+ * and loadStatsGrid (fetches period stats, renders 9-card metric grid).
  */
-
 function renderReactorInfo(r) {
     var st = statusMeta(r.status);
     document.getElementById('stats-kpis').innerHTML =

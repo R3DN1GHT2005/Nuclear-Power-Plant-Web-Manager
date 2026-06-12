@@ -1,4 +1,12 @@
 <?php
+
+/*
+ * backend/src/Models/Alert.php
+ * Alert domain model — represents the Alert entity with
+ * properties matching the database schema. Used across Services,
+ * Repositories, and Mappers for data transfer within the backend.
+ */
+
 namespace App\Models;
 
 use App\Enums\AlertSeverity;

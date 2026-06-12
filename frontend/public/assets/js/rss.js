@@ -1,3 +1,9 @@
+/*
+ * frontend/public/assets/js/rss.js
+ * RSS feed reader — obtains a per-user RSS token from the backend,
+ * fetches the XML alert feed, parses items, and renders them grouped
+ * by day with severity badges. Auto-refreshes daily.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     loadRssFeed();
     setupRssButton();
@@ -33,7 +39,7 @@ async function loadRssFeed() {
             return;
         }
 
-        const serverUrl = 'http://localhost:8082';
+            const serverUrl = (window.FRONTEND_API_URL || '').replace(/\/api$/, '');
         const rssUrl = `${serverUrl}/api/rss/alerts?token=${rssToken}`;
         const response = await fetch(rssUrl);
         
@@ -179,7 +185,7 @@ function setupRssButton() {
                 return;
             }
 
-            const serverUrl = 'http://localhost:8082';
+        const serverUrl = (window.FRONTEND_API_URL || '').replace(/\/api$/, '');
             const rssUrl = `${serverUrl}/api/rss/alerts?token=${rssToken}`;
             
             await navigator.clipboard.writeText(rssUrl);

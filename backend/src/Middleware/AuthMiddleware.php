@@ -1,4 +1,12 @@
 <?php
+
+/*
+ * backend/src/Middleware/AuthMiddleware.php
+ * Authentication middleware — extracts JWT from the Authorization
+ * header or from the access_token cookie, decodes it via TokenService,
+ * and sets userId/role on the request. Returns 401 if invalid/expired.
+ */
+
 namespace App\Middleware;
 
 use App\Services\TokenService;

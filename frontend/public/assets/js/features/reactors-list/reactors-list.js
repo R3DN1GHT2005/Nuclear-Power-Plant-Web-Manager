@@ -1,10 +1,8 @@
 /*
- * reactors-list.js — Reactor list page (reactors.html)
- * Global state for reactor list with filtering by
- * status tabs and search query. Uses
- * reactors-list-renderer.js for card generation.
+ * frontend/public/assets/js/features/reactors-list/reactors-list.js
+ * Reactors list page — authenticates as admin, fetches all reactors,
+ * renders the grid, and wires filtering by status tabs and search input.
  */
-
 var allReactors = [];
 
 document.addEventListener("DOMContentLoaded", async function() {

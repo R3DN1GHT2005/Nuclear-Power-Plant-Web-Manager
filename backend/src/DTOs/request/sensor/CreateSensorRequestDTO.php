@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/DTOs/request/sensor/CreateSensorRequestDTO.php
+ * Request DTO for sensor CreateSensorRequestDTO — validates and
+ * structures incoming API request data before passing it to
+ * the service layer.
+ */
+
+
 namespace App\DTOs\Request\Sensor;
 
 use App\Enums\SensorType;
@@ -13,7 +21,8 @@ class CreateSensorRequestDTO {
     ) {}
 
     public static function fromArray(array $data): self {
-        // 1. Verificăm doar câmpurile obligatorii trimise de frontend
+        
+
         $requiredFields = ['sensor_type', 'min_safe_value', 'max_safe_value'];
 
         foreach ($requiredFields as $field) {
@@ -25,7 +34,8 @@ class CreateSensorRequestDTO {
         $sensorTypeEnum = SensorType::tryFrom($data['sensor_type']);
 
         if (!$sensorTypeEnum) {
-            // Dacă nu e valid, generăm lista de senzori permiși pentru mesajul de eroare
+            
+
             $allowedTypes = implode(', ', array_column(SensorType::cases(), 'value'));
             throw new \InvalidArgumentException("Tip de senzor invalid. Tipurile permise sunt: {$allowedTypes}");
         }

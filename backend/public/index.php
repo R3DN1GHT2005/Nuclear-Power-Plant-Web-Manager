@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/public/index.php
+ * Application entry point — loads autoloader, sets CORS/error
+ * reporting headers, registers all API routes with the Router,
+ * initialises the database, and dispatches the incoming request.
+ */
+
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -61,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
 $uri = rtrim($uri, '/');
 if (empty($uri)) {
     $uri = '/'; 

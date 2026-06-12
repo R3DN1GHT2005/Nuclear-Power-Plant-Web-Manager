@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Repositories/AlertRepository.php
+ * Repository for Alert — provides database query methods
+ * for Alert CRUD operations via PDO. Used by the corresponding
+ * Service layer to decouple data access from business logic.
+ */
+
+
 namespace App\Repositories;
 
 use App\Core\Database;
@@ -121,7 +129,8 @@ class AlertRepository {
             ':message' => $alert->getMessage()
         ]);
         
-        // Returnăm alerta proaspăt creată cu tot cu numele reactorului
+        
+
         $newId = (int) $this->db->lastInsertId();
         return $this->findById($newId);
     }

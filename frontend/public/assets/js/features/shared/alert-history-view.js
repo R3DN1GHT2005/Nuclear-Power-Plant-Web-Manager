@@ -1,10 +1,9 @@
 /*
- * alert-history-view.js — Shared alert history rendering
- * Used by both management.js and reactor-statistics.js.
- * Renders a list of alert items with severity badges,
- * timestamps, and optional resolved-at info.
+ * frontend/public/assets/js/features/shared/alert-history-view.js
+ * Shared alert history component — fetches alert data for a given
+ * reactor and renders a list with severity badges, timestamps,
+ * and optional resolved-at information.
  */
-
 function renderAlertHistory(reactorId, containerId, options) {
     if (!options) options = {};
     var limit         = options.limit || 20;

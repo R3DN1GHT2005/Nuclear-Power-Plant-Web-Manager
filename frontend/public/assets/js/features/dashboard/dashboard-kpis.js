@@ -1,8 +1,9 @@
 /*
- * dashboard-kpis.js — KPI and sensor rendering for dashboard
- * Depends on statusMeta from utils/status.js.
+ * frontend/public/assets/js/features/dashboard/dashboard-kpis.js
+ * Dashboard KPI renderer — displays reactor metrics (name, status,
+ * power, efficiency, soil stability, location, type) and live sensor
+ * data cards on the technician/manager dashboard.
  */
-
 function renderKpis(r) {
     var st = statusMeta(r.status);
     document.getElementById('tech-kpis').innerHTML =

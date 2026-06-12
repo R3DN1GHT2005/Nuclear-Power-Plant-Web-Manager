@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * backend/src/Mappers/UserMapper.php
+ * User data mapper — converts between domain models and
+ * DTOs/arrays for API request/response serialisation. Ensures
+ * clean separation between internal and external data formats.
+ */
+
+
 namespace App\Mappers;
 
 use App\Models\User;
@@ -24,7 +32,8 @@ class UserMapper {
             throw new InvalidArgumentException("Parola trebuie să aibă minim 6 caractere.");
         }
 
-        // Separam numele primit din frontend în prenume și nume de familie
+        
+
         $parts = preg_split('/\s+/', trim($data['name']), 2);
         $firstName = $parts[0] ?? '';
         $lastName = $parts[1] ?? '';
@@ -67,7 +76,8 @@ class UserMapper {
         return new UserResponseDTO(
             id: $user->getId(),
             email: $user->getEmail(),
-            name: $user->getFullName(), // Frontend-ul se așteaptă la un singur "name" pentru afișare
+            name: $user->getFullName(), 
+
             role: $user->getRole()->value, 
             reactor_id: $assignment ? $assignment->getReactorId() : null,
             intervention_role: $assignment ? $assignment->getInterventionRole() : null,

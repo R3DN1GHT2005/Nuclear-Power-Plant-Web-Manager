@@ -1,3 +1,11 @@
+<!--
+  frontend/public/reactor.html
+  Reactor details page — full reactor info, sensor cards with readings,
+  alert and maintenance history tables, status controls.
+-->
+
+
+
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -10,12 +18,11 @@
     <link rel="stylesheet" href="assets/css/style.css?v=2">
     <link rel="stylesheet" href="assets/css/reactor.css?v=2">
     <link rel="stylesheet" href="assets/css/alerts.css?v=2">
+    <script src="env-config.js"></script>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════
-     NAVBAR — identic cu cel din reactors.html
-     ══════════════════════════════════════════════════════ -->
+
 <nav class="navbar" id="top-navbar">
     <div class="nav-left">
         <a class="logo" href="index.html">
@@ -29,15 +36,13 @@
 </nav>
 
 
-<!-- ══════════════════════════════════════════════════════
-     LAYOUT PRINCIPAL — 3 coloane
-     ══════════════════════════════════════════════════════ -->
+
 <main class="main triple-col-layout hidden" id="reactor-details-layout">
 
-    <!-- ── COLOANA STÂNGA: header + specificații ── -->
+    
     <div class="col-left">
 
-        <!-- Header cu titlu, status și butoane de acțiune -->
+        
         <div class="page-header header-minimal">
             <div class="header-top-row">
                 <div>
@@ -56,7 +61,7 @@
             </div>
         </div>
 
-        <!-- Card: Specificații tehnice -->
+        
         <div class="panel-card">
             <div class="detail-section">
                 <header class="det-h">
@@ -109,28 +114,28 @@
             </div>
         </div>
 
-    </div><!-- /col-left -->
+    </div>
 
 
-    <!-- ── COLOANA CENTRU: tab-uri senzori + istoric ── -->
+    
     <div class="col-center">
         <div class="panel-card flex-fill layout-flex-col">
 
-            <!-- Tab-uri -->
+            
             <div class="tab-bar">
                 <button class="tab-btn active" data-target="tab-senzori">Senzori activi</button>
                 <button class="tab-btn" data-target="tab-istoric">Istoric citiri</button>
                 <button class="tab-btn" data-target="tab-mentenanta">Mentenanță</button>
             </div>
 
-            <!-- Panoul: Senzori activi -->
+            
             <div class="tab-panel active" id="tab-senzori">
                 <div class="sensor-grid" id="sensor-grid-container">
                     <div class="history-empty">Se încarcă senzorii...</div>
                 </div>
             </div>
 
-            <!-- Panoul: Istoric citiri -->
+            
             <div class="tab-panel" id="tab-istoric">
                 <div class="history-filter-bar">
                     <select class="form-select select-sm" id="filter-sensor">
@@ -149,17 +154,17 @@
                 </div>
             </div>
 
-            <!-- Footer panel -->
+            
             <div class="panel-footer">
                 <div class="footer-meta" id="last-maintenance-date">Ultima mentenanță: --</div>
                 <button class="btn-text" id="btn-schedule-maint">Programează →</button>
             </div>
 
         </div>
-    </div><!-- /col-center -->
+    </div>
 
 
-    <!-- ── COLOANA DREAPTA: statistici + jurnal alerte ── -->
+    
     <div class="col-right">
         <div class="panel-card">
             <div class="detail-section">
@@ -226,14 +231,12 @@
                 </div>
             </div>
         </div>
-    </div><!-- /col-right -->
+    </div>
 
-</main><!-- /reactor-details-layout -->
+</main>
 
 
-<!-- ══════════════════════════════════════════════════════
-     ECRAN DE EROARE — afișat când reactorul nu e găsit
-     ══════════════════════════════════════════════════════ -->
+
 <div id="error-container" class="error-view hidden">
     <div class="error-icon">⚠️</div>
     <h2>Reactorul nu a putut fi găsit</h2>
@@ -242,9 +245,7 @@
 </div>
 
 
-<!-- ══════════════════════════════════════════════════════
-     MODAL 1 — Confirmare schimbare status
-     ══════════════════════════════════════════════════════ -->
+
 <div class="modal-overlay" id="modal-status">
     <div class="modal">
         <div class="confirm-icon" id="modal-status-icon">🔄</div>
@@ -268,9 +269,7 @@
 </div>
 
 
-<!-- ══════════════════════════════════════════════════════
-     MODAL 2 — Adăugare senzor nou
-     ══════════════════════════════════════════════════════ -->
+
 <div class="modal-overlay" id="modal-add-sensor">
     <div class="modal">
         <div class="modal-title">Adaugă senzor nou</div>
@@ -299,9 +298,7 @@
 </div>
 
 
-<!-- ══════════════════════════════════════════════════════
-     TOAST — notificare temporară
-     ══════════════════════════════════════════════════════ -->
+
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="modal-start-maint">
@@ -324,9 +321,7 @@
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     SCRIPTURI
-     ══════════════════════════════════════════════════════ -->
+
 <script src="assets/js/api.js?v=2"></script>
 <script src="assets/js/navbar.js"></script>
 <script src="assets/js/utils/helpers.js"></script>

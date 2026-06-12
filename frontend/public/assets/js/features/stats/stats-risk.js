@@ -1,10 +1,9 @@
 /*
- * stats-risk.js — Risk matrix rendering for the
- * reactor statistics page. Displays a 5x5 grid
- * of probability vs. impact with colour-coded
- * cells. Extracted from monolithic stats.js.
+ * frontend/public/assets/js/features/stats/stats-risk.js
+ * Statistics risk matrix — renders a 5x5 probability-vs-impact grid
+ * with colour-coded cells. Populates each cell with reactor names and
+ * applies high/medium/low visual classes.
  */
-
 function getRiskCellClass(label) {
   var normalized = normalizeText(label);
   if (normalized === 'critic' || normalized === 'major') return 'rm-hi';

@@ -1,9 +1,8 @@
-/* =========================================
-   DASHBOARD TEHNICIAN
-   Folosește variabilele din style.css
-========================================= */
-
-/* ── Variabile pentru alerts.js ───────── */
+/*
+ * frontend/public/assets/css/dashboard.css
+ * Dashboard page styles — KPI grid cards, sensor data layout, stats
+ * grid, period toggle buttons, maintenance list, RSS feed panel.
+ */
 :root {
     --color-background-primary: var(--surface);
     --color-background-secondary: var(--surface-2);
@@ -19,7 +18,7 @@
     --border-radius-md: var(--radius-sm);
 }
 
-/* ── Anulează .main > div doar pentru tech-dash ─── */
+
 .tech-dash > div {
     display: grid !important;
     flex-direction: revert;
@@ -28,7 +27,7 @@
     grid: 15 px !important;
 }
 
-/* ── Wrapper principal ─────────────────── */
+
 .tech-dash {
     padding: 50px 20px !important;
     width: 100%;
@@ -39,7 +38,7 @@
     gap: 12px !important;
 }
 
-/* ── KPI Bar ───────────────────────────── */
+
 .kpi-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -90,7 +89,7 @@
     font-weight: 400;
 }
 
-/* ── Grid principal ────────────────────── */
+
 .dash-grid {
     display: grid;
     grid-template-columns: 60% 40%;
@@ -109,7 +108,7 @@
     overflow: visible;
 }
 
-/* ── Panel card ────────────────────────── */
+
 .panel-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -150,7 +149,7 @@
     padding: 10px 16px;
 }
 
-/* ── Live pill ─────────────────────────── */
+
 .live-pill {
     display: inline-flex;
     align-items: center;
@@ -179,7 +178,7 @@
     50%       { opacity: 0.3; }
 }
 
-/* ── Count badge ───────────────────────── */
+
 .count-badge {
     font-size: 9px;
     font-weight: 600;
@@ -192,10 +191,10 @@
 }
 .count-badge:empty { display: none; }
 
-/* ── Sensor grid ───────────────────────── */
+
 .sensor-grid {
     display: grid;
-    /* Nativ responsiv: creează coloane câte încap, min 145px */
+    
     grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
     gap: 7px;
     padding: 10px 16px 12px;
@@ -249,7 +248,7 @@
     font-family: 'DM Mono', monospace;
 }
 
-/* ── Stats grid ────────────────────────── */
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -284,12 +283,12 @@
     margin-top: 2px;
 }
 
-/* ── Period switch ─────────────────────── */
+
 .period-switch {
     display: flex;
     gap: 3px;
     flex-shrink: 0;
-    flex-wrap: wrap; /* Adăugat pentru responsivitate */
+    flex-wrap: wrap; 
 }
 
 .period-btn {
@@ -307,10 +306,10 @@
 .period-btn:hover  { background: var(--surface-2); }
 .period-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-/* ── Maintenance tabs ──────────────────── */
+
 .tab-bar {
     display: flex;
-    flex-wrap: wrap; /* Adăugat pentru a nu ieși din ecran */
+    flex-wrap: wrap; 
     gap: 4px;
     padding: 8px 16px 4px;
 }
@@ -329,7 +328,7 @@
 .tab-btn:hover  { background: var(--surface-2); }
 .tab-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-/* ── Scroll area ───────────────────────── */
+
 .scroll-area {
     max-height: 210px;
     overflow-y: auto;
@@ -341,7 +340,7 @@
 .scroll-area::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
 .scroll-area::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
-/* ── Alert / Maintenance rows ──────────── */
+
 .alert-item,
 .maint-item {
     display: flex;
@@ -414,7 +413,7 @@
     font-family: 'DM Mono', monospace;
 }
 
-/* ── Buttons ───────────────────────────── */
+
 .btn-sm {
     padding: 4px 10px;
     font-size: 10px;
@@ -437,7 +436,7 @@
 }
 .btn-sm.primary:hover { background: #1e40af; }
 
-/* ── RSS ───────────────────────────────── */
+
 .rss-item {
     display: flex;
     flex-direction: column;
@@ -499,7 +498,7 @@
     overflow: hidden;
 }
 
-/* ── Empty message ─────────────────────── */
+
 .empty-msg {
     text-align: center;
     padding: 18px;
@@ -507,44 +506,42 @@
     font-size: 11px;
 }
 
-/* ── Status dot animat în KPI ──────────── */
+
 @keyframes statusPulse {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.4; }
 }
 
-/* =========================================
-   MEDIA QUERIES PENTRU RESPONSIVITATE
-========================================= */
 
-/* Tablete (sub 900px) */
+
+
 @media (max-width: 900px) {
     .dash-grid { 
-        grid-template-columns: 1fr; /* Colapsează gridul principal pe o singură coloană */
+        grid-template-columns: 1fr; 
     }
     .kpi-row { 
-        grid-template-columns: repeat(2, 1fr); /* 2 KPI-uri pe rând */
+        grid-template-columns: repeat(2, 1fr); 
     }
 }
 
-/* Telefoane mari (sub 640px) */
+
 @media (max-width: 640px) {
     .stats-grid { 
-        grid-template-columns: 1fr; /* Statisticile trec una sub alta */
+        grid-template-columns: 1fr; 
     }
 }
 
-/* Telefoane mici (sub 480px) */
+
 @media (max-width: 480px) {
     .tech-dash {
-        padding: 20px 10px !important; /* Spațiu mai mic pe margini pe mobil */
+        padding: 20px 10px !important; 
     }
     .kpi-row { 
-        grid-template-columns: 1fr; /* 1 KPI pe rând */
+        grid-template-columns: 1fr; 
     }
     
     .panel-head {
-        flex-direction: column; /* Pune titlul deasupra butoanelor */
+        flex-direction: column; 
         align-items: flex-start;
     }
     
@@ -555,14 +552,14 @@
 
     .alert-item,
     .maint-item {
-        flex-direction: column; /* Pune datele/statusul sub mesaj */
+        flex-direction: column; 
         align-items: flex-start;
     }
 
     .alert-right,
     .maint-right {
         width: 100%;
-        justify-content: space-between; /* Împrăștie badge-ul și butonul */
+        justify-content: space-between; 
         margin-top: 5px;
     }
 }
