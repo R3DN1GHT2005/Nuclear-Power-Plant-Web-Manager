@@ -4,7 +4,7 @@
  * backend/src/DTOs/response/AlertResponseDTO.php
  * Response DTO for AlertResponseDTO — formats outgoing
  * API response data into a consistent JSON structure for the
- * frontend.
+ * frontend
  */
 
 

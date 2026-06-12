@@ -1,12 +1,5 @@
 <?php
 
-/*
- * backend/src/Middleware/SensorMiddleware.php
- * Sensor MAC validation middleware — validates MAC address format
- * in request parameters for sensor-related endpoints.
- */
-
-
 namespace App\Middleware;
 
 use App\Core\Response;
@@ -21,8 +14,7 @@ class SensorMiddleware {
             return false;
         }
 
-        
-
+       
         $validKey = getenv('SENSOR_API_KEY') ?: ($_SERVER['SENSOR_API_KEY'] ?? ($_ENV['SENSOR_API_KEY'] ?? null)); 
 
         if (!$validKey) {
