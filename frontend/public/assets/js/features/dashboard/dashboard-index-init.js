@@ -24,8 +24,8 @@
     /* ── Compute global metrics ─────────── */
     var total = reactors.length;
     var active = reactors.filter(function(r) { return /^activ$/i.test(r.status); }).length;
-    var alertCount = reactors.filter(function(r) { return /^alertă$/i.test(r.status); }).length;
-    var maintCount = reactors.filter(function(r) { return /^mentenanță$/i.test(r.status); }).length;
+    var alertCount = reactors.filter(function(r) { return /^alerta$/i.test(r.status); }).length;
+    var maintCount = reactors.filter(function(r) { return /^mentenanta$/i.test(r.status); }).length;
     var offCount = reactors.filter(function(r) { return /^oprit$/i.test(r.status); }).length;
     var avgEff = reactors.reduce(function(s, r) { return s + (parseFloat(r.current_efficiency) || 0); }, 0) / total;
 
@@ -54,7 +54,7 @@
         '</div>';
 
     /* ── Sort reactors by priority ──────── */
-    var priority = { 'alertă': 0, 'mentenanță': 1, 'oprit': 2, 'in constructie': 3 };
+    var priority = { 'alerta': 0, 'mentenanta': 1, 'oprit': 2, 'in constructie': 3 };
     reactors.sort(function(a, b) {
         var pa = priority[a.status.toLowerCase()] !== undefined ? priority[a.status.toLowerCase()] : 4;
         var pb = priority[b.status.toLowerCase()] !== undefined ? priority[b.status.toLowerCase()] : 4;

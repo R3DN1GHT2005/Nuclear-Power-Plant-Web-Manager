@@ -120,7 +120,7 @@ function bindReactorEvents() {
 
       if (res.ok) {
         showToast('Reactorul a intrat în mentenanță.');
-        state.currentReactor.status = 'Mentenanță';
+        state.currentReactor.status = 'Mentenanta';
         renderReactorDetails(state.currentReactor);
         await loadMaintenanceHistory(state.currentReactor.id);
       } else {

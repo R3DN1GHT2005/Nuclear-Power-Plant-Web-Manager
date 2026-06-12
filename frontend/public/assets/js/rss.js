@@ -116,8 +116,8 @@ async function loadRssFeed() {
                     const eff = match[2];
                     const status = match[3].toLowerCase();
                     let statusClass = 'stats-ok';
-                    if (status === 'alertă' || status === 'critic') statusClass = 'stats-crit';
-                    else if (status === 'mentenanță') statusClass = 'stats-maint';
+                    if (status === 'alerta' || status === 'critic') statusClass = 'stats-crit';
+                    else if (status === 'mentenanta') statusClass = 'stats-maint';
                     else if (status === 'oprit') statusClass = 'stats-off';
                     reactorsHtml += `
                         <div class="stats-reactor ${statusClass}">

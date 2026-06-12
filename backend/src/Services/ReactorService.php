@@ -16,12 +16,12 @@ use InvalidArgumentException;
 class ReactorService {
     private const STATUS_MAP = [
         'activ' => 'Activ',
-        'mentenanta' => 'Mentenanță',
-        'mentenanta planificata' => 'Mentenanță',
+        'mentenanta' => 'Mentenanta',
+        'mentenanta planificata' => 'Mentenanta',
         'oprit' => 'Oprit',
-        'alerta' => 'Alertă',
-        'critica' => 'Alertă',
-        'critic' => 'Alertă',
+        'alerta' => 'Alerta',
+        'critica' => 'Alerta',
+        'critic' => 'Alerta',
         'in constructie' => 'In Constructie',
         'constructie' => 'In Constructie',
     ];

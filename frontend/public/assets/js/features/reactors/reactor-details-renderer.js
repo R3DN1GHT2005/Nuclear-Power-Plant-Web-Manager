@@ -8,9 +8,9 @@
 
 var STATUS_OPTIONS_DETAILS = [
   { value: 'Activ', label: 'Activ' },
-  { value: 'Mentenanță', label: 'Mentenanță' },
+  { value: 'Mentenanta', label: 'Mentenanță' },
   { value: 'Oprit', label: 'Oprit' },
-  { value: 'Alertă', label: 'Alertă' },
+  { value: 'Alerta', label: 'Alertă' },
   { value: 'In Constructie', label: 'În construcție' }
 ];
 

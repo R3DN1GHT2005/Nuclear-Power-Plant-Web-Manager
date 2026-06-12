@@ -28,9 +28,9 @@ function normalizeStatus(value) {
 function normalizeStatusChoice(status) {
   var normalized = normalizeStatus(status);
   if (normalized === 'activ') return 'Activ';
-  if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') return 'Mentenanță';
+  if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') return 'Mentenanta';
   if (normalized === 'oprit') return 'Oprit';
-  if (normalized === 'alerta' || normalized === 'critic' || normalized === 'critica' || normalized === 'stare critica') return 'Alertă';
+  if (normalized === 'alerta' || normalized === 'critic' || normalized === 'critica' || normalized === 'stare critica') return 'Alerta';
   if (normalized === 'in constructie' || normalized === 'constructie') return 'In Constructie';
   return 'Activ';
 }
@@ -39,9 +39,9 @@ function getStatusLabel(status) {
   var normalized = normalizeStatusChoice(status);
   var options = [
     { value: 'Activ', label: 'Activ' },
-    { value: 'Mentenanță', label: 'Mentenanță' },
+    { value: 'Mentenanta', label: 'Mentenanță' },
     { value: 'Oprit', label: 'Oprit' },
-    { value: 'Alertă', label: 'Alertă' },
+    { value: 'Alerta', label: 'Alertă' },
     { value: 'In Constructie', label: 'În construcție' }
   ];
   var found = options.find(function(item) { return item.value === normalized; });
@@ -50,21 +50,22 @@ function getStatusLabel(status) {
 
 var STATUS_OPTIONS = [
   { value: 'Activ', label: 'Activ' },
-  { value: 'Mentenanță', label: 'Mentenanță' },
+  { value: 'Mentenanta', label: 'Mentenanță' },
   { value: 'Oprit', label: 'Oprit' },
-  { value: 'Alertă', label: 'Alertă' },
+  { value: 'Alerta', label: 'Alertă' },
   { value: 'In Constructie', label: 'În construcție' }
 ];
 
 function statusMeta(s) {
   var map = {
     'activ':          { color: 'var(--green)', label: 'Activ' },
-    'mentenanță':     { color: 'var(--amber)', label: 'Mentenanță' },
+    'mentenanta':     { color: 'var(--amber)', label: 'Mentenanță' },
     'oprit':          { color: 'var(--text-3)', label: 'Oprit' },
-    'alertă':         { color: 'var(--red)',   label: 'Alertă' },
+    'alerta':         { color: 'var(--red)',   label: 'Alertă' },
     'in constructie': { color: 'var(--blue)',  label: 'În construcție' }
   };
-  return map[(s || '').toLowerCase()] || { color: 'var(--text-2)', label: s || '—' };
+  var key = (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return map[key] || { color: 'var(--text-2)', label: s || '—' };
 }
 
 function getStatusPillClass(status) {
