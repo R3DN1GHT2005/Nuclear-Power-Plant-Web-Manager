@@ -68,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
 $uri = rtrim($uri, '/');
 if (empty($uri)) {
     $uri = '/'; 

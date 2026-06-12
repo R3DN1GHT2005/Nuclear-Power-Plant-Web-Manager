@@ -5,12 +5,7 @@
  * menu (panou, reactoare, statistici, amplasare, alerte, conturi).
  * Manager sees station-specific links. Tehnician sees only logo + logout.
  */
-const NAV_API_URL = (() => {
-    if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
-        return `${window.location.protocol}//${window.location.hostname}:8082/api`;
-    }
-    return 'http://127.0.0.1:8082/api';
-})();
+const NAV_API_URL = window.FRONTEND_API_URL;
 
 (async function initNavbar() {
     let role = 'viewer';

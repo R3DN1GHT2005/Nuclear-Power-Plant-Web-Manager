@@ -39,7 +39,7 @@ async function loadRssFeed() {
             return;
         }
 
-        const serverUrl = 'http://localhost:8082';
+            const serverUrl = (window.FRONTEND_API_URL || '').replace(/\/api$/, '');
         const rssUrl = `${serverUrl}/api/rss/alerts?token=${rssToken}`;
         const response = await fetch(rssUrl);
         
@@ -185,7 +185,7 @@ function setupRssButton() {
                 return;
             }
 
-            const serverUrl = 'http://localhost:8082';
+        const serverUrl = (window.FRONTEND_API_URL || '').replace(/\/api$/, '');
             const rssUrl = `${serverUrl}/api/rss/alerts?token=${rssToken}`;
             
             await navigator.clipboard.writeText(rssUrl);

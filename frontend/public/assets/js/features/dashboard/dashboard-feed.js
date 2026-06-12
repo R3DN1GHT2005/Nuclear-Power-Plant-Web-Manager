@@ -14,9 +14,7 @@ async function loadRssFeed() {
         var token = tokenData.rss_token;
         if (!token) { list.innerHTML = '<p class="empty-msg">Token RSS lipsă.</p>'; return; }
 
-        var base = (window.location.protocol === 'http:' && window.location.hostname)
-            ? window.location.protocol + '//' + window.location.hostname + ':8082'
-            : 'http://127.0.0.1:8082';
+        var base = (window.FRONTEND_API_URL || '').replace(/\/api$/, '');
 
         var xmlRes = await fetch(base + '/api/rss/alerts?token=' + encodeURIComponent(token));
         if (!xmlRes.ok) { list.innerHTML = '<p class="empty-msg">Eroare la flux RSS.</p>'; return; }

@@ -6,13 +6,7 @@
  * the entire frontend. Automatically redirects to login on 401 after
  * a failed token refresh attempt.
  */
-const API_URL = (() => {
-    if (window.location.hostname && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
-        return `${window.location.protocol}//${window.location.hostname}:8082/api`;
-    }
-
-    return 'http://127.0.0.1:8082/api';
-})();
+const API_URL = window.FRONTEND_API_URL;
 
 async function authFetch(endpoint, options = {}) {
     let headers = {
