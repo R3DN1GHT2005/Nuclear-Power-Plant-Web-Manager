@@ -379,88 +379,204 @@
 }
 
 /* ─── SENSOR CARDS ─────────────────────────────────────────────────────────── */
+/* ─── SENSOR CARDS (Actualizat conform JS) ─────────────────────────────────── */
 
 .sensor-state-card {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     padding: 12px 14px;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-sm, 8px);
     position: relative;
     overflow: hidden;
-    transition: box-shadow 0.15s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* linie colorată sus — indică starea senzorului */
-.sensor-state-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: transparent;
-    border-radius: 2px 2px 0 0;
+.sensor-state-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.sensor-state-card.warn {
-    background: #fffbeb;
-    border-color: rgba(217, 119, 6, 0.25);
-}
-.sensor-state-card.warn::before {
-    background: var(--amber);
-}
-
-.sensor-state-card.crit {
-    background: #fef2f2;
-    border-color: rgba(220, 38, 38, 0.25);
-}
-.sensor-state-card.crit::before {
-    background: var(--red);
-}
-
-.sensor-state-card .sensor-name {
+.sensor-state-type {
     font-size: 10px;
-    font-weight: 600;
-    color: var(--text-3);
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
 
-.sensor-state-card .sensor-value {
-    font-size: 22px;
+.sensor-state-value {
+    font-size: 24px;
     font-weight: 600;
     font-family: 'DM Mono', monospace;
     line-height: 1;
-    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 2px;
 }
-.sensor-state-card.warn .sensor-value { color: var(--amber); }
-.sensor-state-card.crit .sensor-value { color: var(--red);   }
 
-/* badge de stare cu punct animat */
-.sensor-status-badge {
+.sensor-state-unit {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.85;
+}
+
+.sensor-state-badge {
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 10px;
-    font-weight: 600;
-    padding: 3px 7px;
+    font-weight: 700;
+    padding: 3px 6px;
     border-radius: 4px;
     width: fit-content;
-    letter-spacing: 0.04em;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+}
+
+/* ─── HISTORY ROWS / CITIRI SENZORI (Actualizat conform JS) ───────────────── */
+
+.reading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-light, rgba(0, 0, 0, 0.06));
+    transition: background 0.15s ease;
+}
+
+.reading-row:last-child {
+    border-bottom: none;
+}
+
+.reading-row:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.reading-label {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.reading-value {
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin: 0 16px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.reading-time {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-3);
+    width: 100px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ─── ALERT LOG / JURNAL ALERTE (Actualizat conform JS) ───────────────────── */
+
+.alert-log-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-light, rgba(0, 0, 0, 0.06));
+    transition: background 0.15s ease;
+}
+
+.alert-log-item:last-child {
+    border-bottom: none;
+}
+
+.alert-log-item:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.alert-log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.alert-log-severity {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 3px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.alert-log-severity.critical {
+    background: #fef2f2;
+    border: 0.5px solid rgba(226, 75, 74, 0.3);
+}
+
+.alert-log-severity.warning {
+    background: #fffbeb;
+    border: 0.5px solid rgba(186, 117, 23, 0.3);
+}
+
+.alert-log-time {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: 'DM Mono', monospace;
+}
+
+.alert-log-message {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.alert-log-resolved,
+.alert-log-active {
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
     margin-top: 2px;
 }
-.sensor-state-badge.norm { background: #f0fdf4; color: #15803d; }
-.sensor-state-badge.warn { background: rgba(217, 119, 6, 0.1); color: var(--amber); }
-.sensor-state-badge.crit { background: rgba(220, 38, 38, 0.1); color: var(--red); }
 
-.sensor-status-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: currentColor;
-    animation: ssb-pulse 2s infinite;
+.alert-log-resolved {
+    color: #15803d; /* Verde pentru rezolvat */
+}
+
+.alert-log-active {
+    color: #dc2626; /* Roșu pentru activ */
+}
+
+/* ─── MAINTENANCE HISTORY (Menținut pentru că JS încă folosește structura alert-row) ── */
+
+.maint-history-row {
+    padding: 12px 14px;
+}
+
+.maint-history-status {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.maint-history-dates {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-3);
+}
+
+.maint-history-separator {
+    margin: 0 6px;
+    opacity: 0.5;
 }
 @keyframes ssb-pulse {
     0%, 100% { opacity: 1; }
