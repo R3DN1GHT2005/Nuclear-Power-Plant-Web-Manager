@@ -21,10 +21,10 @@
 
 .tech-dash > div {
     display: grid !important;
-    flex-direction: revert;
-    overflow: revert;
-    min-width: revert;
-    grid: 15 px !important;
+    flex-direction: initial;
+    overflow: initial;
+    min-width: initial;
+    gap: 15px !important;
 }
 
 
@@ -194,7 +194,6 @@
 
 .sensor-grid {
     display: grid;
-    
     grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
     gap: 7px;
     padding: 10px 16px 12px;

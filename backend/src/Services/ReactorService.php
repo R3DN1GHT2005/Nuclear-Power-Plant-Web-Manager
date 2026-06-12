@@ -134,8 +134,8 @@ class ReactorService {
     }
 
     private function calculateSoilStability(float $seismicRisk, float $elevationMeters): float {
-        $stability = 1.0 - min(1.0, $seismicRisk / 10.0);
-        $stability += min(0.1, max(0.0, $elevationMeters / 10000.0) * 0.05);
+        $stability = 1.0 - min(1.0, $seismicRisk / 20.0);
+        $stability += min(0.05, max(0.0, $elevationMeters / 5000.0) * 0.1);
         return round(max(0.0, min(1.0, $stability)), 2);
     }
 
