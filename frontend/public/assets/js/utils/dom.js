@@ -5,10 +5,13 @@
  * timed toast messages, and a function to wire up modal close buttons
  * across the page. Used by all feature modules.
  */
+
 function setElText(id, text) {
   var el = document.getElementById(id);
   if (el) el.textContent = text;
 }
+
+
 
 function safeBindClick(element, handler) {
   if (element && typeof element.addEventListener === 'function') {

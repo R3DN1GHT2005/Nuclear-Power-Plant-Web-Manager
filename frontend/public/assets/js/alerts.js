@@ -7,12 +7,17 @@
  */
 (function() {
     
+    const sunetAlarma = new Audio('./assets/alert_sound.mp3');
+    sunetAlarma.loop = true; 
 
+    // MODIFICARE IMPORTANTĂ 1: Citim alertele ignorate din localStorage 
+    // pentru a nu le uita când dăm refresh sau schimbăm pagina (ex: de pe stats pe index).
+    const ignoredAlertIds = new Set(JSON.parse(localStorage.getItem('nw_ignored_alerts') || '[]'));
 
-const sunetAlarma = new Audio('./assets/alert_sound.mp3');
-sunetAlarma.loop = true; 
-
-const ignoredAlertIds = new Set();
+    // Funcție nouă pentru a salva starea actualizată în memoria browserului
+    function saveIgnoredAlerts() {
+        localStorage.setItem('nw_ignored_alerts', JSON.stringify([...ignoredAlertIds]));
+    }
 
     const alertHTML = `
         <div id="nwGlobalOverlay" class="nw-alert-overlay">
@@ -83,8 +88,16 @@ const ignoredAlertIds = new Set();
     }
 
     btnClosePopup.addEventListener('click', () => {
-        if (currentAlertId !== null) ignoredAlertIds.add(currentAlertId);
+        if (currentAlertId !== null) {
+            ignoredAlertIds.add(currentAlertId);
+            // MODIFICARE IMPORTANTĂ 2: Salvăm ID-ul în localStorage
+            saveIgnoredAlerts();
+        }
         overlay.classList.remove('nw-show');
+        
+        // MODIFICARE IMPORTANTĂ 3: Oprim și resetăm sunetul instant când apeși pe X
+        sunetAlarma.pause();
+        sunetAlarma.currentTime = 0;
     });
 
     btnShowForm.addEventListener('click', () => {
@@ -107,6 +120,8 @@ const ignoredAlertIds = new Set();
             if (res.ok) {
                 overlay.classList.remove('nw-show');
                 ignoredAlertIds.delete(currentAlertId);
+                // MODIFICARE IMPORTANTĂ 4: Ștergem din localStorage alerta care a fost rezolvată oficial
+                saveIgnoredAlerts();
                 currentAlertId = null;
                 sunetAlarma.pause();
                 sunetAlarma.currentTime = 0;
@@ -116,12 +131,6 @@ const ignoredAlertIds = new Set();
             btnSubmit.disabled = false;
         }
     });
-
-    
-
-    
-
-    
 
     const listContainer = document.getElementById('alerts-container');
     
@@ -254,12 +263,6 @@ const ignoredAlertIds = new Set();
         });
     }
 
-    
-
-    
-
-    
-
     async function fetchAndRenderHistory() {
         if (!listContainer) return;
 
@@ -301,8 +304,6 @@ const ignoredAlertIds = new Set();
         const recentHistory = historyAlerts.slice(0, 15);
         listContainer.style.padding = "0";
 
-        
-
         listContainer.innerHTML = `
             <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-secondary); letter-spacing: 0.5px; padding: 10px 14px; text-align: center; font-weight: 600; border-bottom: 1px solid rgba(0,0,0,0.06);">
                 Ultimele ${recentHistory.length} intervenții soluționate
@@ -316,8 +317,6 @@ const ignoredAlertIds = new Set();
             const badgeColor    = isCritical ? '#A32D2D'  : '#854F0B';
             const badgeBorder   = isCritical ? '#F09595'  : '#FAC775';
             const severityText  = isCritical ? 'CRITICĂ'  : 'AVERTIZARE';
-
-            
 
             return `
             <div style="padding: 14px; display: flex; flex-direction: column; gap: 8px; background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
@@ -347,12 +346,6 @@ const ignoredAlertIds = new Set();
             </div>`;
     }
 
-    
-
-    
-
-    
-
     async function fetchAndRenderList() {
         try {
             const res = await window.authFetch('/alerts/active');
@@ -367,13 +360,16 @@ const ignoredAlertIds = new Set();
                     const latestAlert = alerts[0];
                     showGlobalAlert(latestAlert);
 
-                    if (ignoredAlertIds.has(latestAlert.id) && sunetAlarma.paused) {
-                        sunetAlarma.play().catch(e => console.log('Sunet blocat.', e));
-                    }
+                    // MODIFICARE IMPORTANTĂ 5: Am șters de aici codul "if(ignoredAlertIds.has(...)) sunetAlarma.play()". 
+                    // Acea linie forța din greșeală pornirea sunetului chiar și pentru alertele ignorate,
+                    // ceea ce îți declanșa zgomotul la schimbarea paginii! Funcția showGlobalAlert gestionează deja sunetul corect.
+
                 } else {
                     overlay.classList.remove('nw-show');
                     currentAlertId = null;
                     ignoredAlertIds.clear();
+                    // MODIFICARE IMPORTANTĂ 6: Golim memoria locală când nu mai e nicio alertă activă global
+                    saveIgnoredAlerts();
                     sunetAlarma.pause();
                     sunetAlarma.currentTime = 0;
                 }
@@ -388,12 +384,6 @@ const ignoredAlertIds = new Set();
             console.error('Eroare la încărcarea alertelor:', e);
         }
     }
-
-    
-
-    
-
-    
 
     window.toggleResolveFormList = function(btn, alertId) {
         const form = document.getElementById(`list-resolve-form-${alertId}`);

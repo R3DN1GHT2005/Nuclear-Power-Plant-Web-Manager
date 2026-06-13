@@ -108,6 +108,7 @@ class AuthController {
         echo json_encode(["message" => "Delogare cu succes!"]);
     }
 
+    //functie pentru a returna datele utilizatorului curent, folosind JWT-ul din cookie
     public function me(): void {
         $jwtUser = AuthMiddleware::getUser();
         $userId = $jwtUser->userId ?? null;

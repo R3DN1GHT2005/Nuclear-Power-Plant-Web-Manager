@@ -51,7 +51,6 @@ class SessionService {
         if (!$user) {
             return false; 
         }
-
         $now = new DateTimeImmutable();
         $expires = new DateTimeImmutable($user['expires_at']);
         
