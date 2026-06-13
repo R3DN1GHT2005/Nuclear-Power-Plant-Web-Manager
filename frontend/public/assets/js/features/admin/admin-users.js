@@ -50,7 +50,7 @@ function renderUsersTable() {
     }).join("");
 }
 
-/* ── Create user modal ── */
+//create user popup
 document.getElementById("btn-create-user")?.addEventListener("click", function() {
     document.getElementById("new-user-firstname").value = "";
     document.getElementById("new-user-lastname").value = "";
@@ -94,7 +94,7 @@ document.getElementById("confirm-create-user")?.addEventListener("click", async 
     }
 });
 
-/* ── Password modal ── */
+//password reset popup
 window.openPasswordModal = function(userId, userName) {
     AdminState.selectedUserId = userId;
     var subEl = document.getElementById("pwd-modal-sub");
@@ -126,7 +126,7 @@ document.getElementById("confirm-change-password")?.addEventListener("click", as
     }
 });
 
-/* ── Delete user ── */
+// Delete user popup
 window.deleteUser = async function(userId, userName) {
     if (!confirm("Sunteți sigur că doriți să ștergeți contul lui " + userName + "?\nAceastă acțiune este ireversibilă.")) return;
 

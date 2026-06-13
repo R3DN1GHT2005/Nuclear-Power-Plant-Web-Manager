@@ -72,9 +72,6 @@ class SensorService {
         if (!$updated) {
             return false;
         }
-
-        
-
         $sensor = $this->getById($dto->sensor_id);
         if (!$sensor) {
             return true; 
@@ -85,11 +82,7 @@ class SensorService {
         $minSafe = $sensor->getMinSafeValue();
         $reactorId = $sensor->getReactorId();
         $sensorType = strtoupper($sensor->getSensorType());
-
         
-
-        
-
         $criticalMax = $maxSafe + abs($maxSafe * 0.15);
         $criticalMin = $minSafe - abs($minSafe * 0.15);
 
@@ -118,7 +111,7 @@ class SensorService {
             try {
                 $this->alertService->triggerAlert($reactorId, $severity, $message);
             } catch (Exception $e) {
-            
+                error_log("Error triggering alert: " . $e->getMessage());
             }
         }
 

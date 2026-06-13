@@ -23,7 +23,7 @@ const NAV_API_URL = window.FRONTEND_API_URL;
     if (!nav) return;
 
     const links = [];
-    if (role === 'admin') {
+    if (role === 'admin') {5
         links.push({ href: 'index.html', label: 'Panou principal' });
         links.push({ href: 'reactors.html', label: 'Reactoare' });
         links.push({ href: 'stats.html', label: 'Statistici' });

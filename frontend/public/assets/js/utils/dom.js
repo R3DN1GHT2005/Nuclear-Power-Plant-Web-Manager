@@ -12,7 +12,6 @@ function setElText(id, text) {
 }
 
 
-
 function safeBindClick(element, handler) {
   if (element && typeof element.addEventListener === 'function') {
     element.addEventListener('click', handler);

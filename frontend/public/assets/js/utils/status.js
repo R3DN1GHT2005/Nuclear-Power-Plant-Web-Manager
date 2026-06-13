@@ -98,28 +98,34 @@ function statusCircleClass(status) {
   if (normalized === 'alerta' || normalized === 'stare critica' || normalized === 'critica' || normalized === 'critic') return 'reactor-circle reactor-circle-red reactor-circle-pulse';
   return 'reactor-circle reactor-circle-blue';
 }
-
 function getStatusStyle(status, efficiency) {
-  if (status === 'alerta') return { textClass: 'text-red', barClass: 'bg-red' };
-  if (status === 'mentenanta') return { textClass: 'text-amber', barClass: 'bg-amber' };
-  if (status === 'oprit') return { textClass: 'text-muted', barClass: 'bg-gray' };
+  var normalized = normalizeStatus(status);
+  
+  if (normalized === 'alerta') return { textClass: 'text-red', barClass: 'bg-red' };
+  if (normalized === 'mentenanta') return { textClass: 'text-amber', barClass: 'bg-amber' };
+  if (normalized === 'oprit') return { textClass: 'text-muted', barClass: 'bg-gray' };
+  
   if (efficiency >= 85) return { textClass: 'text-green', barClass: 'bg-green' };
   if (efficiency >= 70) return { textClass: 'text-amber', barClass: 'bg-amber' };
   return { textClass: 'text-red', barClass: 'bg-red' };
 }
 
 function getStatusBucket(status) {
-  if (status === 'activ') return 'activ';
-  if (status === 'mentenanta' || status === 'mentenanta planificata') return 'mentenanta';
-  if (status === 'in constructie' || status === 'constructie') return 'constructie';
-  if (status === 'oprit') return 'oprit';
-  if (status === 'alerta' || status === 'stare critica' || status === 'critica' || status === 'critic') return 'alerta';
+  var normalized = normalizeStatus(status);
+  
+  if (normalized === 'activ') return 'activ';
+  if (normalized === 'mentenanta' || normalized === 'mentenanta planificata') return 'mentenanta';
+  if (normalized === 'in constructie' || normalized === 'constructie') return 'constructie';
+  if (normalized === 'oprit') return 'oprit';
+  if (normalized === 'alerta' || normalized === 'stare critica' || normalized === 'critica' || normalized === 'critic') return 'alerta';
   return 'other';
 }
 
 function getRowConfig(status) {
-  if (status === 'alerta') return { rowClass: 'row-critical', textClass: 'text-red' };
-  if (status === 'mentenanta') return { rowClass: 'row-maint', textClass: 'text-amber' };
-  if (status === 'oprit') return { rowClass: 'row-off', textClass: 'text-muted' };
+  var normalized = normalizeStatus(status);
+  
+  if (normalized === 'alerta') return { rowClass: 'row-critical', textClass: 'text-red' };
+  if (normalized === 'mentenanta') return { rowClass: 'row-maint', textClass: 'text-amber' };
+  if (normalized === 'oprit') return { rowClass: 'row-off', textClass: 'text-muted' };
   return { rowClass: '', textClass: 'text-green' };
 }

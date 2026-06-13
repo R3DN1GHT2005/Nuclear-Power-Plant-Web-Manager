@@ -4,6 +4,9 @@
  * assignment modal. Displays each reactor with its personnel and
  * provides UI for assigning/removing users from reactors.
  */
+
+
+/// Renders the reactor assignment overview cards on the left side of the admin page.
 function renderReactorAssignments() {
     var container = document.getElementById("reactor-assignments-container");
     if (!container) return;
@@ -41,6 +44,7 @@ function renderReactorAssignments() {
     }).join('');
 }
 
+// Populates the reactor select dropdown in the assignment modal with available reactors.
 function populateReactorSelect() {
     var select = document.getElementById("assign-reactor-select");
     if (!select) return;
@@ -51,7 +55,7 @@ function populateReactorSelect() {
     });
 }
 
-
+// Opens the assignment modal for a specific user, allowing the admin to assign or remove them from a reactor.
 window.openAssignModal = function(userId) {
     AdminState.selectedUserId = userId;
     var user = AdminState.users.find(function(u) { return u.id === userId; });

@@ -12,7 +12,7 @@ async function postJson(url, body) {
     const res = await fetch(url, {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(body)
     });
     const json = await res.json().catch(() => null);
