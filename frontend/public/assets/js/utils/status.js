@@ -17,7 +17,7 @@ function normalizeStatus(value) {
   if (normalized.includes('activ')) return 'activ';
   if (normalized.includes('mentenan')) return 'mentenanta';
   if (normalized.includes('in construct')) return 'constructie';
-  if (normalized.includes('alert')) return 'alerta';
+  if (normalized.includes('alert') || normalized.includes('avarie')) return 'alerta';
   if (normalized.includes('oprit') || normalized.includes('stop')) return 'oprit';
   return normalized || 'other';
 }
@@ -69,7 +69,7 @@ function getStatusPillClass(status) {
   if (!status) return 'pill-off';
   var s = normalizeText(status);
   if (s.includes('activ') || s.includes('operaț')) return 'pill-active';
-  if (s.includes('alert')) return 'pill-alert';
+  if (s.includes('alert') || s.includes('avarie')) return 'pill-alert';
   if (s.includes('mentenant')) return 'pill-maint';
   if (s.includes('constructie')) return 'pill-blue';
   return 'pill-off';
