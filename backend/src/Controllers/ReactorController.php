@@ -11,8 +11,8 @@
 namespace App\Controllers;
 
 use App\Core\Response;
-use App\DTOs\Request\reactor\CreateReactorRequestDTO;
-use App\DTOs\Request\reactor\UpdateReactorDTO;
+use App\DTOs\Request\Reactor\CreateReactorRequestDTO;
+use App\DTOs\Request\Reactor\UpdateReactorDTO;
 use App\Mappers\ReactorMapper;
 use App\Middleware\AuthMiddleware;
 use App\Repositories\ReactorPersonnelRepository;

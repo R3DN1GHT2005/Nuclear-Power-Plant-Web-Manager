@@ -12,9 +12,9 @@ namespace App\Services;
 
 use App\Clients\ElevationApiClient;
 use App\Clients\SeismicApiClient;
-use App\DTOs\Request\reactor\CreateReactorRequestDTO;
-use App\DTOs\Request\reactor\InsertReactorDTO;
-use App\DTOs\Request\reactor\UpdateReactorDTO;
+use App\DTOs\Request\Reactor\CreateReactorRequestDTO;
+use App\DTOs\Request\Reactor\InsertReactorDTO;
+use App\DTOs\Request\Reactor\UpdateReactorDTO;
 use App\Models\Reactor;
 use App\Repositories\ReactorRepository;
 use App\Repositories\SensorRepository;

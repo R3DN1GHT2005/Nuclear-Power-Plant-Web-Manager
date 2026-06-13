@@ -9,7 +9,7 @@
 
 namespace App\Validators\Reactors;
 
-use App\DTOs\Request\reactor\CreateReactorRequestDTO;
+use App\DTOs\Request\Reactor\CreateReactorRequestDTO;
 use App\Clients\ElevationApiClient;
 use App\Clients\SeismicApiClient;
 use App\Exceptions\ValidationException;

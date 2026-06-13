@@ -11,8 +11,8 @@
 namespace App\Repositories;
 
 use App\Core\Database;
-use App\DTOs\Request\reactor\InsertReactorDTO;
-use App\DTOs\Request\reactor\UpdateReactorDTO;
+use App\DTOs\Request\Reactor\InsertReactorDTO;
+use App\DTOs\Request\Reactor\UpdateReactorDTO;
 use App\Models\Reactor;
 use PDO;
 
