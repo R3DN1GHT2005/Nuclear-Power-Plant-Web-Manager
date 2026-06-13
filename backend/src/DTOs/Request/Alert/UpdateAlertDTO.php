@@ -8,7 +8,7 @@
  */
 
 
-namespace App\DTOs\Request\alert;
+namespace App\DTOs\Request\Alert;
 
 class UpdateAlertDTO {
     public function __construct(
