@@ -8,7 +8,7 @@
  */
 
 
-namespace App\DTOs\Request\reactor;
+namespace App\DTOs\Request\Reactor;
 
 class CreateReactorRequestDTO {
     public function __construct(
