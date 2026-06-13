@@ -597,3 +597,75 @@ body { display: flex; flex-direction: column; }
 @media (max-width:480px){
   .auth-card{width:92%;padding:18px}
 }
+
+@media (max-width: 1024px) {
+  .main, .body-wrap {
+    grid-template-columns: 1fr !important; 
+    padding: 16px 20px;
+  }
+  
+  .metrics, .kpi-grid, .meteo-grid {
+    grid-template-columns: repeat(2, 1fr); 
+  }
+
+  .col-l, .col-r {
+    padding-right: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+  }
+  .logo {
+    font-size: 14px;
+    padding-right: 10px;
+  }
+
+  .main, .body-wrap {
+    padding: 12px 10px;
+  }
+
+  .metrics, .kpi-grid, .reactor-grid, .rgrid, .meteo-row, .gauge-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .col-left, .col-right {
+    gap: 12px;
+  }
+
+  .scroll-area {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .reactor-table, .data-table, .comp-table, .ctable, .ftable {
+    min-width: 600px; 
+  }
+
+  .legend {
+    flex-wrap: wrap;
+    padding: 10px 14px;
+  }
+
+  .rmatrix, .matrix-wrap {
+    overflow-x: auto;
+  }
+  
+  .matrix-headers, .matrix-body {
+    min-width: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel-header, .section-header, .det-h {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .see-all, .action-link {
+    align-self: flex-end;
+  }
+}
